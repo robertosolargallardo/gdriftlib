@@ -13,13 +13,13 @@ class Individual{
             Chromosome***  _chromosomes;
   
    public:  Individual(const uint32_t&,const boost::property_tree::ptree&);
+            Individual(const uint32_t&,const Ploidy&,const uint32_t&);
             Individual(const Individual&);
             uint32_t id(void) const;
             uint32_t n_chromosomes(void) const;
-            Chromosome** chromosome(const uint32_t&);
+            Chromosome**& chromosome(const uint32_t&);
             Ploidy ploidy(void) const;
             ~Individual(void);                     
-
 
             void show(void){
                for(uint32_t cid=0U;cid<this->n_chromosomes();cid++){
@@ -29,7 +29,7 @@ class Individual{
                      cout << "Ploidy::"<<j<<endl;
                      for(uint32_t k=0U;k<chromosome[j]->n_genes();k++){
                         cout << "Gene::"<<k<<endl;
-                        cout << chromosome[j]->gene(k)->ref()->to_string() << " " << chromosome[j]->gene(k)->mutation_rate() << endl;
+                        cout << chromosome[j]->gene(k)->reference()->to_string() << " " << chromosome[j]->gene(k)->mutation_rate() << endl;
                         
                      }
                   }

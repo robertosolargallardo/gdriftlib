@@ -1,9 +1,15 @@
 #include "Reference.h"
 Reference::Reference(const Reference &_reference):Bitset(_reference){
    this->_count=0U;
+   this->_read_only=_reference._read_only;
 }
-Reference::Reference(const uint32_t &_nucleotides,const uint32_t &_sequence):Bitset(_nucleotides,_sequence){
+Reference::Reference(const string &_sequence,const bool &_read_only):Bitset(_sequence){
    this->_count=0U;
+   this->_read_only=_read_only;
+}
+Reference::Reference(const uint32_t &_nucleotides,const uint32_t &_sequence,const bool &_read_only):Bitset(_nucleotides,_sequence){
+   this->_count=0U;
+   this->_read_only=_read_only;
 }
 void Reference::increase(void){
    this->_count++;
@@ -13,6 +19,9 @@ void Reference::decrease(void){
 }
 uint32_t Reference::count(void) const{
    return(this->_count);
+}
+bool Reference::read_only(void) const{
+   return(this->_read_only);
 }
 void Reference::mutate(void){
    uint32_t size=uint32_t(ceil(double(this->_nucleotides)/double(N_NUCLEOTIDES)));

@@ -18,7 +18,7 @@ namespace model{
          for(uint32_t cid=0;cid<individual->n_chromosomes();cid++){
             for(uint32_t gid=0;gid<individual->chromosome(cid)[0]->n_genes();gid++,position++){
                if(mutation_rate(rng)<=_src->at(id)->chromosome(cid)[0]->gene(gid)->mutation_rate()){
-                  reference=new Reference(*(_src->at(id)->chromosome(cid)[0]->gene(gid)->ref()));
+                  reference=new Reference(*(_src->at(id)->chromosome(cid)[0]->gene(gid)->reference()));
                   reference->mutate();
 
                   validator=_pool->push(position,reference);
@@ -26,10 +26,10 @@ namespace model{
                      delete reference;
                      reference=validator;
                   }
-                  _dst->at(id)->chromosome(cid)[0]->gene(gid)->ref(reference);
+                  _dst->at(id)->chromosome(cid)[0]->gene(gid)->reference(reference);
                }
                else
-                  _dst->at(id)->chromosome(cid)[0]->gene(gid)->ref(_src->at(id)->chromosome(cid)[0]->gene(gid)->ref());
+                  _dst->at(id)->chromosome(cid)[0]->gene(gid)->reference(_src->at(id)->chromosome(cid)[0]->gene(gid)->reference());
             }
          }
       }

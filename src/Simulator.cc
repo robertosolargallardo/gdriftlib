@@ -156,6 +156,12 @@ void Simulator::run(void){
       this->_pool->release();
    }
 }
+vector<Population*> Simulator::populations(void){
+   std::vector<Population*> p;
+   p.reserve(this->_populations.size());
+   std::for_each(this->_populations.begin(),this->_populations.end(),[&p](const map<string,tuple<Population*,Population*>>::value_type& _p){p.push_back(get<0>(_p.second));});
+   return(p);
+}
 Simulator::~Simulator(void){
    for(map<string,tuple<Population*,Population*>>::iterator i=this->_populations.begin();i!=this->_populations.end();i++){
       delete get<0>(i->second);

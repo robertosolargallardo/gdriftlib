@@ -30,7 +30,7 @@ Individual* Pool::generate(const uint32_t &_id){
       for(uint32_t p=0U;p<uint32_t(individual->ploidy());p++){
          for(uint32_t gid=0U;gid<individual->chromosome(cid)[p]->n_genes();gid++){
             uniform_int_distribution<> uniform(0,this->_pool[position+gid]->size()-1);
-            individual->chromosome(cid)[p]->gene(gid)->ref((*this->_pool[position+gid])[uniform(rng)]);
+            individual->chromosome(cid)[p]->gene(gid)->reference((*this->_pool[position+gid])[uniform(rng)]);
          }
       }
       position+=individual->chromosome(cid)[0]->n_genes();

@@ -16,6 +16,7 @@ class Simulator{
    public:  Simulator(const boost::property_tree::ptree&);
             ~Simulator(void);
          
+            vector<Population*> populations(void);
             void run(void);
 };
 #endif

@@ -17,6 +17,7 @@ class Population{
    public:  Population(void);
             Population(const uint32_t&);
             Population(const string&,const uint32_t&);
+            Population(const Ploidy&,const boost::property_tree::ptree&);
  
             uint32_t size(void);
             string name(void);
@@ -36,6 +37,36 @@ class Population{
 
 
             /*indices*/
+            pair<double,double> rarest_nucleotides_statistics(const vector<string> &_sequences){
+               map<char,int> count;
+               vector<int> stats;
+               double mean=0.0;
+               
+               string ref=_sequences[0];
+               for(size_t i=0;i<ref.length();i++){
+
+                  count['A']=count['C']=count['G']=count['T']=0;
+                  for(size_t j=0;j<_sequences.size();j++){
+                     count[_sequences[j].at(i)]++;
+                  }
+                  int c=0;
+                  for(auto j : count)
+                     if(j.second<int(double(_sequences.size())*0.01))
+                        c++;
+                  stats.push_back(c);
+                  mean+=double(c);
+               }
+               mean/=double(ref.length());
+
+               double diff,variance=0.0;
+               for(auto s : stats){
+                  diff=s-mean;
+                  variance+=diff*diff;
+               }
+               variance/=double(ref.length());
+
+               return(pair<double,double>(mean,variance));
+            }
             double number_of_haplotypes(const vector<string> &_sequences){
                map<string,double> haplotypes;
 
@@ -118,16 +149,19 @@ class Population{
 
                for(auto& individual : sample){
                    for(uint32_t cid=0U;cid<individual->n_chromosomes();cid++){
-                     for(int p=0;p<int(individual->ploidy());p++){
-                        for(uint32_t gid=0;gid<individual->chromosome(cid)[p]->n_genes();gid++){
-                           sequences[cid][gid].push_back(individual->chromosome(cid)[p]->gene(gid)->ref()->to_string());
+                     for(int pid=0;pid<int(individual->ploidy());pid++){
+                        for(uint32_t gid=0;gid<individual->chromosome(cid)[pid]->n_genes();gid++){
+                           sequences[cid][gid].push_back(individual->chromosome(cid)[pid]->gene(gid)->reference()->to_string());
                         }
                      }
                   }
                }
+
+               //this->rarest_nucleotides_statistics(sequences[0][0]);
    
                double mean_of_the_number_of_pairwise_differences,variance_of_the_number_of_pairwise_differences;
                boost::property_tree::ptree fpopulation;
+
                boost::property_tree::ptree fchromosomes;
                fpopulation.put("name",this->name());
 

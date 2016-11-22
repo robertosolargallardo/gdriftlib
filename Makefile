@@ -1,14 +1,17 @@
-TARGET=test
+#TARGET=test
+TARGET=lib/libgdrift++.a
 CXX=g++
 CXXFLAGS=-std=c++11 -Wall -g -ggdb -O3 
 
-OBJS=obj/Bitset.o obj/Reference.o obj/Pool.o obj/Individual.o obj/Chromosome.o obj/Gene.o obj/Population.o obj/Event.o obj/EventList.o obj/Simulator.o obj/Model.o obj/test.o 
+OBJS=obj/Bitset.o obj/Reference.o obj/Pool.o obj/Individual.o obj/Chromosome.o obj/Gene.o obj/Population.o obj/Event.o obj/EventList.o obj/Simulator.o obj/Model.o #obj/test.o 
 
+#$(TARGET):$(OBJS)
+#			 $(CXX) $^ -o $@ $(CXXFLAGS)
 $(TARGET):$(OBJS)
-			 $(CXX) $^ -o $@ $(CXXFLAGS)
+		ar rvs $(TARGET) $^
 
-obj/test.o:src/test.cc
-			  $(CXX) -c $^ -o $@ $(CXXFLAGS)
+#obj/test.o:src/test.cc
+#			  $(CXX) -c $^ -o $@ $(CXXFLAGS)
 obj/Bitset.o:src/Bitset.cc src/Bitset.h
 				 $(CXX) -c $< -o $@ $(CXXFLAGS)
 obj/Reference.o:src/Reference.cc src/Reference.h

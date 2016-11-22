@@ -5,7 +5,8 @@ Chromosome::Chromosome(const uint32_t &_id,const uint32_t &_n_genes){
    this->_genes=(Gene**)malloc(sizeof(Gene*)*this->_n_genes);
 
    for(uint32_t id=0;id<this->_n_genes;id++)
-      this->_genes[id]=new Gene(id);
+      this->_genes[id]=nullptr;
+      //this->_genes[id]=new Gene(id);
 }
 Chromosome::Chromosome(const Chromosome &_chromosome){
    this->_id=_chromosome._id;
@@ -22,7 +23,7 @@ uint32_t Chromosome::id(void) const{
 uint32_t Chromosome::n_genes(void) const{
    return(this->_n_genes);
 }
-Gene* Chromosome::gene(const uint32_t &_id){
+Gene*& Chromosome::gene(const uint32_t &_id){
    return(this->_genes[_id]);
 }
 Chromosome::~Chromosome(void){

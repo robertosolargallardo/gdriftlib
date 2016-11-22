@@ -13,7 +13,7 @@ class Chromosome{
             Chromosome(const Chromosome&);
             uint32_t id(void) const;
             uint32_t n_genes(void) const;
-            Gene* gene(const uint32_t&);
+            Gene*& gene(const uint32_t&);
             ~Chromosome(void);
 };
 #endif
