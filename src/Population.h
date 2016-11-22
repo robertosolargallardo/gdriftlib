@@ -16,6 +16,7 @@ class Population{
    
    public:  Population(void);
             Population(const uint32_t&);
+            Population(const string&);
             Population(const string&,const uint32_t&);
             Population(const Ploidy&,const boost::property_tree::ptree&);
  

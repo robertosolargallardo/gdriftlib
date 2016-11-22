@@ -26,6 +26,9 @@ Population::Population(const Ploidy &_ploidy,const boost::property_tree::ptree &
       this->_population.push_back(individual);
    }
 }
+Population::Population(const string &_name){
+   this->_name=_name;
+}
 Population::Population(const string &_name,const uint32_t &_size){
    this->_name=_name;
    this->_population.reserve(_size);
