@@ -11,7 +11,6 @@ void Simulator::run(void){
    uint32_t start=this->_evlist->top()->timestamp();
 
    for(uint32_t t=start;;t++){
-      cout << t << endl;
       while(!this->_evlist->empty() && this->_evlist->top()->timestamp()==t){
          Event* e=this->_evlist->top();
          this->_evlist->pop();
@@ -105,9 +104,6 @@ void Simulator::run(void){
                break;
             }
             case ENDSIM:{
-               for(map<string,tuple<Population*,Population*>>::iterator i=this->_populations.begin();i!=this->_populations.end();i++)
-                  cout << get<0>(i->second)->size() << endl;
-
                delete e;
                return;
             }
