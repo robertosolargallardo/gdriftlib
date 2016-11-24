@@ -30,7 +30,8 @@ Individual* Pool::generate(const uint32_t &_id){
       for(uint32_t p=0U;p<uint32_t(individual->ploidy());p++){
          for(uint32_t gid=0U;gid<individual->chromosome(cid)[p]->n_genes();gid++){
             uniform_int_distribution<> uniform(0,this->_pool[position+gid]->size()-1);
-            individual->chromosome(cid)[p]->gene(gid)->reference((*this->_pool[position+gid])[uniform(rng)]);
+				Reference *reference=(*this->_pool[position+gid])[uniform(rng)];
+            individual->chromosome(cid)[p]->gene(gid)->reference(reference);
          }
       }
       position+=individual->chromosome(cid)[0]->n_genes();
@@ -70,8 +71,10 @@ void Pool::populate(const uint32_t &_position,const uint32_t &_nucleotides,const
    
    this->_pool[_position]->reserve(_number_of_alleles);  
       
-   for(uint32_t sequence=0U;sequence<_number_of_alleles;sequence++)
-      this->_pool[_position]->push_back(new Reference(_nucleotides,sequence));
+   for(uint32_t sequence=0U;sequence<_number_of_alleles;sequence++){
+		Reference* reference=new Reference(_nucleotides,sequence);
+      this->_pool[_position]->push_back(reference);
+	}
 }
 Pool::~Pool(void){
    for(uint32_t position=0;position<this->size();position++){

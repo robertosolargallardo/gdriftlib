@@ -12,8 +12,9 @@ Bitset::Bitset(const uint32_t &_nucleotides,const uint32_t &_sequence){
    memset(this->_data,0,sizeof(char)*size);
   
    uint32_t mask=UCHAR_MAX;
+	int max_disp=sizeof(uint32_t)*CHAR_BIT;
 
-   for(int i=size-1,disp=0;i>=0;i--,disp=+CHAR_BIT)
+   for(int i=size-1,disp=0;i>=0 && disp<max_disp;i--,disp+=CHAR_BIT)
       this->_data[i]=char((_sequence & (mask<<disp))>>disp);
 }
 Bitset::Bitset(const string &_sequence){

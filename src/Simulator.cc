@@ -26,7 +26,7 @@ void Simulator::run(void){
                   src->push(this->_pool->generate(id));
                   dst->push(new Individual(id,this->_fsettings.get_child("individual")));
                }
-               this->_populations[params.get<string>("population.name")]=tuple<Population*,Population*>(src,dst);
+					this->_populations[params.get<string>("population.name")]=tuple<Population*,Population*>(src,dst);
                break;
             }
             case SPLIT:{

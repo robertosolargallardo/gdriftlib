@@ -29,6 +29,7 @@ class Population{
             Individual* top(void);
             Individual* at(const uint32_t&);
             ~Population(void);
+				vector<Individual*> individuals(void);
    
             vector<Population*> split(const size_t&);
             void migration(Population*,const uint32_t&);

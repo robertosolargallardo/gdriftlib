@@ -26,6 +26,9 @@ Population::Population(const Ploidy &_ploidy,const boost::property_tree::ptree &
       this->_population.push_back(individual);
    }
 }
+vector<Individual*> Population::individuals(void){
+	return(this->_population);
+}
 Population::Population(const string &_name){
    this->_name=_name;
 }
