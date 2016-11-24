@@ -32,10 +32,7 @@ void Gene::mutation_rate(const double &_mutation_rate){
 }
 Gene::~Gene(void){
    this->_reference->decrease();
-   if(!this->_reference->read_only()){
+   if(!this->_reference->read_only())
       delete this->_reference;
-		this->_reference=nullptr;
-	}
-	else if(!this->_reference->count())
-		this->_reference=nullptr;
+	this->_reference=nullptr;
 }
