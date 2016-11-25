@@ -39,7 +39,7 @@ void Reference::mutate(void){
    char value=(this->_data[p])&(mask<<n);
 
    if(!value) value=mask<<n;
-   
+	
    this->_data[p]^=value;
 }
 Reference::~Reference(void){

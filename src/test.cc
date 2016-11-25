@@ -8,9 +8,20 @@ mt19937 rng(seed());
 int main(int argc,char** argv)
 {
 
-	/*Bitset* b=new Bitset(200,4294967295);
+	/*Bitset* b=new Bitset(18,100001);
 	cout << b->to_string() << endl;
-	delete b;*/
+	Bitset* c=new Bitset(*b);
+	cout << c->to_string() << endl;
+
+	Reference* r=new Reference(18,100001);
+	cout << r->to_string() << endl;
+	Reference* s=new Reference(*r);
+	cout << s->to_string() << endl;
+
+	delete b;
+	delete c;
+	delete r;
+	delete s;*/
    boost::property_tree::ptree fsettings;
    read_json(argv[1],fsettings);
 
@@ -25,18 +36,6 @@ int main(int argc,char** argv)
 	}
 
    delete sim;
-
-   /*boost::property_tree::ptree fpopulations;
-   read_json(argv[1],fpopulations);
-   
-   for(auto population : fpopulations.get_child("populations")){
-      Population *p=new Population(Ploidy(fpopulations.get<int>("ploidy")),population.second);
-      boost::property_tree::ptree findices=p->indices(1.0);
-      stringstream ss;
-      write_json(ss,findices);
-      cout << ss.str() << endl;
-      delete p;
-   }*/
    
    return(0);
 }

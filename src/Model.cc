@@ -11,25 +11,25 @@ namespace model{
       Reference* validator=nullptr;
 
       Individual* individual=nullptr;
+
       for(uint32_t id=0U;id<_dst->size();id++){
          individual=_src->at(uniform(rng));
 
          position=0U;
          for(uint32_t cid=0;cid<individual->n_chromosomes();cid++){
             for(uint32_t gid=0;gid<individual->chromosome(cid)[0]->n_genes();gid++,position++){
-               if(mutation_rate(rng)<=_src->at(id)->chromosome(cid)[0]->gene(gid)->mutation_rate()){
-                  reference=new Reference(*(_src->at(id)->chromosome(cid)[0]->gene(gid)->reference()));
+               if(mutation_rate(rng)<=individual->chromosome(cid)[0]->gene(gid)->mutation_rate()){
+                  reference=new Reference(*(individual->chromosome(cid)[0]->gene(gid)->reference()));
                   reference->mutate();
 
-                  validator=_pool->push(position,reference);
-                  if((*validator)==(*reference)){
+                  if((validator=_pool->push(position,reference))){
                      delete reference;
                      reference=validator;
                   }
                   _dst->at(id)->chromosome(cid)[0]->gene(gid)->reference(reference);
                }
                else
-                  _dst->at(id)->chromosome(cid)[0]->gene(gid)->reference(_src->at(id)->chromosome(cid)[0]->gene(gid)->reference());
+                  _dst->at(id)->chromosome(cid)[0]->gene(gid)->reference(individual->chromosome(cid)[0]->gene(gid)->reference());
             }
          }
       }

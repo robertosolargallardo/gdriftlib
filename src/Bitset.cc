@@ -71,7 +71,8 @@ bool Bitset::operator==(const Bitset &_bitset){
       return(false);
 
    uint32_t size=ceil(double(this->_nucleotides)/double(N_NUCLEOTIDES));
-   return(memcmp(this->_data,_bitset._data,sizeof(char)*size));
+	auto r=memcmp(this->_data,_bitset._data,sizeof(char)*size);
+   return(r==0);
 }
 Bitset::~Bitset(void){
    if(this->_data!=nullptr){

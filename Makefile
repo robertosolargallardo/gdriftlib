@@ -38,4 +38,4 @@ obj/Model.o:src/Model.cc src/Model.h
 			   $(CXX) -c $< -o $@ $(CXXFLAGS)
 
 clean:
-		${RM} $(TARGET) $(OBJS) $(TEST)
+		${RM} $(TARGET) $(OBJS) $(TEST) obj/$(TEST).o

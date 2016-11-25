@@ -44,7 +44,7 @@ Reference* Pool::push(const uint32_t &_position,Reference* _reference){
       if((**i)==(*_reference)) return(*i);
 
    this->_pool[_position]->push_back(_reference);
-   return(_reference);
+   return(nullptr);
 }
 uint32_t Pool::size(void){
    return(this->_size);
