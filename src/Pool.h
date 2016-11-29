@@ -9,19 +9,17 @@
 
 extern random_device seed;
 extern mt19937 rng;
-
 class Pool{
-   private: uint32_t _size;
-            vector<Reference*>** _pool;
+   private: map<pair<uint32_t,uint32_t>,vector<Reference*>> _pool;
             boost::property_tree::ptree _findividual;
 
    public:  Pool(const boost::property_tree::ptree&);
 
-            void populate(const uint32_t&,const uint32_t&,const uint32_t&,const uint32_t&);
+            void populate(const uint32_t&,const uint32_t&,const uint32_t&,const uint32_t&,const uint32_t&);
             Individual* generate(const uint32_t&);
             void release(void);
             void decrease_all(void);
-            Reference* push(const uint32_t&,Reference*);
+            Reference* push(const uint32_t&,const uint32_t&,Reference*);
             uint32_t size(void);
       
             ~Pool(void);

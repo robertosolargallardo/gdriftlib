@@ -43,6 +43,10 @@ void Population::push(Individual* _individual){
    this->_population.push_back(_individual);
 }
 Individual* Population::at(const uint32_t &_id){
+	if(_id>=this->size()){
+		cerr << "Error::Cannot access position " << _id << endl;
+		exit(EXIT_FAILURE);
+	}
    return(this->_population[_id]);
 }
 uint32_t Population::size(void){

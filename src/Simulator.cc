@@ -27,6 +27,8 @@ void Simulator::run(void){
                   dst->push(new Individual(id,this->_fsettings.get_child("individual")));
                }
 					this->_populations[params.get<string>("population.name")]=tuple<Population*,Population*>(src,dst);
+      			
+      			this->_pool->release();
                break;
             }
             case SPLIT:{
@@ -116,8 +118,7 @@ void Simulator::run(void){
          delete e;
       }
 
-      this->_pool->decrease_all();
-
+      //this->_pool->decrease_all();
       Model m=Model(this->_fsettings.get_child("scenario").get<int>("model"));
       switch(m){
          case WRIGHTFISHER:{
@@ -126,7 +127,7 @@ void Simulator::run(void){
                case HAPLOID:{
                   for(map<string,tuple<Population*,Population*>>::iterator i=this->_populations.begin();i!=this->_populations.end();i++){
                      model::run<WRIGHTFISHER,HAPLOID>(get<0>(i->second),get<1>(i->second),this->_pool);   
-                     swap(get<0>(i->second),get<1>(i->second));
+							swap(get<0>(i->second),get<1>(i->second));
                   }
                   break;
                }  
@@ -148,8 +149,7 @@ void Simulator::run(void){
             exit(EXIT_FAILURE);
          }
       }
-
-      this->_pool->release();
+      //this->_pool->release();
    }
 }
 vector<Population*> Simulator::populations(void){

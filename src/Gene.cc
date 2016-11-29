@@ -13,10 +13,11 @@ Gene::Gene(const Gene &_gene){
    this->_id=_gene._id;
    this->_mutation_rate=_gene._mutation_rate;
    this->_reference=_gene._reference;
+	this->_reference->increase();//TODO creo q faltaba esto
 }
 void Gene::reference(Reference* _reference){
+	_reference->increase();
    this->_reference=_reference;
-   this->_reference->increase();
 }
 uint32_t Gene::id(void) const{
    return(this->_id);
