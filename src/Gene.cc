@@ -16,8 +16,8 @@ Gene::Gene(const Gene &_gene){
 	this->_reference->increase();//TODO creo q faltaba esto
 }
 void Gene::reference(Reference* _reference){
-	_reference->increase();
    this->_reference=_reference;
+   this->_reference->increase();
 }
 uint32_t Gene::id(void) const{
    return(this->_id);
