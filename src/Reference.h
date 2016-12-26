@@ -1,5 +1,6 @@
 #ifndef _REFERENCE_H_
 #define _REFERENCE_H_
+#include <random>
 #include "Bitset.h"
 extern random_device seed;
 extern mt19937 rng;
