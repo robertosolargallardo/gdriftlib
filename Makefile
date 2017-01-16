@@ -12,9 +12,9 @@ $(TARGET):$(OBJS)
 obj/Bitset.o:src/Bitset.cc src/Bitset.h
 				 $(CXX) -c $< -o $@ $(CXXFLAGS)
 obj/Reference.o:src/Reference.cc src/Reference.h
-				    $(CXX) -c $< -o $@ $(CXXFLAGS)
+					 $(CXX) -c $< -o $@ $(CXXFLAGS)
 obj/Pool.o:src/Pool.cc src/Pool.h
-		     $(CXX) -c $< -o $@ $(CXXFLAGS)
+			  $(CXX) -c $< -o $@ $(CXXFLAGS)
 obj/Individual.o:src/Individual.cc src/Individual.h
 					  $(CXX) -c $< -o $@ $(CXXFLAGS)
 obj/Chromosome.o:src/Chromosome.cc src/Chromosome.h
@@ -22,15 +22,15 @@ obj/Chromosome.o:src/Chromosome.cc src/Chromosome.h
 obj/Gene.o:src/Gene.cc src/Gene.h
 			  $(CXX) -c $< -o $@ $(CXXFLAGS)
 obj/Population.o:src/Population.cc src/Population.h
-			        $(CXX) -c $< -o $@ $(CXXFLAGS)
+					  $(CXX) -c $< -o $@ $(CXXFLAGS)
 obj/Event.o:src/Event.cc src/Event.h
-			   $(CXX) -c $< -o $@ $(CXXFLAGS)
+				$(CXX) -c $< -o $@ $(CXXFLAGS)
 obj/EventList.o:src/EventList.cc src/EventList.h
-			       $(CXX) -c $< -o $@ $(CXXFLAGS)
+					 $(CXX) -c $< -o $@ $(CXXFLAGS)
 obj/Simulator.o:src/Simulator.cc src/Simulator.h
-			       $(CXX) -c $< -o $@ $(CXXFLAGS)
+					 $(CXX) -c $< -o $@ $(CXXFLAGS)
 obj/Model.o:src/Model.cc src/Model.h
-			   $(CXX) -c $< -o $@ $(CXXFLAGS)
+				$(CXX) -c $< -o $@ $(CXXFLAGS)
 
 clean:
 		${RM} $(TARGET) $(OBJS) $(TEST) obj/$(TEST).o
