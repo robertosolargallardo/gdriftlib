@@ -11,7 +11,6 @@ void Simulator::run(void){
    uint32_t start=this->_evlist->top()->timestamp();
 
    for(uint32_t t=start;;t++){
-cout << t << endl;
       while(!this->_evlist->empty() && this->_evlist->top()->timestamp()==t){
          Event* e=this->_evlist->top();
          this->_evlist->pop();
