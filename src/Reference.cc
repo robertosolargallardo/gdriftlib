@@ -29,8 +29,8 @@ void Reference::mutate(void){
    int p=0,n=0;
    char mask=1;
 
-   p=int(floor(double(m)/double(sizeof(char))));
-   n=int(m%uint32_t(sizeof(char)));
+   p=int(floor(double(m)/double(N_NUCLEOTIDES)));
+   n=int(m%uint32_t(N_NUCLEOTIDES));
 
    /*uint32_t size=uint32_t(ceil(double(this->_nucleotides)/double(N_NUCLEOTIDES)));
    uniform_int_distribution<> position(0U,size-1U);
