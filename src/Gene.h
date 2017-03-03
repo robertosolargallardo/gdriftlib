@@ -18,5 +18,6 @@ class Gene{
             double mutation_rate(void) const;
             void mutation_rate(const double&);
             ~Gene(void);
+            void clear(void);
 };
 #endif

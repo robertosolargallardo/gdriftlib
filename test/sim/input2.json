@@ -10,7 +10,7 @@
                   "nucleotides" : "664",
                   "number-of-segregating-sites" : "10",
                   "number-of-alleles" : "1048576",
-                  "mutation-rate" : "0.00005"
+                  "mutation-rate" : "1.0"
                }
             ]
          }
@@ -26,7 +26,7 @@
             "params" : {
                "population" : {
                   "name" : "p0",
-                  "size" : "5700"
+                  "size" : "570"
                }
             },
             "timestamp" : "14"

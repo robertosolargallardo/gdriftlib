@@ -11,6 +11,7 @@ void Simulator::run(void){
    uint32_t start=this->_evlist->top()->timestamp();
 
    for(uint32_t t=start;;t++){
+cout << t << endl;
       while(!this->_evlist->empty() && this->_evlist->top()->timestamp()==t){
          Event* e=this->_evlist->top();
          this->_evlist->pop();
@@ -35,20 +36,18 @@ void Simulator::run(void){
                vector<Population*> srcs=get<0>(this->_populations[params.get<string>("source.population.name")])->split(params.get<size_t>("partitions"));
                vector<Population*> dsts=get<1>(this->_populations[params.get<string>("source.population.name")])->split(params.get<size_t>("partitions"));
 
-               int i=0;
                for(auto& destination : params.get_child("destination")){
-                  srcs[i]->name(destination.second.get<string>("population.name"));
-                  dsts[i]->name(destination.second.get<string>("population.name"));
-                  this->_populations[destination.second.get<string>("population.name")]=tuple<Population*,Population*>(srcs[i],dsts[i]);
-                  i++;
+                  srcs.back()->name(destination.second.get<string>("population.name"));
+                  dsts.back()->name(destination.second.get<string>("population.name"));
+                  this->_populations[destination.second.get<string>("population.name")]=tuple<Population*,Population*>(srcs.back(),dsts.back());
+                  srcs.pop_back();
+                  dsts.pop_back();
                }
 
                delete get<0>(this->_populations[params.get<string>("source.population.name")]);
                delete get<1>(this->_populations[params.get<string>("source.population.name")]);
                this->_populations.erase(this->_populations.find(params.get<string>("source.population.name")));
    
-               srcs.clear();
-               dsts.clear();
                break;
             }
             case MIGRATION:{
@@ -86,8 +85,13 @@ void Simulator::run(void){
             }
             case INCREMENT:{
                uint32_t size=uint32_t(ceil(double(get<0>(this->_populations[params.get<string>("source.population.name")])->size())*params.get<double>("source.population.percentage")));
-               get<0>(this->_populations[params.get<string>("source.population.name")])->increase(size);
-               get<1>(this->_populations[params.get<string>("source.population.name")])->increase(size);
+               Population *src=get<0>(this->_populations[params.get<string>("source.population.name")]);
+               Population *dst=get<1>(this->_populations[params.get<string>("source.population.name")]);
+
+               src->increase(size);
+
+               for(uint32_t id=0;id<size;id++)
+                  dst->push(new Individual(dst->size()+id,this->_fsettings.get_child("individual")));
                break;
             }
             case DECREMENT:{
@@ -127,6 +131,7 @@ void Simulator::run(void){
                   for(map<string,tuple<Population*,Population*>>::iterator i=this->_populations.begin();i!=this->_populations.end();i++){
                      model::run<WRIGHTFISHER,HAPLOID>(get<0>(i->second),get<1>(i->second),this->_pool);   
 							swap(get<0>(i->second),get<1>(i->second));
+                     get<1>(i->second)->clear();
                   }
                   break;
                }  

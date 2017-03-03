@@ -66,3 +66,9 @@ Individual::~Individual(void){
    }
    free(this->_chromosomes);
 }
+void Individual::clear(void){
+   for(uint32_t i=0U;i<this->_n_chromosomes;i++)
+      for(int j=0;j<int(this->_ploidy);j++)
+         for(uint32_t k=0;k<this->_chromosomes[i][j]->n_genes();k++)
+            this->_chromosomes[i][j]->gene(k)->clear();
+}
