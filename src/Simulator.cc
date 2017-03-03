@@ -11,7 +11,6 @@ void Simulator::run(void){
    uint32_t start=this->_evlist->top()->timestamp();
 
    for(uint32_t t=start;;t++){
-cout << t << endl;
       while(!this->_evlist->empty() && this->_evlist->top()->timestamp()==t){
          Event* e=this->_evlist->top();
          this->_evlist->pop();
@@ -20,14 +19,14 @@ cout << t << endl;
             
          switch(e->type()){
             case CREATE:{
-               Population* src=new Population(params.get<string>("population.name"),params.get<uint32_t>("population.size"));
-               Population* dst=new Population(params.get<string>("population.name"),params.get<uint32_t>("population.size"));
+               uint32_t size=params.get<uint32_t>("population.size");
+              tuple<Population*,Population*> target(new Population(params.get<string>("population.name"),size),new Population(params.get<string>("population.name"),size));
 
                for(uint32_t id=0U;id<params.get<uint32_t>("population.size");id++){
-                  src->push(this->_pool->generate(id));
-                  dst->push(new Individual(id,this->_fsettings.get_child("individual")));
+                  get<0>(target)->push(this->_pool->generate(id));
+                  get<1>(target)->push(new Individual(id,this->_fsettings.get_child("individual")));
                }
-					this->_populations[params.get<string>("population.name")]=tuple<Population*,Population*>(src,dst);
+					this->_populations[params.get<string>("population.name")]=target;
       			
       			this->_pool->release();
                break;
@@ -52,46 +51,50 @@ cout << t << endl;
             }
             case MIGRATION:{
                uint32_t size=uint32_t(ceil(double(get<0>(this->_populations[params.get<string>("source.population.name")])->size())*params.get<double>("source.population.percentage")));
+               tuple<Population*,Population*> target;
 
-               Population* src=new Population(params.get<string>("destination.population.name"),size);
-               Population* dst=new Population(params.get<string>("destination.population.name"),size);
+               if(this->_populations.count(params.get<string>("destination.population.name"))==0)
+                  target=tuple<Population*,Population*>(new Population(params.get<string>("destination.population.name"),size),new Population(params.get<string>("destination.population.name"),size));
+               else
+                  target=this->_populations[params.get<string>("destination.population.name")];
 
-               get<0>(this->_populations[params.get<string>("source.population.name")])->migration(src,size);
-               get<1>(this->_populations[params.get<string>("source.population.name")])->migration(dst,size);
+               get<0>(this->_populations[params.get<string>("source.population.name")])->migration(get<0>(target),size);
+               get<1>(this->_populations[params.get<string>("source.population.name")])->migration(get<1>(target),size);
 
-               this->_populations[params.get<string>("destination.population.name")]=tuple<Population*,Population*>(src,dst);
+               this->_populations[params.get<string>("destination.population.name")]=target;
 
                break;
             }
             case MERGE:{
                uint32_t size=0U;
+               tuple<Population*,Population*> target;
 
-               for(auto& source : params.get_child("source"))  size+=(get<0>(this->_populations[source.second.get<string>("population.name")]))->size();
+               for(auto& source : params.get_child("source"))  
+                  size+=(get<0>(this->_populations[source.second.get<string>("population.name")]))->size();
 
-               Population* src=new Population(params.get<string>("destination.population.name"),size);
-               Population* dst=new Population(params.get<string>("destination.population.name"),size);
+               if(this->_populations.count(params.get<string>("destination.population.name"))==0)
+                  target=tuple<Population*,Population*>(new Population(params.get<string>("destination.population.name"),size),new Population(params.get<string>("destination.population.name"),size));
+               else
+                  target=this->_populations[params.get<string>("destination.population.name")];
 
                for(auto& source : params.get_child("source")){
-                  src->merge(get<0>(this->_populations[source.second.get<string>("population.name")]));
-                  dst->merge(get<1>(this->_populations[source.second.get<string>("population.name")]));
+                  get<0>(target)->merge(get<0>(this->_populations[source.second.get<string>("population.name")]));
+                  get<1>(target)->merge(get<1>(this->_populations[source.second.get<string>("population.name")]));
 
                   delete get<0>(this->_populations[source.second.get<string>("population.name")]);
                   delete get<1>(this->_populations[source.second.get<string>("population.name")]);
       
                   this->_populations.erase(this->_populations.find(source.second.get<string>("population.name")));
                }
-               this->_populations[params.get<string>("destination.population.name")]=tuple<Population*,Population*>(src,dst);
+               this->_populations[params.get<string>("destination.population.name")]=target;
                break;
             }
             case INCREMENT:{
                uint32_t size=uint32_t(ceil(double(get<0>(this->_populations[params.get<string>("source.population.name")])->size())*params.get<double>("source.population.percentage")));
-               Population *src=get<0>(this->_populations[params.get<string>("source.population.name")]);
-               Population *dst=get<1>(this->_populations[params.get<string>("source.population.name")]);
-
-               src->increase(size);
+               get<0>(this->_populations[params.get<string>("source.population.name")])->increase(size);
 
                for(uint32_t id=0;id<size;id++)
-                  dst->push(new Individual(dst->size()+id,this->_fsettings.get_child("individual")));
+                  get<1>(this->_populations[params.get<string>("source.population.name")])->push(new Individual(id,this->_fsettings.get_child("individual")));
                break;
             }
             case DECREMENT:{

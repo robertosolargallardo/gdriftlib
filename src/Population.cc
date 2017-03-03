@@ -77,9 +77,10 @@ void Population::name(const string &_name){
 vector<Population*> Population::split(const size_t &_n_populations){
    uint32_t round_robin=0U;
    vector<Population*> populations(_n_populations);
+   size_t size=size_t(ceil(this->size()/_n_populations));
 
    for(uint32_t i=0U;i<_n_populations;i++)
-      populations[i]=new Population();
+      populations[i]=new Population(size);
    
    random_shuffle(this->_population.begin(),this->_population.end());
 

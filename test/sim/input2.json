@@ -26,7 +26,7 @@
             "params" : {
                "population" : {
                   "name" : "p0",
-                  "size" : "570"
+                  "size" : "1000"
                }
             },
             "timestamp" : "14"
