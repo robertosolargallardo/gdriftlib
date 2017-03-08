@@ -10,7 +10,11 @@ int main(int argc,char** argv)
    boost::property_tree::ptree fsettings;
    read_json(argv[1],fsettings);
 
-   Simulator *sim=new Simulator(fsettings);
+   for(auto event : fsettings.get_child("scenario.events")){
+      cout << event.second.get<uint32_t>("id") << endl;
+   }
+
+   /*Simulator *sim=new Simulator(fsettings);
    sim->run();
 
 	for(auto p : sim->populations()){
@@ -20,7 +24,7 @@ int main(int argc,char** argv)
       cout << ss.str() << endl;
 	}
 
-   delete sim;
+   delete sim;*/
    
    return(0);
 }
