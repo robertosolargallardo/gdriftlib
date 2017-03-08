@@ -22,7 +22,8 @@ Individual* Pool::generate(const uint32_t &_id){
       for(uint32_t p=0U;p<uint32_t(individual->ploidy());p++){
          for(uint32_t gid=0U;gid<individual->chromosome(cid)[p]->n_genes();gid++){
             uniform_int_distribution<> uniform(0,this->_pool[pair<uint32_t,uint32_t>(cid,gid)].size()-1);
-				Reference *reference=this->_pool[pair<uint32_t,uint32_t>(cid,gid)][uniform(rng)];
+//				Reference *reference=this->_pool[pair<uint32_t,uint32_t>(cid,gid)][uniform(rng)];
+				VirtualSequence *reference=this->_pool[pair<uint32_t,uint32_t>(cid,gid)][uniform(rng)];
             individual->chromosome(cid)[p]->gene(gid)->reference(reference);
          }
       }
@@ -30,8 +31,10 @@ Individual* Pool::generate(const uint32_t &_id){
 
    return(individual);
 }
-Reference* Pool::push(const uint32_t &_cid,const uint32_t &_gid,Reference* _reference){
-   for(vector<Reference*>::iterator i=this->_pool[pair<uint32_t,uint32_t>(_cid,_gid)].begin();i!=this->_pool[pair<uint32_t,uint32_t>(_cid,_gid)].end();i++)
+//Reference* Pool::push(const uint32_t &_cid,const uint32_t &_gid,Reference* _reference){
+//   for(vector<Reference*>::iterator i=this->_pool[pair<uint32_t,uint32_t>(_cid,_gid)].begin();i!=this->_pool[pair<uint32_t,uint32_t>(_cid,_gid)].end();i++)
+VirtualSequence* Pool::push(const uint32_t &_cid,const uint32_t &_gid,VirtualSequence* _reference){
+   for(vector<VirtualSequence*>::iterator i=this->_pool[pair<uint32_t,uint32_t>(_cid,_gid)].begin();i!=this->_pool[pair<uint32_t,uint32_t>(_cid,_gid)].end();i++)
       if((**i)==(*_reference)) return(*i);
 
    this->_pool[pair<uint32_t,uint32_t>(_cid,_gid)].push_back(_reference);
@@ -41,13 +44,18 @@ uint32_t Pool::size(void){
    return(this->_pool.size());
 }
 void Pool::decrease_all(void){
-   for(map<pair<uint32_t,uint32_t>,vector<Reference*>>::iterator i=this->_pool.begin();i!=this->_pool.end();i++)
-		for_each(i->second.begin(),i->second.end(),[](Reference* &reference){reference->decrease();});
+//   for(map<pair<uint32_t,uint32_t>,vector<Reference*>>::iterator i=this->_pool.begin();i!=this->_pool.end();i++)
+//		for_each(i->second.begin(),i->second.end(),[](Reference* &reference){reference->decrease();});
+   for(map<pair<uint32_t,uint32_t>,vector<VirtualSequence*>>::iterator i=this->_pool.begin();i!=this->_pool.end();i++)
+		for_each(i->second.begin(),i->second.end(),[](VirtualSequence* &reference){reference->decrease();});
 }
 void Pool::release(void){
-   for(map<pair<uint32_t,uint32_t>,vector<Reference*>>::iterator i=this->_pool.begin();i!=this->_pool.end();i++){
-		for_each(i->second.begin(),i->second.end(),[](Reference* &reference){if(reference->count()<=0){delete reference;reference=nullptr;}});
-		i->second.erase(std::remove_if(i->second.begin(),i->second.end(),[](Reference* &reference){return reference==nullptr;}),i->second.end());	
+//   for(map<pair<uint32_t,uint32_t>,vector<Reference*>>::iterator i=this->_pool.begin();i!=this->_pool.end();i++){
+//		for_each(i->second.begin(),i->second.end(),[](Reference* &reference){if(reference->count()<=0){delete reference;reference=nullptr;}});
+//		i->second.erase(std::remove_if(i->second.begin(),i->second.end(),[](Reference* &reference){return reference==nullptr;}),i->second.end());	
+   for(map<pair<uint32_t,uint32_t>,vector<VirtualSequence*>>::iterator i=this->_pool.begin();i!=this->_pool.end();i++){
+		for_each(i->second.begin(),i->second.end(),[](VirtualSequence* &reference){if(reference->count()<=0){delete reference;reference=nullptr;}});
+		i->second.erase(std::remove_if(i->second.begin(),i->second.end(),[](VirtualSequence* &reference){return reference==nullptr;}),i->second.end());	
 	}
 }
 void Pool::populate(const uint32_t &_cid,const uint32_t &_gid,const uint32_t &_nucleotides,const uint32_t &_number_of_alleles,const uint32_t &_number_of_segregating_sites){
@@ -62,14 +70,18 @@ void Pool::populate(const uint32_t &_cid,const uint32_t &_gid,const uint32_t &_n
    
    this->_pool[pair<uint32_t,uint32_t>(_cid,_gid)].reserve(_number_of_alleles);  
       
+      // CAMBIAR ESTE CODIGO al llenado con mutaciones
    for(uint32_t sequence=0U;sequence<_number_of_alleles;sequence++){
-		Reference* reference=new Reference(_nucleotides,sequence);
+//		Reference* reference=new Reference(_nucleotides,sequence);
+		VirtualSequence* reference=new VirtualSequence(_nucleotides,sequence);
       this->_pool[pair<uint32_t,uint32_t>(_cid,_gid)].push_back(reference);
 	}
 }
 Pool::~Pool(void){
-   for(map<pair<uint32_t,uint32_t>,vector<Reference*>>::iterator i=this->_pool.begin();i!=this->_pool.end();i++){
-      for_each(i->second.begin(),i->second.end(),[](Reference* &reference){delete reference;reference=nullptr;});
+//   for(map<pair<uint32_t,uint32_t>,vector<Reference*>>::iterator i=this->_pool.begin();i!=this->_pool.end();i++){
+//      for_each(i->second.begin(),i->second.end(),[](Reference* &reference){delete reference;reference=nullptr;});
+   for(map<pair<uint32_t,uint32_t>,vector<VirtualSequence*>>::iterator i=this->_pool.begin();i!=this->_pool.end();i++){
+      for_each(i->second.begin(),i->second.end(),[](VirtualSequence* &reference){delete reference;reference=nullptr;});
 		i->second.clear();
    }
 	this->_pool.clear();

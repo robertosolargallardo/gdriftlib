@@ -17,7 +17,8 @@ Population::Population(const Ploidy &_ploidy,const boost::property_tree::ptree &
          for(auto& fgene : fchromosome.second.get_child("genes")){
             pid=0;
             for(auto& fsequence : fgene.second.get_child("sequences")){
-               Reference* reference=new Reference(fsequence.second.data(),false);
+//               Reference* reference=new Reference(fsequence.second.data(),false);
+               VirtualSequence* reference=new VirtualSequence(fsequence.second.data(),false);
                individual->chromosome(fchromosome.second.get<uint32_t>("id"))[pid]->gene(fgene.second.get<uint32_t>("id"))=new Gene(fgene.second.get<uint32_t>("id"),reference);
                pid++;
             }

@@ -1,8 +1,10 @@
 #ifndef _MODEL_H_
 #define _MODEL_H_
+
 #include "Population.h" 
 #include "Individual.h" 
 #include "Pool.h" 
+#include "VirtualSequence.h" 
 
 enum Model{WRIGHTFISHER=0};
 

@@ -1,9 +1,11 @@
 #ifndef _POPULATION_H_
 #define _POPULATION_H_
+
 #include <stdint.h>
 #include <vector>
 #include <map>
 #include "Individual.h"
+#include "VirtualSequence.h"
 
 extern random_device seed;
 extern mt19937 rng;

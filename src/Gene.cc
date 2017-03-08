@@ -4,7 +4,8 @@ Gene::Gene(const uint32_t &_id){
    this->_mutation_rate=0.0;
    this->_reference=nullptr;
 }
-Gene::Gene(const uint32_t &_id,Reference* _reference){
+//Gene::Gene(const uint32_t &_id,Reference* _reference){
+Gene::Gene(const uint32_t &_id,VirtualSequence* _reference){
    this->_id=_id;
    this->_mutation_rate=0.0;
    this->_reference=_reference;
@@ -15,14 +16,16 @@ Gene::Gene(const Gene &_gene){
    this->_reference=_gene._reference;
 	this->_reference->increase();//TODO creo q faltaba esto
 }
-void Gene::reference(Reference* _reference){
+//void Gene::reference(Reference* _reference){
+void Gene::reference(VirtualSequence* _reference){
    this->_reference=_reference;
    this->_reference->increase();
 }
 uint32_t Gene::id(void) const{
    return(this->_id);
 }
-Reference* Gene::reference(void){
+//Reference* Gene::reference(void){
+VirtualSequence* Gene::reference(void){
    return(this->_reference);
 }
 double Gene::mutation_rate(void) const{
