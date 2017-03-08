@@ -140,7 +140,9 @@ void Simulator::run(void){
                }  
                case DIPLOID:{
                   for(map<string,tuple<Population*,Population*>>::iterator i=this->_populations.begin();i!=this->_populations.end();i++){
-            
+                     model::run<WRIGHTFISHER,DIPLOID>(get<0>(i->second),get<1>(i->second),this->_pool);   
+							swap(get<0>(i->second),get<1>(i->second));
+                     get<1>(i->second)->clear();
                   }
                   break;
                }
