@@ -35,6 +35,7 @@ namespace model{
    }
    template<>
    void run<WRIGHTFISHER,DIPLOID>(Population* &_src,Population* &_dst,Pool* &_pool){
+      constexpr uint32_t PARENTS=2U;
       uniform_int_distribution<> coin(0U,1U);
       uniform_int_distribution<> uniform(0U,_src->size()-1U);
       uniform_real_distribution<double> mutation_rate(0.0,1.0);
@@ -42,8 +43,8 @@ namespace model{
       Reference* reference=nullptr;
       Reference* validator=nullptr;
 
-      array<Individual*,2> individual={nullptr,nullptr};
-      array<Gene*,2> gene={nullptr,nullptr};
+      array<Individual*,PARENTS> individual={nullptr,nullptr};
+      array<Gene*,PARENTS> gene={nullptr,nullptr};
 
       for(uint32_t id=0U;id<_dst->size();id++){
          individual[0]=_src->at(uniform(rng));
