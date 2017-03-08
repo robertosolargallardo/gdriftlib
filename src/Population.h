@@ -71,10 +71,63 @@ class Population{
 
                return(pair<double,double>(mean,variance));
             }
+            pair<double,double> rarest_nucleotides_statistics_seq(const vector<VirtualSequence*> &_sequences){
+               map<char,int> count;
+               vector<int> stats;
+               double mean=0.0;
+               
+               VirtualSequence *ref = _sequences[0];
+               for(size_t i = 0; i < ref->length(); i++){
+
+                  count['A']=count['C']=count['G']=count['T']=0;
+                  for(size_t j=0; j<_sequences.size();j++){
+                     count[_sequences[j]->at(i)]++;
+                  }
+                  int c=0;
+                  for(auto j : count)
+                     if(j.second<int(double(_sequences.size())*0.01))
+                        c++;
+                  stats.push_back(c);
+                  mean+=double(c);
+               }
+               mean/=double(ref->length());
+
+               double diff,variance=0.0;
+               for(auto s : stats){
+                  diff=s-mean;
+                  variance+=diff*diff;
+               }
+               variance/=double(ref->length());
+
+               return(pair<double,double>(mean,variance));
+            }
             double number_of_haplotypes(const vector<string> &_sequences){
                map<string,double> haplotypes;
 
                for(auto& seq : _sequences) haplotypes[seq]=(haplotypes.count(seq))?haplotypes[seq]+1.0:1.0;
+
+               double sum=0.0;
+               double N=double(_sequences.size());
+               for(auto& h : haplotypes){
+                  double x=double(h.second)/N;
+                  sum+=(x*x);
+               }
+
+               haplotypes.clear();
+               return((N/(N-1.0))*(1.0-sum));
+            }
+            double number_of_haplotypes_seq(const vector<VirtualSequence*> &_sequences){
+               map<string,double> haplotypes;
+
+               // for(auto& seq : _sequences) haplotypes[seq]=(haplotypes.count(seq))?haplotypes[seq]+1.0:1.0;
+				string str;
+				for(unsigned int i = 0; i < _sequences.size(); ++i){
+//					vector< pair<seq_size_t, char> > mutations = _sequences[i]->get_mutations();
+//					haplotypes[mutations] = (haplotypes.count(mutations))?haplotypes[mutations]+1.0:1.0;
+					str = _sequences[i]->to_string();
+					haplotypes.emplace(str, 0.0);
+					haplotypes[str] += 1;
+				}
 
                double sum=0.0;
                double N=double(_sequences.size());
@@ -100,6 +153,20 @@ class Population{
                }
                return(segregating_sites);
             }
+            double number_of_segregating_sites_seq(const vector<VirtualSequence*> &_sequences){
+               double segregating_sites=0.0;
+   
+               VirtualSequence *ref=_sequences[0];
+               for(size_t i=0;i<ref->length();i++){
+                  for(size_t j=1; j<_sequences.size(); j++){
+                     if(ref->at(i) != _sequences[j]->at(i)){
+                        segregating_sites += 1.0;
+                        break;
+                     }
+                  }
+               }
+               return(segregating_sites);
+            }
             pair<double,double> pairwise_statistics(const vector<string> &_sequences){
                vector<double> pairwise_differences;
                double mean=0.0;
@@ -116,6 +183,32 @@ class Population{
                   }
                }
                mean/=double(pairwise_differences.size());
+   
+               double variance=0.0;
+               for(auto& diff : pairwise_differences)
+                  variance+=(diff-mean)*(diff-mean);
+
+               variance/=double(pairwise_differences.size());
+               pairwise_differences.clear();
+
+               return(make_pair(mean,variance));
+            }
+            pair<double,double> pairwise_statistics_seq(const vector<VirtualSequence*> &_sequences){
+               vector<double> pairwise_differences;
+               double mean = 0.0;
+   
+               for(size_t i = 0; i < _sequences.size(); i++){
+                  for(size_t j = i+1; j < _sequences.size(); j++){
+                     double diff = 0.0;
+                     for(size_t k = 0; k < _sequences[i]->length(); k++){
+                        if( _sequences[i]->at(k) != _sequences[j]->at(k) )
+                           diff += 1.0;
+                     }
+                     pairwise_differences.push_back(diff);
+                     mean += diff;
+                  }
+               }
+               mean /= double(pairwise_differences.size());
    
                double variance=0.0;
                for(auto& diff : pairwise_differences)
@@ -150,12 +243,14 @@ class Population{
                auto sample=vector<Individual*>(this->_population.begin(),this->_population.begin()+int(floor(double(this->size())*_percentage)));
 
                map<uint32_t,map<uint32_t,vector<string>>> sequences;
+//               map<uint32_t,map<uint32_t,vector<VirtualSequence*>>> sequences;
 
                for(auto& individual : sample){
                    for(uint32_t cid=0U;cid<individual->n_chromosomes();cid++){
                      for(int pid=0;pid<int(individual->ploidy());pid++){
                         for(uint32_t gid=0;gid<individual->chromosome(cid)[pid]->n_genes();gid++){
                            sequences[cid][gid].push_back(individual->chromosome(cid)[pid]->gene(gid)->reference()->to_string());
+//                           sequences[cid][gid].push_back(individual->chromosome(cid)[pid]->gene(gid)->reference());
                         }
                      }
                   }
@@ -179,10 +274,15 @@ class Population{
                      fgene.put("id",gid);
 
                      boost::property_tree::ptree findices;
+                     
                      findices.put("number-of-haplotypes",this->number_of_haplotypes(sequences[cid][gid]));
                      findices.put("number-of-segregating-sites",this->number_of_segregating_sites(sequences[cid][gid]));
-
                      tie(mean_of_the_number_of_pairwise_differences,variance_of_the_number_of_pairwise_differences)=this->pairwise_statistics(sequences[cid][gid]);
+                     
+//                     findices.put("number-of-haplotypes",this->number_of_haplotypes_seq(sequences[cid][gid]));
+//                     findices.put("number-of-segregating-sites",this->number_of_segregating_sites_seq(sequences[cid][gid]));
+//                     tie(mean_of_the_number_of_pairwise_differences,variance_of_the_number_of_pairwise_differences)=this->pairwise_statistics_seq(sequences[cid][gid]);
+                     
                      findices.put("mean-of-the-number-of-pairwise-differences",mean_of_the_number_of_pairwise_differences);
                      findices.put("variance-of-the-number-of-pairwise-differences",variance_of_the_number_of_pairwise_differences);
 
