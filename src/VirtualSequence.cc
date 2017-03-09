@@ -227,28 +227,6 @@ void VirtualSequence::mutate(mt19937 *arg_rng){
 	
 }
 
-void VirtualSequence::mutateInsert(seq_size_t pos, char c){
-//	cerr<<"VirtualSequence::mutateInsert - Metodo no implementado\n";
-	cout<<"VirtualSequence::mutateInsert - Inicio ("<<pos<<", '"<<c<<"')\n";
-	if(pos >= length()){
-		return;
-	}
-	char res = 0;
-	unsigned int pos_insert;
-	pos_insert = countInserts(pos, res);
-	if(res != 0){
-		// Ya hay una insercion en la misma posicion, reemplazo el char
-		cout<<"VirtualSequence::mutateInsert - Insert replicado (char anterior: '"<<res<<"')\n";
-		inserts[pos_insert].second = c;
-	}
-	else{
-		// Agregar insert en pos_insert
-		cout<<"VirtualSequence::mutateInsert - Agregando insert en pos_insert: "<<pos_insert<<"\n";
-		vector< pair<seq_size_t, char> >::iterator it = inserts.begin() + pos_insert;
-		inserts.insert(it, pair<seq_size_t, char>(pos, c));
-	}
-}
-
 void VirtualSequence::printData(){
 	cout<<"VirtualSequence["<<(unsigned long long)this<<"]: |";
 	for(unsigned int i = 0; i < ( (size>16)?16:size ); ++i){
@@ -304,7 +282,7 @@ void VirtualSequence::mutateBitMask(unsigned int mask, unsigned int byte_ini){
 }
 
 char VirtualSequence::at(seq_size_t pos) const{
-	if(pos >= size || data == NULL){
+	if(pos >= length() || data == NULL){
 		// exception !
 		return 0;
 	}
@@ -331,25 +309,33 @@ char VirtualSequence::at(seq_size_t pos) const{
 	}
 	*/
 	
-	/*
+	
 	// Si hay inserciones y borrados, la posicion puede no corresponder a la posicion directa de los datos
 	// En ese caso sera necesario usar una pos ajustada
 	// Si pos calza con un insert, la respuesta es directa
 	// Si pos es mayor a algun insert, hay que restar el total de inserts a la pos de los datos
 	// Esto es similar al ajuste de metadatos en relz
-	map<seq_size_t, char>::const_iterator res = insertions.find(pos);
-	if( res != mutations.end() ){
-		return res->second;
+	
+//	cout<<"VirtualSequence::at - Inicio (pos: "<<pos<<")\n";
+		
+	char res = 0;
+	unsigned int pos_insert;
+	pos_insert = countInserts(pos, res);
+	if(res != 0){
+		return res;
 	}
 	else{
 		// Esto se puede resolver con una estructura de rank y select
 		// La suma de los inserts anteriores a pos es rank(pos)
-		
-		
+		// Notar que el siguiente caso nunca deberia pasar, esto es solo precautorio
+		if(pos < pos_insert){
+			pos = 0;
+		}
+		else{
+			pos -= pos_insert;
+		}
+//		cout<<"VirtualSequence::at - Ajustando pos: "<<pos<<"\n";
 	}
-	*/
-	
-	
 	
 	
 	// Version con mutaciones a nivel de bits
@@ -364,20 +350,20 @@ char VirtualSequence::at(seq_size_t pos) const{
 //	cout<<"VirtualSequence::at - val: "<<(unsigned int)val<<"\n";
 	// Por ultimo, muevo el valor (que estaba en medio del byte) a su posicion inicial
 	val >>= ((pos & 0x3)<<1);
-//	cout<<"VirtualSequence::at - val ajustado: "<<(unsigned int)val<<" ("<<alphabet[val]<<")\n";
+//	cout<<"VirtualSequence::at - val ajustado: "<<(unsigned int)val<<" ('"<<alphabet[val]<<"')\n";
 	// Ahora aplico mutaciones a ambos bits
 	seq_size_t pos_bit_1 = pos<<1;
 	seq_size_t pos_bit_2 = (pos<<1) + 1;
 //	cout<<"VirtualSequence::at - Buscando mutacion en bits: "<<pos_bit_1<<" y "<<pos_bit_2<<"\n";
 	if(mutations.find(pos_bit_1) != mutations.end()){
 		val ^= 0x1;
-//		cout<<"VirtualSequence::at - val mut bit 1: "<<(unsigned int)val<<" ("<<alphabet[val]<<")\n";
+//		cout<<"VirtualSequence::at - val mut bit 1: "<<(unsigned int)val<<" ('"<<alphabet[val]<<"')\n";
 	}
 	if(mutations.find(pos_bit_2) != mutations.end()){
 		val ^= 0x2;
-//		cout<<"VirtualSequence::at - val mut bit 2: "<<(unsigned int)val<<" ("<<alphabet[val]<<")\n";
+//		cout<<"VirtualSequence::at - val mut bit 2: "<<(unsigned int)val<<" ('"<<alphabet[val]<<"')\n";
 	}
-//	cout<<"VirtualSequence::at - val final: "<<(unsigned int)val<<" ("<<alphabet[val]<<")\n";
+//	cout<<"VirtualSequence::at - val final: "<<(unsigned int)val<<" ('"<<alphabet[val]<<"')\n";
 	return alphabet[val];
 	
 }
@@ -385,8 +371,8 @@ char VirtualSequence::at(seq_size_t pos) const{
 // Cuenta el numero de inserts hasta pos
 // Si pos calza exactamente con un insert, retorna el caracter
 // Para este metodo, inserts puede ser un vector< pair<seq_size_t, char> >
-seq_size_t VirtualSequence::countInserts(seq_size_t pos, char &res){
-	cout<<"VirtualSequence::countInserts - Inicio (pos: "<<pos<<")\n";
+seq_size_t VirtualSequence::countInserts(seq_size_t pos, char &res) const{
+//	cout<<"VirtualSequence::countInserts - Inicio (pos: "<<pos<<")\n";
 	if( inserts.empty() ){
 		res = 0;
 		return 0;
@@ -404,14 +390,38 @@ seq_size_t VirtualSequence::countInserts(seq_size_t pos, char &res){
 			h = m;
 		}
 	}
-	cout<<"VirtualSequence::countInserts - BB terminada (total: "<<h<<")\n";
+//	cout<<"VirtualSequence::countInserts - BB terminada (total: "<<h<<")\n";
 	// Notar que el while que sigue no es realmente necesario, pero lo uso para debug
 	while( (h < inserts.size()) && (inserts[h].first < pos) ){
 		++h;
 	}
-	res = inserts[h].second;
-	cout<<"VirtualSequence::countInserts - Fin (total: "<<h<<", res: "<<((res==0)?'0':res)<<")\n";
+	if(inserts[h].first == pos){
+		res = inserts[h].second;
+	}
+//	cout<<"VirtualSequence::countInserts - Fin (total: "<<h<<", res: '"<<((res==0)?'0':res)<<"')\n";
 	return h;
+}
+
+void VirtualSequence::mutateInsert(seq_size_t pos, char c){
+//	cerr<<"VirtualSequence::mutateInsert - Metodo no implementado\n";
+	cout<<"VirtualSequence::mutateInsert - Inicio ("<<pos<<", '"<<c<<"')\n";
+	if(pos >= length()){
+		return;
+	}
+	char res = 0;
+	unsigned int pos_insert;
+	pos_insert = countInserts(pos, res);
+	if(res != 0){
+		// Ya hay una insercion en la misma posicion, reemplazo el char
+		cout<<"VirtualSequence::mutateInsert - Insert replicado (char anterior: '"<<res<<"')\n";
+		inserts[pos_insert].second = c;
+	}
+	else{
+		// Agregar insert en pos_insert
+		cout<<"VirtualSequence::mutateInsert - Agregando insert en pos_insert: "<<pos_insert<<"\n";
+		vector< pair<seq_size_t, char> >::iterator it = inserts.begin() + pos_insert;
+		inserts.insert(it, pair<seq_size_t, char>(pos, c));
+	}
 }
 
 string VirtualSequence::to_string(){
@@ -419,6 +429,7 @@ string VirtualSequence::to_string(){
 	if(length() == 0 || data == NULL){
 		return seq;
 	}
+//	cout<<"VirtualSequence::to_string - Decodificando "<<length()<<" caracteres\n";
 	for(unsigned int i = 0; i < length(); ++i){
 		// La logica de la decodificacion y aplicacion de mutaciones esta en at()
 		seq.push_back(at(i));
@@ -426,6 +437,7 @@ string VirtualSequence::to_string(){
 	// reverse ???
 	// Esto no es necesario ahora que el at decodifica en el orden correcto
 	// reverse(seq.begin(), seq.end());
+//	cout<<"VirtualSequence::to_string - res: \""<<seq<<"\"\n";
 	return seq;
 }
 

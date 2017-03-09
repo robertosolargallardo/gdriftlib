@@ -171,22 +171,29 @@ int main(int argc,char** argv)
 	
 	cout<<"Seq Original: \n";
 	seq->printData();
+	s1 = seq->to_string();
+	cout<<"Texto: \""<<s1<<"\" ("<<s1.length()<<")\n";
 	cout<<"-----\n";
 	
 	cout<<"Mutando\n";
-	seq->mutate();
-	seq->mutate();
-	seq->mutateInsert(1, 'N');
-	seq->mutateInsert(10, 'N');
-	seq->mutateInsert(3, 'N');
-	cout<<"Seq Final: \n";
-	seq->printData();
-	cout<<"-----\n";
-	
-	cout<<"Replicando insert\n";
+//	seq->mutate();
+//	seq->mutate();
+	seq->mutateInsert(1, 'K');
+	seq->mutateInsert(10, 'L');
 	seq->mutateInsert(3, 'M');
 	cout<<"Seq Final: \n";
 	seq->printData();
+	s1 = seq->to_string();
+	cout<<"Texto: \""<<s1<<"\" ("<<s1.length()<<")\n";
+	cout<<"-----\n";
+	
+	cout<<"Replicando insert\n";
+	seq->mutateInsert(0, 'N');
+	seq->mutateInsert(3, 'O');
+	cout<<"Seq Final: \n";
+	seq->printData();
+	s1 = seq->to_string();
+	cout<<"Texto: \""<<s1<<"\" ("<<s1.length()<<")\n";
 	cout<<"-----\n";
 	
 	/*

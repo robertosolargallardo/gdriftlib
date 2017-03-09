@@ -60,7 +60,7 @@ protected:
 	
 	// Cuenta el numero de inserts hasta pos
 	// Si pos calza exactamente con un insert, retorna el caracter
-	seq_size_t countInserts(seq_size_t pos, char &res);
+	seq_size_t countInserts(seq_size_t pos, char &res) const;
 
 public:
 	
