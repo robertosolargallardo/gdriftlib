@@ -46,6 +46,9 @@ protected:
 	// map<seq_size_t, char> mutations;
 	set<seq_size_t> mutations;
 	
+	// Estructura para inserciones
+	vector< pair<seq_size_t, char> > inserts;
+	
 	uint32_t cur_count;
 	bool cur_read;
 	
@@ -54,6 +57,10 @@ protected:
 	// Deberia llamarse a este metodo luego de aplicar cualquier mutacion
 	// Este metodo debe considerar las diferentes formas de mutacion para el espacio
 	bool verifyDecompression();
+	
+	// Cuenta el numero de inserts hasta pos
+	// Si pos calza exactamente con un insert, retorna el caracter
+	seq_size_t countInserts(seq_size_t pos, char &res);
 
 public:
 	
@@ -69,18 +76,18 @@ public:
 	char at(seq_size_t pos) const;
 	
 	// Aplica una mutacion cambiando el BIT de la posicion absoluta pos 
+	// Este metodo puede entrar en conflicto con insert
 	void mutateBit(unsigned int pos);
 	
 	// Aplica una mutacion cambiando TODOS los bits de mask, partiendo desde el byte byte_ini de data
 	// Notar que esto puede modificar un maximo de 4 bytes (32 bits de mask)
+	// Este metodo puede entrar en conflicto con insert
 	void mutateBitMask(unsigned int mask, unsigned int byte_ini = 0);
 	
-	void mutateInsert(seq_size_t pos, char *c);
+	// Este metodo puede entrar en conflicto con insert
+	void mutateInsert(seq_size_t pos, char c);
 	
 	string to_string();
-	
-	// vector< pair<seq_size_t, char> > get_mutations();
-//	vector<seq_size_t> get_mutations();
 	
 	void increase();
 	void decrease();
@@ -88,7 +95,10 @@ public:
 	bool read_only() const;
 	bool operator==(const VirtualSequence&);
 	unsigned int length() const;
-				
+	
+	// Metodo para debug
+	void printData();
+	
 	// Contador de constructores
 	static unsigned int count_str;
 	static unsigned int count_int;

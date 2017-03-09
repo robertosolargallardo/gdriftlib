@@ -13,28 +13,8 @@ mt19937 rng(seed());
 int main(int argc,char** argv)
 {
 	
-	// Pruebas preliminares de datos 
-	/*
-	cout<<"Test - Pruebas preliminares de datos\n";
-	
-	VirtualSequence v_seq("AACACGTTT", 9);
-	for(unsigned int i = 0; i < 12; ++i){
-		cout<<"v_seq["<<i<<"]: "<<v_seq.at(i)<<"\n";
-	}
-	
-	Bitset seq(14, 2572888);
-	string seq_str = seq.to_string();
-	cout<<"Test - Bitset(14, 2572888): "<<seq_str<<"\n";
-	
-	VirtualSequence v_seq2(14, 2572888);
-	string seq2_str = v_seq2.to_string();
-	cout<<"Test - VirtualSequence(14, 2572888): "<<seq2_str<<"\n";
-	
-	cout<<"Test - Pruebas preliminares terminadas\n-----  -----\n";
-	*/
-	
-	/*
 	// Prueba de correctitud de VirtualSequence
+	rng.seed(0);
 	Reference *ref = NULL;
 	VirtualSequence *seq = NULL;
 	VirtualSequence *seq_copy = NULL;
@@ -188,12 +168,29 @@ int main(int argc,char** argv)
 	s1 = seq->to_string();
 	cout<<"s1: "<<s1<<" ("<<s1.length()<<")\n";
 	cout<<"-----\n";
-	*/
 	
+	cout<<"Seq Original: \n";
+	seq->printData();
+	cout<<"-----\n";
 	
+	cout<<"Mutando\n";
+	seq->mutate();
+	seq->mutate();
+	seq->mutateInsert(1, 'N');
+	seq->mutateInsert(10, 'N');
+	seq->mutateInsert(3, 'N');
+	cout<<"Seq Final: \n";
+	seq->printData();
+	cout<<"-----\n";
 	
+	cout<<"Replicando insert\n";
+	seq->mutateInsert(3, 'M');
+	cout<<"Seq Final: \n";
+	seq->printData();
+	cout<<"-----\n";
+	
+	/*
 	rng.seed(0);
-	
 	
 	cout<<"Test - Inicio\n";
 	NanoTimer timer;
@@ -223,7 +220,7 @@ int main(int argc,char** argv)
 	cout<<"Test - Fin (const_str: "<<VirtualSequence::count_str<<", const_int: "<<VirtualSequence::count_int<<", const_copy: "<<VirtualSequence::count_copy<<", const_mem: "<<VirtualSequence::count_mem<<", const_del: "<<VirtualSequence::count_del<<", const_del_mem: "<<VirtualSequence::count_del_mem<<", const_mut: "<<VirtualSequence::count_mut<<")\n";
 //	cout<<"Test - Fin (const_str: "<<Bitset::count_str<<", const_int: "<<Bitset::count_int<<", const_copy: "<<Bitset::count_copy<<", const_del: "<<Bitset::count_del<<", const_mut: "<<Bitset::count_mut<<")\n";
 	return(0);
-	
+	*/
 	
 	
 }

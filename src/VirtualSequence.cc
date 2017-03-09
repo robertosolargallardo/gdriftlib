@@ -139,7 +139,7 @@ VirtualSequence::~VirtualSequence(){
 	else{
 		++count_del;
 	}
-	
+	inserts.clear();
 	mutations.clear();
 	if(owns_data){
 		delete [] data;
@@ -148,20 +148,20 @@ VirtualSequence::~VirtualSequence(){
 	size = 0;
 }
 
-
+// Ajustar este metodo para cada tipo de mutacion
 bool VirtualSequence::verifyDecompression(){
 	
 	// Condicion de descompresion
 	// Las mutaciones se vuelcan en un nuevo arreglo de datos si son muchas
 	// Falta revisar esta condicion para que sea mas clara y precisa
-	//cout<<"VirtualSequence::verifyDecompression - Mutaciones: "<<mutations.size()<<"\n";
-	if( mutations.size() >= size/4 ){
+	cout<<"VirtualSequence::verifyDecompression - Mutaciones: "<<mutations.size()<<"\n";
+	if( mutations.size() >= size/2 ){
 		// Si NO es dueño de datos, pedirlos antes de agrgar mutaciones
 		// Si ya tiene datos, bsata con agregar las mutaciones
-		//cout<<"VirtualSequence::verifyDecompression - Descomprimiendo secuencia por numero de mutaciones\n";
+		cout<<"VirtualSequence::verifyDecompression - Descomprimiendo secuencia por numero de mutaciones\n";
 		if(!owns_data){
 			++count_mem;
-			//cout<<"VirtualSequence::verifyDecompression - Pidiendo memoria\n";
+			cout<<"VirtualSequence::verifyDecompression - Pidiendo memoria\n";
 			unsigned char *original_data = data;
 			unsigned int data_size = (size>>2);
 			if( size & 0x3 ){
@@ -190,6 +190,7 @@ bool VirtualSequence::verifyDecompression(){
 	return false;
 }
 
+// Este metodo puede entrar en conflicto con insert
 void VirtualSequence::mutate(mt19937 *arg_rng){
 	++count_mut;
 	
@@ -226,11 +227,52 @@ void VirtualSequence::mutate(mt19937 *arg_rng){
 	
 }
 
-void VirtualSequence::mutateInsert(seq_size_t pos, char *c){
-	cerr<<"VirtualSequence::mutateInsert - Metodo no implementado\n";
+void VirtualSequence::mutateInsert(seq_size_t pos, char c){
+//	cerr<<"VirtualSequence::mutateInsert - Metodo no implementado\n";
+	cout<<"VirtualSequence::mutateInsert - Inicio ("<<pos<<", '"<<c<<"')\n";
+	if(pos >= length()){
+		return;
+	}
+	char res = 0;
+	unsigned int pos_insert;
+	pos_insert = countInserts(pos, res);
+	if(res != 0){
+		// Ya hay una insercion en la misma posicion, reemplazo el char
+		cout<<"VirtualSequence::mutateInsert - Insert replicado (char anterior: '"<<res<<"')\n";
+		inserts[pos_insert].second = c;
+	}
+	else{
+		// Agregar insert en pos_insert
+		cout<<"VirtualSequence::mutateInsert - Agregando insert en pos_insert: "<<pos_insert<<"\n";
+		vector< pair<seq_size_t, char> >::iterator it = inserts.begin() + pos_insert;
+		inserts.insert(it, pair<seq_size_t, char>(pos, c));
+	}
+}
+
+void VirtualSequence::printData(){
+	cout<<"VirtualSequence["<<(unsigned long long)this<<"]: |";
+	for(unsigned int i = 0; i < ( (size>16)?16:size ); ++i){
+		cout<<(unsigned int)data[i]<<" |";
+	}
+	cout<<"\n";
+	cout<<"Mutations ("<<mutations.size()<<"): ";
+	set<seq_size_t>::iterator it;
+	for(it = mutations.begin(); it != mutations.end(); it++){
+		cout<<*it<<" ";
+	}
+//	for(unsigned int i = 0; i < mutations.size(); ++i){
+//		cout<<(mutations[i])<<" ";
+//	}
+	cout<<"\n";
+	cout<<"Insertions ("<<inserts.size()<<"): ";
+	for(unsigned int i = 0; i < inserts.size(); ++i){
+		cout<<"("<<(inserts[i].first)<<", "<<(inserts[i].second)<<") ";
+	}
+	cout<<"\n";
 }
 	
 // Aplica una mutacion cambiando el BIT de la posicion absoluta pos 
+// Este metodo puede entrar en conflicto con insert
 void VirtualSequence::mutateBit(unsigned int pos){
 	if(pos >= ((unsigned int)size<<1)){
 //		cout<<"VirtualSequence::mutateBit - Omitiendo bit "<<pos<<"\n";
@@ -289,6 +331,27 @@ char VirtualSequence::at(seq_size_t pos) const{
 	}
 	*/
 	
+	/*
+	// Si hay inserciones y borrados, la posicion puede no corresponder a la posicion directa de los datos
+	// En ese caso sera necesario usar una pos ajustada
+	// Si pos calza con un insert, la respuesta es directa
+	// Si pos es mayor a algun insert, hay que restar el total de inserts a la pos de los datos
+	// Esto es similar al ajuste de metadatos en relz
+	map<seq_size_t, char>::const_iterator res = insertions.find(pos);
+	if( res != mutations.end() ){
+		return res->second;
+	}
+	else{
+		// Esto se puede resolver con una estructura de rank y select
+		// La suma de los inserts anteriores a pos es rank(pos)
+		
+		
+	}
+	*/
+	
+	
+	
+	
 	// Version con mutaciones a nivel de bits
 	// Primero tomo el byte (data en posicion pos/4)
 	unsigned char byte = data[ pos>>2 ];
@@ -319,12 +382,44 @@ char VirtualSequence::at(seq_size_t pos) const{
 	
 }
 
+// Cuenta el numero de inserts hasta pos
+// Si pos calza exactamente con un insert, retorna el caracter
+// Para este metodo, inserts puede ser un vector< pair<seq_size_t, char> >
+seq_size_t VirtualSequence::countInserts(seq_size_t pos, char &res){
+	cout<<"VirtualSequence::countInserts - Inicio (pos: "<<pos<<")\n";
+	if( inserts.empty() ){
+		res = 0;
+		return 0;
+	}
+	// seq_size_t h = 0;
+	seq_size_t l = 0;
+	seq_size_t h = (seq_size_t)inserts.size() - 1;
+	seq_size_t m;
+	while(l < h){
+		m = l + ((h-l)>>1);
+		if( inserts[m].first < pos ){
+			l = m+1;
+		}
+		else{
+			h = m;
+		}
+	}
+	cout<<"VirtualSequence::countInserts - BB terminada (total: "<<h<<")\n";
+	// Notar que el while que sigue no es realmente necesario, pero lo uso para debug
+	while( (h < inserts.size()) && (inserts[h].first < pos) ){
+		++h;
+	}
+	res = inserts[h].second;
+	cout<<"VirtualSequence::countInserts - Fin (total: "<<h<<", res: "<<((res==0)?'0':res)<<")\n";
+	return h;
+}
+
 string VirtualSequence::to_string(){
 	string seq;
-	if(size == 0 || data == NULL){
+	if(length() == 0 || data == NULL){
 		return seq;
 	}
-	for(unsigned int i = 0; i < size; ++i){
+	for(unsigned int i = 0; i < length(); ++i){
 		// La logica de la decodificacion y aplicacion de mutaciones esta en at()
 		seq.push_back(at(i));
 	}
@@ -333,14 +428,6 @@ string VirtualSequence::to_string(){
 	// reverse(seq.begin(), seq.end());
 	return seq;
 }
-
-/*
-vector<seq_size_t> VirtualSequence::get_mutations(){
-	vector<seq_size_t> res;
-	res.insert(res.begin(), mutations.begin(), mutations.end());
-	return res;
-}
-*/
 
 void VirtualSequence::increase(){
 	++cur_count;
@@ -411,7 +498,8 @@ bool VirtualSequence::operator==(const VirtualSequence &seq){
 }
 
 unsigned int VirtualSequence::length() const{
-	return (unsigned int)size;
+//	return (unsigned int)size;
+	return (unsigned int)(size + inserts.size());
 }
 
 
