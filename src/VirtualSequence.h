@@ -75,13 +75,12 @@ public:
 	// Notar que esto puede modificar un maximo de 4 bytes (32 bits de mask)
 	void mutateBitMask(unsigned int mask, unsigned int byte_ini = 0);
 	
-//	void mutatePunctual();
-//	void mutateOTHER();
+	void mutateInsert(seq_size_t pos, char *c);
 	
 	string to_string();
 	
 	// vector< pair<seq_size_t, char> > get_mutations();
-	vector<seq_size_t> get_mutations();
+//	vector<seq_size_t> get_mutations();
 	
 	void increase();
 	void decrease();
@@ -96,6 +95,7 @@ public:
 	static unsigned int count_copy;
 	static unsigned int count_mem;
 	static unsigned int count_del;
+	static unsigned int count_del_mem;
 	static unsigned int count_mut;
 	
 };
