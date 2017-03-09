@@ -154,14 +154,14 @@ bool VirtualSequence::verifyDecompression(){
 	// Condicion de descompresion
 	// Las mutaciones se vuelcan en un nuevo arreglo de datos si son muchas
 	// Falta revisar esta condicion para que sea mas clara y precisa
-	cout<<"VirtualSequence::verifyDecompression - Mutaciones: "<<mutations.size()<<"\n";
+//	cout<<"VirtualSequence::verifyDecompression - Mutaciones: "<<mutations.size()<<"\n";
 	if( mutations.size() >= size/2 ){
 		// Si NO es dueño de datos, pedirlos antes de agrgar mutaciones
 		// Si ya tiene datos, bsata con agregar las mutaciones
-		cout<<"VirtualSequence::verifyDecompression - Descomprimiendo secuencia por numero de mutaciones\n";
+//		cout<<"VirtualSequence::verifyDecompression - Descomprimiendo secuencia por numero de mutaciones\n";
 		if(!owns_data){
 			++count_mem;
-			cout<<"VirtualSequence::verifyDecompression - Pidiendo memoria\n";
+//			cout<<"VirtualSequence::verifyDecompression - Pidiendo memoria\n";
 			unsigned char *original_data = data;
 			unsigned int data_size = (size>>2);
 			if( size & 0x3 ){
@@ -315,6 +315,9 @@ char VirtualSequence::at(seq_size_t pos) const{
 	// Si pos calza con un insert, la respuesta es directa
 	// Si pos es mayor a algun insert, hay que restar el total de inserts a la pos de los datos
 	// Esto es similar al ajuste de metadatos en relz
+	// Notar tambien que este modelo implica prioridades entre mutaciones diferentes
+	// Probablemente el resultado seria primero verificar borrados, luego inserciones, y luego los datos con sus mutaciones puntuales
+	// Actualmente, las mutaciones puntutales SOLO se pueden aplicar a los datos (sin contar inserciones)
 	
 //	cout<<"VirtualSequence::at - Inicio (pos: "<<pos<<")\n";
 		
@@ -403,8 +406,7 @@ seq_size_t VirtualSequence::countInserts(seq_size_t pos, char &res) const{
 }
 
 void VirtualSequence::mutateInsert(seq_size_t pos, char c){
-//	cerr<<"VirtualSequence::mutateInsert - Metodo no implementado\n";
-	cout<<"VirtualSequence::mutateInsert - Inicio ("<<pos<<", '"<<c<<"')\n";
+//	cout<<"VirtualSequence::mutateInsert - Inicio ("<<pos<<", '"<<c<<"')\n";
 	if(pos >= length()){
 		return;
 	}
@@ -413,12 +415,12 @@ void VirtualSequence::mutateInsert(seq_size_t pos, char c){
 	pos_insert = countInserts(pos, res);
 	if(res != 0){
 		// Ya hay una insercion en la misma posicion, reemplazo el char
-		cout<<"VirtualSequence::mutateInsert - Insert replicado (char anterior: '"<<res<<"')\n";
+//		cout<<"VirtualSequence::mutateInsert - Insert replicado (char anterior: '"<<res<<"')\n";
 		inserts[pos_insert].second = c;
 	}
 	else{
 		// Agregar insert en pos_insert
-		cout<<"VirtualSequence::mutateInsert - Agregando insert en pos_insert: "<<pos_insert<<"\n";
+//		cout<<"VirtualSequence::mutateInsert - Agregando insert en pos_insert: "<<pos_insert<<"\n";
 		vector< pair<seq_size_t, char> >::iterator it = inserts.begin() + pos_insert;
 		inserts.insert(it, pair<seq_size_t, char>(pos, c));
 	}
