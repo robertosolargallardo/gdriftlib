@@ -1,6 +1,7 @@
 #include "Population.h"
 Population::Population(void){
-   ;
+   this->_name.clear();
+   this->_population.clear();
 }
 Population::Population(const Ploidy &_ploidy,const boost::property_tree::ptree &_fpopulation){
    int pid=0;
@@ -76,18 +77,20 @@ void Population::name(const string &_name){
 }
 vector<Population*> Population::split(const size_t &_n_populations){
    uint32_t round_robin=0U;
-   vector<Population*> populations;
-   uint32_t size=uint32_t(ceil(double(this->size())/double(_n_populations)));
+   vector<Population*> populations(_n_populations);
+   size_t size=size_t(ceil(this->size()/_n_populations));
 
-   for(uint32_t i=0U;i<_n_populations;i++) populations.push_back(new Population(size));
+   for(uint32_t i=0U;i<_n_populations;i++)
+      populations[i]=new Population(size);
    
    random_shuffle(this->_population.begin(),this->_population.end());
 
    while(!this->_population.empty()){
-      populations[round_robin]->push(this->_population.back());
-      this->_population.pop_back();
+      populations[round_robin]->push(this->top());
+      this->pop();
       ++round_robin%=_n_populations;
    }
+
    return(populations);
 }
 void Population::migration(Population* _population,const uint32_t &_size){
@@ -117,4 +120,8 @@ void Population::merge(Population* _population){
       this->push(_population->top());
       _population->pop();
    }
+}
+void Population::clear(void){
+   for(vector<Individual*>::iterator i=this->_population.begin();i!=this->_population.end();i++)
+      (*i)->clear();
 }

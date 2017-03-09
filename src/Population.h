@@ -28,12 +28,14 @@ class Population{
             bool empty(void);
             void push(Individual*);
             void pop(void);
+            void clear(void);
             Individual* top(void);
             Individual* at(const uint32_t&);
             ~Population(void);
 				vector<Individual*> individuals(void);
    
             vector<Population*> split(const size_t&);
+
             void migration(Population*,const uint32_t&);
             void decrease(const uint32_t&);
             void increase(const uint32_t&);

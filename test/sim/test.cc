@@ -10,21 +10,27 @@ int main(int argc,char** argv)
    boost::property_tree::ptree fsettings;
    read_json(argv[1],fsettings);
 
-   for(auto event : fsettings.get_child("scenario.events")){
-      cout << event.second.get<uint32_t>("id") << endl;
-   }
+   /*Population *population=new Population();
+   Individual *individual=new Individual(0U,fsettings.get_child("individual"));
 
-   /*Simulator *sim=new Simulator(fsettings);
+   population->push(individual);
+   population->push(new Individual(1U,fsettings.get_child("individual")));
+
+   population->clear();
+
+   delete population;*/
+
+   Simulator *sim=new Simulator(fsettings);
    sim->run();
 
-	for(auto p : sim->populations()){
+	/*for(auto p : sim->populations()){
 		boost::property_tree::ptree findices=p->indices(1.0);
       stringstream ss;
       write_json(ss,findices);
       cout << ss.str() << endl;
-	}
+	}*/
 
-   delete sim;*/
+   delete sim;
    
    return(0);
 }

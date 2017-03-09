@@ -24,15 +24,15 @@ bool Reference::read_only(void) const{
    return(this->_read_only);
 }
 void Reference::mutate(void){
-   uniform_int_distribution<> mutation(0U,this->_nucleotides-1);
+   /*uniform_int_distribution<> mutation(0U,this->_nucleotides-1);
    uint32_t m=mutation(rng);
    int p=0,n=0;
    char mask=1;
 
-   p=int(floor(double(m)/double(sizeof(char))));
-   n=int(m%uint32_t(sizeof(char)));
+   p=int(floor(double(m)/double(N_NUCLEOTIDES)));
+   n=int(m%uint32_t(N_NUCLEOTIDES));*/
 
-   /*uint32_t size=uint32_t(ceil(double(this->_nucleotides)/double(N_NUCLEOTIDES)));
+   uint32_t size=uint32_t(ceil(double(this->_nucleotides)/double(N_NUCLEOTIDES)));
    uniform_int_distribution<> position(0U,size-1U);
    uniform_int_distribution<> nucleotide(0,CHAR_BIT-1);
 
@@ -42,7 +42,7 @@ void Reference::mutate(void){
    do{
       p=position(rng);
       n=nucleotide(rng);
-   }while((p*CHAR_BIT+n)>=this->_nucleotides);*/
+   }while((p*CHAR_BIT+n)>=this->_nucleotides);
 
    char value=(this->_data[p])&(mask<<n);
 

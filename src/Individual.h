@@ -19,7 +19,8 @@ class Individual{
             uint32_t n_chromosomes(void) const;
             Chromosome**& chromosome(const uint32_t&);
             Ploidy ploidy(void) const;
-            ~Individual(void);                     
+            ~Individual(void);
+            void clear(void);
 
             void show(void){
                for(uint32_t cid=0U;cid<this->n_chromosomes();cid++){
