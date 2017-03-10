@@ -84,6 +84,11 @@ public:
 	// Este metodo puede entrar en conflicto con insert
 	void mutateBit(unsigned int pos);
 	
+	// Un metodo para aplicar varias mutaciones de una vez puede ser mejor
+	// Esto es porque, al ser un vector, hay que hacer ajustes con cada insercion
+	// Se podria implementar una version que prepare las inserciones y solo haga un sort al final
+	// void mutateMany(unsigned int num_mutations);
+	
 	// Aplica una mutacion cambiando TODOS los bits de mask, partiendo desde el byte byte_ini de data
 	// Notar que esto puede modificar un maximo de 4 bytes (32 bits de mask)
 	// Este metodo puede entrar en conflicto con insert

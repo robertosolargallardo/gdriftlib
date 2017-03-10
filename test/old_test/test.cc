@@ -198,7 +198,7 @@ int main(int argc,char** argv)
 	cout<<"-----\n";
 	*/
 	
-	
+	/*
 	// Prueba de espacio en ram
 	// Estaticamente mido tamaño en varios casos, luego pruebo la carga y un sleep para verificar el uso efectivo
 	if(argc != 5){
@@ -237,9 +237,9 @@ int main(int argc,char** argv)
 	}
 	delete [] pool;
 	cout<<"Terminando\n";
+	*/
 	
 	
-	/*
 	rng.seed(0);
 	
 	cout<<"Test - Inicio\n";
@@ -270,7 +270,7 @@ int main(int argc,char** argv)
 	cout<<"Test - Fin (const_str: "<<VirtualSequence::count_str<<", const_int: "<<VirtualSequence::count_int<<", const_copy: "<<VirtualSequence::count_copy<<", const_mem: "<<VirtualSequence::count_mem<<", const_del: "<<VirtualSequence::count_del<<", const_del_mem: "<<VirtualSequence::count_del_mem<<", const_mut: "<<VirtualSequence::count_mut<<")\n";
 //	cout<<"Test - Fin (const_str: "<<Bitset::count_str<<", const_int: "<<Bitset::count_int<<", const_copy: "<<Bitset::count_copy<<", const_del: "<<Bitset::count_del<<", const_mut: "<<Bitset::count_mut<<")\n";
 	return(0);
-	*/
+	
 	
 	
 }
