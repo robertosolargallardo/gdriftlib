@@ -63,8 +63,9 @@ protected:
 	// Si pos calza exactamente con un insert, retorna el caracter
 	seq_size_t countInserts(seq_size_t pos, char &res) const;
 	
-	const static unsigned int NOT_FOUND = 0xffffffff;  
-	unsigned int findMutation(seq_size_t pos) const;
+//	const static unsigned int NOT_FOUND = 0xffffffff;
+//	unsigned int findMutation(seq_size_t pos) const;
+	bool findMutation(seq_size_t pos, seq_size_t &pos_mut) const;
 
 public:
 	

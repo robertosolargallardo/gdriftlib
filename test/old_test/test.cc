@@ -12,6 +12,7 @@ mt19937 rng(seed());
 
 int main(int argc,char** argv)
 {
+	
 	/*
 	// Prueba de correctitud de VirtualSequence
 	rng.seed(0);

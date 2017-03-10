@@ -193,11 +193,12 @@ bool VirtualSequence::verifyDecompression(){
 }
 
 // Este metodo asume que el arreglo de mutaciones esta ordenado crecientemente
-// Retorna la posicion de la mutacion "pos" si la encuentra, o NOT_FOUND si no la encuentra
-unsigned int VirtualSequence::findMutation(seq_size_t pos) const{
-	unsigned int res = NOT_FOUND;
+// Retorna true SOLO si la mutacion fue encontrada
+// Almacena en mut_pos la posicion de la mutacion (si fue encontrada) o del primer elemento mayor (donde tendria que ser insertada)
+bool VirtualSequence::findMutation(seq_size_t pos, seq_size_t &mut_pos) const{
+	mut_pos = 0;
 	if( mutations.empty() ){
-		return res;
+		return false;
 	}
 	// seq_size_t h = 0;
 	seq_size_t l = 0;
@@ -212,15 +213,15 @@ unsigned int VirtualSequence::findMutation(seq_size_t pos) const{
 			h = m;
 		}
 	}
-//	cout<<"VirtualSequence::countInserts - BB terminada (total: "<<h<<")\n";
-	// Notar que el while que sigue no es realmente necesario, pero lo uso para debug
-//	while( (h < mutations.size()) && (mutations[h] < pos) ){
-//		++h;
-//	}
-	if( (h < mutations.size()) && (mutations[h] == pos) ){
-		res = h;
+//	cout<<"VirtualSequence::findMutation - BB terminada (h: "<<h<<", l: "<<l<<")\n";
+	if( (h < mutations.size()) && (mutations[h] < pos) ){
+		++h;
 	}
-	return res;
+	mut_pos = h;
+	if( (h < mutations.size()) && (mutations[h] == pos) ){
+		return true;
+	}
+	return false;
 }
 
 // Este metodo puede entrar en conflicto con insert
@@ -270,30 +271,25 @@ void VirtualSequence::mutateBit(unsigned int pos){
 		return;
 	}
 //	cout<<"VirtualSequence::mutateBit - Modificando bit "<<pos<<" (VirtualSequence "<<(unsigned long long)this<<", "<<mutations.size()<<" mutations)\n";
-//	set<seq_size_t>::iterator it = mutations.find(pos);
-//	if(it == mutations.end()){
-//		mutations.insert(pos);
-//	}
-//	else{
-//		mutations.erase(it);
-//	}
-	unsigned int pos_mut = findMutation(pos);
-	if(pos_mut == NOT_FOUND){
-//		cout<<"VirtualSequence::mutateBit - Agregando "<<pos<<"\n";
-		mutations.push_back(pos);
-		sort(mutations.begin(), mutations.end());
+	seq_size_t pos_mut = 0;
+	if(! findMutation(pos, pos_mut)){
+//		cout<<"VirtualSequence::mutateBit - Agregando "<<pos<<" (en "<<pos_mut<<")\n";
+//		mutations.push_back(pos);
+//		sort(mutations.begin(), mutations.end());
+		mutations.insert(mutations.begin() + pos_mut, pos);
 	}
 	else{
 //		cout<<"VirtualSequence::mutateBit - Eliminando "<<pos<<" (en "<<pos_mut<<")\n";
 		mutations.erase(mutations.begin() + pos_mut);
 		
-//		cout<<"VirtualSequence::mutateBit - Resultado: ";
-//		for(unsigned int i = 0; i < mutations.size(); ++i){
-//			cout<<mutations[i]<<" ";
-//		}
-//		cout<<"\n";
-		
 	}
+	
+//	cout<<"VirtualSequence::mutateBit - Resultado: ";
+//	for(unsigned int i = 0; i < mutations.size(); ++i){
+//		cout<<mutations[i]<<" ";
+//	}
+//	cout<<"\n";
+		
 	verifyDecompression();
 }
 
@@ -316,29 +312,6 @@ char VirtualSequence::at(seq_size_t pos) const{
 		// exception !
 		return 0;
 	}
-	/*
-	// Aplico la mutacion si existe (es decir, tiene prioridad)
-	map<seq_size_t, char>::const_iterator res = mutations.find(pos);
-	if( res != mutations.end() ){
-		return res->second;
-	}
-	else{
-		// Primero tomo el byte (data en posicion pos/4)
-		unsigned char byte = data[ pos>>2 ];
-//		cout<<"VirtualSequence::at - pos: "<<pos<<", byte: "<<(unsigned int)byte<<"\n";
-		// Ahora tomo el valor correcto del byte, los 2 bits que busco
-		// Para eso aplico la mascara 0x3 (2 bits) corrida en el resto de pos/4, x2
-		// El resto de pos/4 lo calculo como pos & 0x3 (por los 2 bits de la division)
-		// El x2 (porque son 2 bits por posicion) lo aplico con un <<1 adicional
-		unsigned char val = byte & (0x3 << ((pos & 0x3)<<1) );
-//		cout<<"VirtualSequence::at - val: "<<(unsigned int)val<<"\n";
-		// Por ultimo, muevo el valor (que estaba en medio del byte) a su posicion inicial
-		val >>= ((pos & 0x3)<<1);
-//		cout<<"VirtualSequence::at - final val: "<<(unsigned int)val<<" ("<<alphabet[val]<<")\n";
-		return alphabet[val];
-	}
-	*/
-	
 	
 	// Si hay inserciones y borrados, la posicion puede no corresponder a la posicion directa de los datos
 	// En ese caso sera necesario usar una pos ajustada
@@ -389,12 +362,13 @@ char VirtualSequence::at(seq_size_t pos) const{
 	seq_size_t pos_bit_2 = (pos<<1) + 1;
 //	cout<<"VirtualSequence::at - Buscando mutacion en bits: "<<pos_bit_1<<" y "<<pos_bit_2<<"\n";
 //	if(mutations.find(pos_bit_1) != mutations.end()){
-	if(findMutation(pos_bit_1) != NOT_FOUND){
+	seq_size_t pos_mut = 0;
+	if( findMutation(pos_bit_1, pos_mut) ){
 		val ^= 0x1;
 //		cout<<"VirtualSequence::at - val mut bit 1: "<<(unsigned int)val<<" ('"<<alphabet[val]<<"')\n";
 	}
 //	if(mutations.find(pos_bit_2) != mutations.end()){
-	if(findMutation(pos_bit_2) != NOT_FOUND){
+	if( findMutation(pos_bit_2, pos_mut) ){
 		val ^= 0x2;
 //		cout<<"VirtualSequence::at - val mut bit 2: "<<(unsigned int)val<<" ('"<<alphabet[val]<<"')\n";
 	}
