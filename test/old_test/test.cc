@@ -12,7 +12,7 @@ mt19937 rng(seed());
 
 int main(int argc,char** argv)
 {
-	
+	/*
 	// Prueba de correctitud de VirtualSequence
 	rng.seed(0);
 	Reference *ref = NULL;
@@ -195,6 +195,71 @@ int main(int argc,char** argv)
 	s1 = seq->to_string();
 	cout<<"Texto: \""<<s1<<"\" ("<<s1.length()<<")\n";
 	cout<<"-----\n";
+	*/
+	
+	// Prueba de espacio en ram
+	// Estaticamente mido tamaño en varios casos, luego pruebo la carga y un sleep para verificar el uso efectivo
+	if(argc != 5){
+		cout<<"\nModo de Uso: test input n_objects str_size n_muts\n";
+		cout<<"\n";
+		return 0;
+	}
+
+	cout<<"Calculo estatico de memoria\n";
+	cout<<"sizeof(VirtualSequence) "<<sizeof(VirtualSequence)<<"\n";
+	unsigned int n_objects = atoi(argv[2]);
+	unsigned int str_size = atoi(argv[3]);
+	unsigned int n_mutations = atoi(argv[4]);
+	VirtualSequence **pool = new VirtualSequence*[n_objects];
+	VirtualSequence *seq = NULL;
+	string str(str_size, 'A');
+	cout<<"Creando pool de "<<n_objects<<" secuencias de largo "<<str_size<<" con "<<n_mutations<<" mutations\n";
+	unsigned int n_batch = 5;
+	unsigned int batch_size = n_objects / n_batch;
+	for(unsigned int i = 0; i < n_batch; ++i){
+		cout<<"Agregando "<<batch_size<<" secuencias\n";
+		for(unsigned int j = 0; j < batch_size; ++j){
+			seq = new VirtualSequence(str);
+			for(unsigned int k = 0; k < n_mutations; ++k){
+				seq->mutate();
+			}
+			pool[ i*batch_size + j ] = seq;
+		}
+		cout<<"Esperando...\n";
+		string str_cin;
+		cin>>str_cin;
+	}
+	cout<<"Borrando\n";
+	for(unsigned int i = 0; i < n_objects; ++i){
+		delete pool[i];
+	}
+	delete [] pool;
+	cout<<"Terminando\n";
+	
+//	string str(10, 'A');
+//	VirtualSequence *seq = new VirtualSequence(str);
+//	cout<<"sizeof(str) "<<sizeof(str)<<"\n";
+//	cout<<"sizeof(seq) "<<sizeof(*seq)<<"\n";
+//	delete seq;
+//	str = string(100, 'A');
+//	seq = new VirtualSequence(str);
+//	cout<<"sizeof(str) "<<sizeof(str)<<"\n";
+//	cout<<"sizeof(seq) "<<sizeof(*seq)<<"\n";
+//	delete seq;
+//	str = string(1000, 'A');
+//	seq = new VirtualSequence(str);
+//	cout<<"sizeof(str) "<<sizeof(str)<<"\n";
+//	cout<<"sizeof(seq) "<<sizeof(*seq)<<"\n";
+//	delete seq;
+//	cout<<"-----\n";
+//	str = string(1000, 'A');
+//	seq = new VirtualSequence(str);
+//	for(unsigned int i = 0; i < 100; ++i){
+//		seq->mutate();
+//	}
+//	cout<<"sizeof(str) "<<sizeof(str)<<"\n";
+//	cout<<"sizeof(seq) con 100 mutaciones "<<sizeof(*seq)<<"\n";
+	
 	
 	/*
 	rng.seed(0);
