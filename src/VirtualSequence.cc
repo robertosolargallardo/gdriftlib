@@ -129,7 +129,8 @@ VirtualSequence::VirtualSequence(const VirtualSequence &original){
 	
 	// Muaciones
 	//cout<<"VirtualSequence - Agregando "<<original.mutations.size()<<" mutaciones\n";
-	mutations.insert(original.mutations.begin(), original.mutations.end());
+//	mutations.insert(original.mutations.begin(), original.mutations.end());
+	mutations.insert(mutations.begin(), original.mutations.begin(), original.mutations.end());
 }
 
 VirtualSequence::~VirtualSequence(){
@@ -154,14 +155,14 @@ bool VirtualSequence::verifyDecompression(){
 	// Condicion de descompresion
 	// Las mutaciones se vuelcan en un nuevo arreglo de datos si son muchas
 	// Falta revisar esta condicion para que sea mas clara y precisa
-//	cout<<"VirtualSequence::verifyDecompression - Mutaciones: "<<mutations.size()<<"\n";
+	cout<<"VirtualSequence::verifyDecompression - Mutaciones: "<<mutations.size()<<"\n";
 	if( mutations.size() >= size/2 ){
 		// Si NO es dueño de datos, pedirlos antes de agrgar mutaciones
 		// Si ya tiene datos, bsata con agregar las mutaciones
-//		cout<<"VirtualSequence::verifyDecompression - Descomprimiendo secuencia por numero de mutaciones\n";
+		cout<<"VirtualSequence::verifyDecompression - Descomprimiendo secuencia por numero de mutaciones\n";
 		if(!owns_data){
 			++count_mem;
-//			cout<<"VirtualSequence::verifyDecompression - Pidiendo memoria\n";
+			cout<<"VirtualSequence::verifyDecompression - Pidiendo memoria\n";
 			unsigned char *original_data = data;
 			unsigned int data_size = (size>>2);
 			if( size & 0x3 ){
@@ -172,7 +173,8 @@ bool VirtualSequence::verifyDecompression(){
 			memcpy(data, original_data, size);
 			owns_data = true;
 		}
-		set<seq_size_t>::iterator it;
+//		set<seq_size_t>::iterator it;
+		vector<seq_size_t>::iterator it;
 		seq_size_t pos;
 		unsigned int pos_byte;
 		unsigned int pos_bit;
@@ -190,40 +192,50 @@ bool VirtualSequence::verifyDecompression(){
 	return false;
 }
 
+// Este metodo asume que el arreglo de mutaciones esta ordenado crecientemente
+// Retorna la posicion de la mutacion "pos" si la encuentra, o NOT_FOUND si no la encuentra
+unsigned int VirtualSequence::findMutation(seq_size_t pos) const{
+	unsigned int res = NOT_FOUND;
+	if( mutations.empty() ){
+		return res;
+	}
+	// seq_size_t h = 0;
+	seq_size_t l = 0;
+	seq_size_t h = (seq_size_t)mutations.size() - 1;
+	seq_size_t m;
+	while(l < h){
+		m = l + ((h-l)>>1);
+		if( mutations[m] < pos ){
+			l = m+1;
+		}
+		else{
+			h = m;
+		}
+	}
+//	cout<<"VirtualSequence::countInserts - BB terminada (total: "<<h<<")\n";
+	// Notar que el while que sigue no es realmente necesario, pero lo uso para debug
+//	while( (h < mutations.size()) && (mutations[h] < pos) ){
+//		++h;
+//	}
+	if( (h < mutations.size()) && (mutations[h] == pos) ){
+		res = h;
+	}
+	return res;
+}
+
 // Este metodo puede entrar en conflicto con insert
 void VirtualSequence::mutate(mt19937 *arg_rng){
 	++count_mut;
 	
-	// escoger al azar posicion
-	// mutar (agregar a mapa)
-	// para que esto sea totalmente efectivo, 
-	// ...hay que mutar hasta encontrar una posicion no escogida previamente (o el maximo)
 	if(arg_rng == NULL){
 		arg_rng = &rng;
 	}
-	/*
-	// Version de texto completo, podría usarse una expresión reducida de la mutacion
-	// En esta version NO estoy verificando que la mutacion sea efectiva
-	uniform_int_distribution<> pos_dist(0, size-1);
-	uniform_int_distribution<> val_dist(0, alphabet_size-1);
-	seq_size_t pos = pos_dist(*arg_rng);
-	char value = alphabet[val_dist(*arg_rng)];
-	mutations[pos] = value;
-	*/
 	
 	// Version directa en bits
 	// Notar que aqui pos representa la poscion del bit mutado, de ahi el size*2
 	uniform_int_distribution<> pos_dist(0, (size<<1) - 1);
 	seq_size_t pos = pos_dist(*arg_rng);
-	set<seq_size_t>::iterator it = mutations.find(pos);
-	if(it == mutations.end()){
-		mutations.insert(pos);
-	}
-	else{
-		mutations.erase(it);
-	}
-	
-	verifyDecompression();
+	mutateBit(pos);
 	
 }
 
@@ -234,7 +246,8 @@ void VirtualSequence::printData(){
 	}
 	cout<<"\n";
 	cout<<"Mutations ("<<mutations.size()<<"): ";
-	set<seq_size_t>::iterator it;
+//	set<seq_size_t>::iterator it;
+	vector<seq_size_t>::iterator it;
 	for(it = mutations.begin(); it != mutations.end(); it++){
 		cout<<*it<<" ";
 	}
@@ -253,16 +266,33 @@ void VirtualSequence::printData(){
 // Este metodo puede entrar en conflicto con insert
 void VirtualSequence::mutateBit(unsigned int pos){
 	if(pos >= ((unsigned int)size<<1)){
-//		cout<<"VirtualSequence::mutateBit - Omitiendo bit "<<pos<<"\n";
+		cout<<"VirtualSequence::mutateBit - Omitiendo bit "<<pos<<"\n";
 		return;
 	}
-//	cout<<"VirtualSequence::mutateBit - Modificando bit "<<pos<<"\n";
-	set<seq_size_t>::iterator it = mutations.find(pos);
-	if(it == mutations.end()){
-		mutations.insert(pos);
+	cout<<"VirtualSequence::mutateBit - Modificando bit "<<pos<<" (VirtualSequence "<<(unsigned long long)this<<", "<<mutations.size()<<" mutations)\n";
+//	set<seq_size_t>::iterator it = mutations.find(pos);
+//	if(it == mutations.end()){
+//		mutations.insert(pos);
+//	}
+//	else{
+//		mutations.erase(it);
+//	}
+	unsigned int pos_mut = findMutation(pos);
+	if(pos_mut == NOT_FOUND){
+		cout<<"VirtualSequence::mutateBit - Agregando "<<pos<<"\n";
+		mutations.push_back(pos);
+		sort(mutations.begin(), mutations.end());
 	}
 	else{
-		mutations.erase(it);
+		cout<<"VirtualSequence::mutateBit - Eliminando "<<pos<<" (en "<<pos_mut<<")\n";
+		mutations.erase(mutations.begin() + pos_mut);
+		
+		cout<<"VirtualSequence::mutateBit - Resultado: ";
+		for(unsigned int i = 0; i < mutations.size(); ++i){
+			cout<<mutations[i]<<" ";
+		}
+		cout<<"\n";
+		
 	}
 	verifyDecompression();
 }
@@ -319,7 +349,7 @@ char VirtualSequence::at(seq_size_t pos) const{
 	// Probablemente el resultado seria primero verificar borrados, luego inserciones, y luego los datos con sus mutaciones puntuales
 	// Actualmente, las mutaciones puntutales SOLO se pueden aplicar a los datos (sin contar inserciones)
 	
-//	cout<<"VirtualSequence::at - Inicio (pos: "<<pos<<")\n";
+	cout<<"VirtualSequence::at - Inicio (pos: "<<pos<<")\n";
 		
 	char res = 0;
 	unsigned int pos_insert;
@@ -358,15 +388,17 @@ char VirtualSequence::at(seq_size_t pos) const{
 	seq_size_t pos_bit_1 = pos<<1;
 	seq_size_t pos_bit_2 = (pos<<1) + 1;
 //	cout<<"VirtualSequence::at - Buscando mutacion en bits: "<<pos_bit_1<<" y "<<pos_bit_2<<"\n";
-	if(mutations.find(pos_bit_1) != mutations.end()){
+//	if(mutations.find(pos_bit_1) != mutations.end()){
+	if(findMutation(pos_bit_1) != NOT_FOUND){
 		val ^= 0x1;
-//		cout<<"VirtualSequence::at - val mut bit 1: "<<(unsigned int)val<<" ('"<<alphabet[val]<<"')\n";
+		cout<<"VirtualSequence::at - val mut bit 1: "<<(unsigned int)val<<" ('"<<alphabet[val]<<"')\n";
 	}
-	if(mutations.find(pos_bit_2) != mutations.end()){
+//	if(mutations.find(pos_bit_2) != mutations.end()){
+	if(findMutation(pos_bit_2) != NOT_FOUND){
 		val ^= 0x2;
-//		cout<<"VirtualSequence::at - val mut bit 2: "<<(unsigned int)val<<" ('"<<alphabet[val]<<"')\n";
+		cout<<"VirtualSequence::at - val mut bit 2: "<<(unsigned int)val<<" ('"<<alphabet[val]<<"')\n";
 	}
-//	cout<<"VirtualSequence::at - val final: "<<(unsigned int)val<<" ('"<<alphabet[val]<<"')\n";
+	cout<<"VirtualSequence::at - val final: "<<(unsigned int)val<<" ('"<<alphabet[val]<<"')\n";
 	return alphabet[val];
 	
 }
@@ -492,7 +524,8 @@ bool VirtualSequence::operator==(const VirtualSequence &seq){
 		}
 //		cout<<"VirtualSequence::operator== - Comparando mutaciones\n";
 		// Solo en este caso se puede facilmente comparar las mutaciones sin los datos
-		set<seq_size_t>::const_iterator it1, it2;
+//		set<seq_size_t>::const_iterator it1, it2;
+		vector<seq_size_t>::const_iterator it1, it2;
 		for( it1 = mutations.begin(), it2 = seq.mutations.begin(); it1 != mutations.end(); it1++, it2++ ){
 			if( *it1 != *it2 ){
 				return false;

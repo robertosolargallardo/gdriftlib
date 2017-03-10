@@ -7,11 +7,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sstream>
-#include <algorithm>
 #include <limits.h>
 
+#include <algorithm>
 #include <map>
 #include <set>
+#include <vector>
 #include <random>
 
 using namespace std;
@@ -43,8 +44,8 @@ protected:
 	bool owns_data;
 	
 	// Variables de la instancia (mutaciones)
-	// map<seq_size_t, char> mutations;
-	set<seq_size_t> mutations;
+//	set<seq_size_t> mutations;
+	vector<seq_size_t> mutations;
 	
 	// Estructura para inserciones
 	vector< pair<seq_size_t, char> > inserts;
@@ -61,6 +62,9 @@ protected:
 	// Cuenta el numero de inserts hasta pos
 	// Si pos calza exactamente con un insert, retorna el caracter
 	seq_size_t countInserts(seq_size_t pos, char &res) const;
+	
+	const static unsigned int NOT_FOUND = 0xffffffff;  
+	unsigned int findMutation(seq_size_t pos) const;
 
 public:
 	
