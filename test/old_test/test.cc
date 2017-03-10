@@ -12,7 +12,7 @@ mt19937 rng(seed());
 
 int main(int argc,char** argv)
 {
-	
+	/*
 	// Prueba de correctitud de VirtualSequence
 	rng.seed(0);
 	Reference *ref = NULL;
@@ -195,9 +195,9 @@ int main(int argc,char** argv)
 	s1 = seq->to_string();
 	cout<<"Texto: \""<<s1<<"\" ("<<s1.length()<<")\n";
 	cout<<"-----\n";
+	*/
 	
 	
-	/*
 	// Prueba de espacio en ram
 	// Estaticamente mido tamaño en varios casos, luego pruebo la carga y un sleep para verificar el uso efectivo
 	if(argc != 5){
@@ -236,7 +236,7 @@ int main(int argc,char** argv)
 	}
 	delete [] pool;
 	cout<<"Terminando\n";
-	*/
+	
 	
 	/*
 	rng.seed(0);

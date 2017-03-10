@@ -155,14 +155,14 @@ bool VirtualSequence::verifyDecompression(){
 	// Condicion de descompresion
 	// Las mutaciones se vuelcan en un nuevo arreglo de datos si son muchas
 	// Falta revisar esta condicion para que sea mas clara y precisa
-	cout<<"VirtualSequence::verifyDecompression - Mutaciones: "<<mutations.size()<<"\n";
+//	cout<<"VirtualSequence::verifyDecompression - Mutaciones: "<<mutations.size()<<"\n";
 	if( mutations.size() >= size/2 ){
 		// Si NO es dueño de datos, pedirlos antes de agrgar mutaciones
 		// Si ya tiene datos, bsata con agregar las mutaciones
-		cout<<"VirtualSequence::verifyDecompression - Descomprimiendo secuencia por numero de mutaciones\n";
+//		cout<<"VirtualSequence::verifyDecompression - Descomprimiendo secuencia por numero de mutaciones\n";
 		if(!owns_data){
 			++count_mem;
-			cout<<"VirtualSequence::verifyDecompression - Pidiendo memoria\n";
+//			cout<<"VirtualSequence::verifyDecompression - Pidiendo memoria\n";
 			unsigned char *original_data = data;
 			unsigned int data_size = (size>>2);
 			if( size & 0x3 ){
@@ -266,10 +266,10 @@ void VirtualSequence::printData(){
 // Este metodo puede entrar en conflicto con insert
 void VirtualSequence::mutateBit(unsigned int pos){
 	if(pos >= ((unsigned int)size<<1)){
-		cout<<"VirtualSequence::mutateBit - Omitiendo bit "<<pos<<"\n";
+//		cout<<"VirtualSequence::mutateBit - Omitiendo bit "<<pos<<"\n";
 		return;
 	}
-	cout<<"VirtualSequence::mutateBit - Modificando bit "<<pos<<" (VirtualSequence "<<(unsigned long long)this<<", "<<mutations.size()<<" mutations)\n";
+//	cout<<"VirtualSequence::mutateBit - Modificando bit "<<pos<<" (VirtualSequence "<<(unsigned long long)this<<", "<<mutations.size()<<" mutations)\n";
 //	set<seq_size_t>::iterator it = mutations.find(pos);
 //	if(it == mutations.end()){
 //		mutations.insert(pos);
@@ -279,19 +279,19 @@ void VirtualSequence::mutateBit(unsigned int pos){
 //	}
 	unsigned int pos_mut = findMutation(pos);
 	if(pos_mut == NOT_FOUND){
-		cout<<"VirtualSequence::mutateBit - Agregando "<<pos<<"\n";
+//		cout<<"VirtualSequence::mutateBit - Agregando "<<pos<<"\n";
 		mutations.push_back(pos);
 		sort(mutations.begin(), mutations.end());
 	}
 	else{
-		cout<<"VirtualSequence::mutateBit - Eliminando "<<pos<<" (en "<<pos_mut<<")\n";
+//		cout<<"VirtualSequence::mutateBit - Eliminando "<<pos<<" (en "<<pos_mut<<")\n";
 		mutations.erase(mutations.begin() + pos_mut);
 		
-		cout<<"VirtualSequence::mutateBit - Resultado: ";
-		for(unsigned int i = 0; i < mutations.size(); ++i){
-			cout<<mutations[i]<<" ";
-		}
-		cout<<"\n";
+//		cout<<"VirtualSequence::mutateBit - Resultado: ";
+//		for(unsigned int i = 0; i < mutations.size(); ++i){
+//			cout<<mutations[i]<<" ";
+//		}
+//		cout<<"\n";
 		
 	}
 	verifyDecompression();
@@ -349,7 +349,7 @@ char VirtualSequence::at(seq_size_t pos) const{
 	// Probablemente el resultado seria primero verificar borrados, luego inserciones, y luego los datos con sus mutaciones puntuales
 	// Actualmente, las mutaciones puntutales SOLO se pueden aplicar a los datos (sin contar inserciones)
 	
-	cout<<"VirtualSequence::at - Inicio (pos: "<<pos<<")\n";
+//	cout<<"VirtualSequence::at - Inicio (pos: "<<pos<<")\n";
 		
 	char res = 0;
 	unsigned int pos_insert;
@@ -391,14 +391,14 @@ char VirtualSequence::at(seq_size_t pos) const{
 //	if(mutations.find(pos_bit_1) != mutations.end()){
 	if(findMutation(pos_bit_1) != NOT_FOUND){
 		val ^= 0x1;
-		cout<<"VirtualSequence::at - val mut bit 1: "<<(unsigned int)val<<" ('"<<alphabet[val]<<"')\n";
+//		cout<<"VirtualSequence::at - val mut bit 1: "<<(unsigned int)val<<" ('"<<alphabet[val]<<"')\n";
 	}
 //	if(mutations.find(pos_bit_2) != mutations.end()){
 	if(findMutation(pos_bit_2) != NOT_FOUND){
 		val ^= 0x2;
-		cout<<"VirtualSequence::at - val mut bit 2: "<<(unsigned int)val<<" ('"<<alphabet[val]<<"')\n";
+//		cout<<"VirtualSequence::at - val mut bit 2: "<<(unsigned int)val<<" ('"<<alphabet[val]<<"')\n";
 	}
-	cout<<"VirtualSequence::at - val final: "<<(unsigned int)val<<" ('"<<alphabet[val]<<"')\n";
+//	cout<<"VirtualSequence::at - val final: "<<(unsigned int)val<<" ('"<<alphabet[val]<<"')\n";
 	return alphabet[val];
 	
 }
