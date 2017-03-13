@@ -5,6 +5,7 @@
 #include "Individual.h" 
 #include "Pool.h" 
 #include "VirtualSequence.h" 
+#include "NanoTimer.h" 
 
 enum Model{WRIGHTFISHER=0};
 

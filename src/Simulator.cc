@@ -125,7 +125,7 @@ void Simulator::run(void){
       }
 
       this->_pool->decrease_all();
-      Model m=Model(this->_fsettings.get_child("scenario").get<int>("model"));
+      Model m = Model(this->_fsettings.get_child("scenario").get<int>("model"));
       switch(m){
          case WRIGHTFISHER:{
             Ploidy p=Ploidy(this->_fsettings.get_child("individual").get<int>("ploidy"));
