@@ -1,7 +1,7 @@
 #include "Pool.h"
 Pool::Pool(const boost::property_tree::ptree &_findividual){
 	this->_findividual=_findividual;
-
+	
 	uint32_t cid,gid,nucleotides,number_of_segregating_sites,number_of_alleles; 
 	for(auto fchromosome : _findividual.get_child("chromosomes")){
 		cid=fchromosome.second.get<uint32_t>("id");
@@ -16,18 +16,29 @@ Pool::Pool(const boost::property_tree::ptree &_findividual){
 	}
 }
 Individual* Pool::generate(const uint32_t &_id){
-	Individual *individual=new Individual(_id,this->_findividual);
-
-	for(uint32_t cid=0U;cid<individual->n_chromosomes();cid++){
-		for(uint32_t p=0U;p<uint32_t(individual->ploidy());p++){
-			for(uint32_t gid=0U;gid<individual->chromosome(cid)[p]->n_genes();gid++){
-				uniform_int_distribution<> uniform(0,this->_pool[pair<uint32_t,uint32_t>(cid,gid)].size()-1);
-//				Reference *reference=this->_pool[pair<uint32_t,uint32_t>(cid,gid)][uniform(rng)];
-				VirtualSequence *reference=this->_pool[pair<uint32_t,uint32_t>(cid,gid)][uniform(rng)];
-				individual->chromosome(cid)[p]->gene(gid)->reference(reference);
+	// Crear idividuo vacio y escoger genes del pool
+	Individual *individual = new Individual(_id, this->_findividual);
+	
+	//void setGene(unsigned int gen, unsigned int chr, unsigned int plo, VirtualSequence *new_gene);
+	for(unsigned int plo = 0; plo < individual->getPloidy(); ++plo){
+		for(unsigned int chr = 0; chr < individual->getChromosomes(); ++chr){
+			for(unsigned int gen = 0; gen < individual->getGenes(chr); ++gen){
+				uniform_int_distribution<> uniform(0, _pool[pair<uint32_t, uint32_t>(chr, gen)].size() - 1);
+				VirtualSequence *reference = _pool[pair<uint32_t, uint32_t>(chr, gen)][uniform(rng)];
+				individual->setGene(gen, chr, plo, reference);
 			}
 		}
 	}
+	
+//	for(uint32_t cid = 0U; cid < individual->n_chromosomes(); cid++){
+//		for(uint32_t p = 0U; p < individual->getPloidy(); p++){
+//			for(uint32_t gid = 0U; gid < individual->chromosome(cid)[p]->n_genes(); gid++){
+//				uniform_int_distribution<> uniform(0, this->_pool[pair<uint32_t, uint32_t>(cid, gid)].size() - 1);
+//				VirtualSequence *reference = this->_pool[pair<uint32_t, uint32_t>(cid, gid)][uniform(rng)];
+//				individual->chromosome(cid)[p]->gene(gid)->reference(reference);
+//			}
+//		}
+//	}
 
 	return(individual);
 }

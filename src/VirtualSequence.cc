@@ -274,8 +274,6 @@ void VirtualSequence::mutateBit(unsigned int pos){
 	seq_size_t pos_mut = 0;
 	if(! findMutation(pos, pos_mut)){
 //		cout<<"VirtualSequence::mutateBit - Agregando "<<pos<<" (en "<<pos_mut<<")\n";
-//		mutations.push_back(pos);
-//		sort(mutations.begin(), mutations.end());
 		mutations.insert(mutations.begin() + pos_mut, pos);
 	}
 	else{

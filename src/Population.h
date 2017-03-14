@@ -248,10 +248,13 @@ class Population{
 //               map<uint32_t,map<uint32_t,vector<VirtualSequence*>>> sequences;
 
                for(auto& individual : sample){
-                   for(uint32_t cid=0U;cid<individual->n_chromosomes();cid++){
-                     for(int pid=0;pid<int(individual->ploidy());pid++){
-                        for(uint32_t gid=0;gid<individual->chromosome(cid)[pid]->n_genes();gid++){
-                           sequences[cid][gid].push_back(individual->chromosome(cid)[pid]->gene(gid)->reference()->to_string());
+                  for(unsigned int pid = 0; pid < individual->getPloidy(); pid++){
+                     for(uint32_t cid = 0U; cid < individual->getChromosomes(); cid++){
+                        for(uint32_t gid = 0; gid < individual->getGenes(cid); gid++){
+                           sequences[cid][gid].push_back(
+                           	individual->getGene(gid, cid, pid)->to_string()
+                           	);
+//                           sequences[cid][gid].push_back(individual->chromosome(cid)[pid]->gene(gid)->reference()->to_string());
 //                           sequences[cid][gid].push_back(individual->chromosome(cid)[pid]->gene(gid)->reference());
                         }
                      }

@@ -10,6 +10,11 @@ void Simulator::run(void){
 
    uint32_t start=this->_evlist->top()->timestamp();
 
+	//_fsettings
+	
+	// Definir la especie
+	Individual::setParameters(_fsettings.get_child("individual"));
+	
    for(uint32_t t=start;;t++){
 		cout<<"Simulator::run - Iteracion "<<t<<"\n";
       while(!this->_evlist->empty() && this->_evlist->top()->timestamp()==t){
@@ -20,6 +25,8 @@ void Simulator::run(void){
             
          switch(e->type()){
             case CREATE:{
+            	
+            	
                uint32_t size=params.get<uint32_t>("population.size");
               tuple<Population*,Population*> target(new Population(params.get<string>("population.name"),size),new Population(params.get<string>("population.name"),size));
 

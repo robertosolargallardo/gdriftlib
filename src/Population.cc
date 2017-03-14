@@ -9,18 +9,20 @@ Population::Population(const Ploidy &_ploidy,const boost::property_tree::ptree &
    this->_population.reserve(_fpopulation.get_child("individuals").size());
 
    for(auto& findividual : _fpopulation.get_child("individuals")){
-      Individual* individual=new Individual(findividual.second.get<uint32_t>("id"),_ploidy,uint32_t(findividual.second.get_child("chromosomes").size()));
+      Individual* individual = new Individual(findividual.second.get<uint32_t>("id"), _ploidy, uint32_t(findividual.second.get_child("chromosomes").size()));
       for(auto& fchromosome : findividual.second.get_child("chromosomes")){
 
-         for(pid=0;pid<int(_ploidy);pid++) 
-            individual->chromosome(fchromosome.second.get<uint32_t>("id"))[pid]=new Chromosome(fchromosome.second.get<uint32_t>("id"),uint32_t(fchromosome.second.get_child("genes").size()));
+//         for(pid=0;pid<int(_ploidy);pid++) 
+//            individual->chromosome(fchromosome.second.get<uint32_t>("id"))[pid]=new Chromosome(fchromosome.second.get<uint32_t>("id"),uint32_t(fchromosome.second.get_child("genes").size()));
 
          for(auto& fgene : fchromosome.second.get_child("genes")){
             pid=0;
+            // una secuencia por ploidy
             for(auto& fsequence : fgene.second.get_child("sequences")){
 //               Reference* reference=new Reference(fsequence.second.data(),false);
                VirtualSequence* reference=new VirtualSequence(fsequence.second.data(),false);
-               individual->chromosome(fchromosome.second.get<uint32_t>("id"))[pid]->gene(fgene.second.get<uint32_t>("id"))=new Gene(fgene.second.get<uint32_t>("id"),reference);
+//               individual->chromosome(fchromosome.second.get<uint32_t>("id"))[pid]->gene(fgene.second.get<uint32_t>("id"))=new Gene(fgene.second.get<uint32_t>("id"),reference);
+				individual->setGene(fgene.second.get<uint32_t>("id"), fchromosome.second.get<uint32_t>("id"), pid, reference);
                pid++;
             }
          }
