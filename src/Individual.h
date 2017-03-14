@@ -36,5 +36,14 @@ class Individual{
                   }
                }
             }
+            
+            inline void setParent(Individual *individual){
+            	for(unsigned int i = 0; i < _n_chromosomes; ++i){
+					for(unsigned int j = 0; j < _chromosomes[i][0]->n_genes(); ++j){
+						_chromosomes[i][0]->gene(j)->reference(individual->chromosome(i)[0]->gene(j)->reference());
+					}
+            	}
+            }
+            
 };
 #endif
