@@ -454,7 +454,9 @@ void VirtualSequence::increase(){
 }
 
 void VirtualSequence::decrease(){
-	--cur_count;
+	if(cur_count > 0){
+		--cur_count;
+	}
 }
 
 uint32_t VirtualSequence::count() const{

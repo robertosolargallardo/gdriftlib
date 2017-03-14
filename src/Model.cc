@@ -9,11 +9,11 @@ namespace model{
 //		Reference* reference=nullptr;
 //		Reference* validator=nullptr;
 		VirtualSequence* reference=nullptr;
-//		VirtualSequence* validator=nullptr;
+		VirtualSequence* validator=nullptr;
 
 		Individual* individual=nullptr;
 		
-		cout<<"Model::run - ITerando por "<<_dst->size()<<" individuos\n";
+		cout<<"Model::run - ITerando por "<<_dst->size()<<" individuos ("<<_src->at(0)->n_chromosomes()<<" chromosomes, "<<_src->at(0)->chromosome(0)[0]->n_genes()<<" genes in ch0)\n";
 		NanoTimer timer;
 		for(uint32_t id=0U;id<_dst->size();id++){
 			individual=_src->at(uniform(rng));
@@ -26,7 +26,7 @@ namespace model{
 						reference = new VirtualSequence(*(individual->chromosome(cid)[0]->gene(gid)->reference()));
 						reference->mutate();
 						
-//						validator=_pool->push(cid,gid,reference);
+						validator=_pool->push(cid,gid,reference);
 //						if(validator!=nullptr){
 //							delete reference;
 //							reference=validator;

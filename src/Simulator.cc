@@ -11,6 +11,7 @@ void Simulator::run(void){
    uint32_t start=this->_evlist->top()->timestamp();
 
    for(uint32_t t=start;;t++){
+   		cout<<"Simulator::run - Iteracion "<<t<<"\n";
       while(!this->_evlist->empty() && this->_evlist->top()->timestamp()==t){
          Event* e=this->_evlist->top();
          this->_evlist->pop();
@@ -124,7 +125,7 @@ void Simulator::run(void){
          delete e;
       }
 
-      this->_pool->decrease_all();
+//      this->_pool->decrease_all();
       Model m = Model(this->_fsettings.get_child("scenario").get<int>("model"));
       switch(m){
          case WRIGHTFISHER:{
@@ -159,6 +160,7 @@ void Simulator::run(void){
          }
       }
       this->_pool->release();
+      cout<<"Simulator::run - Fin\n";
    }
 }
 vector<Population*> Simulator::populations(void){

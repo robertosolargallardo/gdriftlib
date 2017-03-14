@@ -19,7 +19,11 @@ Gene::Gene(const Gene &_gene){
 }
 //void Gene::reference(Reference* _reference){
 void Gene::reference(VirtualSequence* _reference){
-   this->_reference=_reference;
+	// Creo que aqui falta reducir el contador de la referencia anterior
+//	if(this->_reference != nullptr){
+//		this->_reference->decrease();
+//	}
+   this->_reference = _reference;
    this->_reference->increase();
 }
 uint32_t Gene::id(void) const{
@@ -44,5 +48,12 @@ Gene::~Gene(void){
    }
 }
 void Gene::clear(void){
+	if(_reference != nullptr){
+		_reference->decrease();
+	}
    this->_reference=nullptr;
 }
+
+
+
+

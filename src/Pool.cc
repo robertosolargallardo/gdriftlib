@@ -34,8 +34,8 @@ Individual* Pool::generate(const uint32_t &_id){
 //Reference* Pool::push(const uint32_t &_cid,const uint32_t &_gid,Reference* _reference){
 //	for(vector<Reference*>::iterator i=this->_pool[pair<uint32_t,uint32_t>(_cid,_gid)].begin();i!=this->_pool[pair<uint32_t,uint32_t>(_cid,_gid)].end();i++)
 VirtualSequence* Pool::push(const uint32_t &_cid,const uint32_t &_gid,VirtualSequence* _reference){
-	for(vector<VirtualSequence*>::iterator i=this->_pool[pair<uint32_t,uint32_t>(_cid,_gid)].begin();i!=this->_pool[pair<uint32_t,uint32_t>(_cid,_gid)].end();i++)
-		if((**i)==(*_reference)) return(*i);
+//	for(vector<VirtualSequence*>::iterator i=this->_pool[pair<uint32_t,uint32_t>(_cid,_gid)].begin();i!=this->_pool[pair<uint32_t,uint32_t>(_cid,_gid)].end();i++)
+//		if((**i)==(*_reference)) return(*i);
 
 	this->_pool[pair<uint32_t,uint32_t>(_cid,_gid)].push_back(_reference);
 	return(nullptr);
@@ -52,11 +52,25 @@ void Pool::decrease_all(void){
 void Pool::release(void){
 //	for(map<pair<uint32_t,uint32_t>,vector<Reference*>>::iterator i=this->_pool.begin();i!=this->_pool.end();i++){
 //		for_each(i->second.begin(),i->second.end(),[](Reference* &reference){if(reference->count()<=0){delete reference;reference=nullptr;}});
-//		i->second.erase(std::remove_if(i->second.begin(),i->second.end(),[](Reference* &reference){return reference==nullptr;}),i->second.end());	
+//		i->second.erase(std::remove_if(i->second.begin(),i->second.end(),[](Reference* &reference){return reference==nullptr;}),i->second.end());
+	unsigned int total_deletes = 0;
+	cout<<"Pool::release - Inicio ("<<_pool.size()<<", "<<_pool.begin()->second.size()<<")\n";
 	for(map<pair<uint32_t,uint32_t>,vector<VirtualSequence*>>::iterator i=this->_pool.begin();i!=this->_pool.end();i++){
-		for_each(i->second.begin(),i->second.end(),[](VirtualSequence* &reference){if(reference->count()<=0){delete reference;reference=nullptr;}});
-		i->second.erase(std::remove_if(i->second.begin(),i->second.end(),[](VirtualSequence* &reference){return reference==nullptr;}),i->second.end());	
+//		total_deletes = i->second.size();
+//		for_each(i->second.begin(),i->second.end(),[](VirtualSequence* &reference){if(reference->count()<=0){delete reference;reference=nullptr;}});
+//		total_deletes -= i->second.size();
+//		for(unsigned int j = 0; j < i->second.size(); ++j){
+//			VirtualSequence *reference = i->second.at(j);
+		for(vector<VirtualSequence*>::iterator it = i->second.begin(); it != i->second.end(); it++){
+			if( (*it != nullptr) && ((*it)->count() <= 0) ){
+				delete *it;
+				*it = nullptr;
+				++total_deletes;
+			}
+		}
+		i->second.erase(std::remove_if(i->second.begin(),i->second.end(),[](VirtualSequence* &reference){return reference==nullptr;}),i->second.end());
 	}
+	cout<<"Pool::release - total_deletes: "<<total_deletes<<"\n";
 }
 void Pool::populate(const uint32_t &_cid,const uint32_t &_gid,const uint32_t &_nucleotides,const uint32_t &_number_of_alleles,const uint32_t &_number_of_segregating_sites){
 	if(_number_of_alleles>pow(N_NUCLEOTIDES,_number_of_segregating_sites)){
