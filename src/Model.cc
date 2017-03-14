@@ -9,7 +9,7 @@ namespace model{
 //		Reference* reference=nullptr;
 //		Reference* validator=nullptr;
 		VirtualSequence* reference=nullptr;
-		VirtualSequence* validator=nullptr;
+//		VirtualSequence* validator=nullptr;
 
 		Individual* individual=nullptr;
 		
@@ -26,7 +26,8 @@ namespace model{
 						reference = new VirtualSequence(*(individual->chromosome(cid)[0]->gene(gid)->reference()));
 						reference->mutate();
 						
-						validator=_pool->push(cid,gid,reference);
+						_pool->push(cid,gid,reference);
+//						validator=_pool->push(cid,gid,reference);
 //						if(validator!=nullptr){
 //							delete reference;
 //							reference=validator;
