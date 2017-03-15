@@ -11,7 +11,7 @@ namespace model{
 //		Reference* validator=nullptr;
 //		VirtualSequence* validator=nullptr;
 
-		cout<<"Model::run - Iterando por "<<_dst->size()<<" individuos ("<<_src->at(0)->getChromosomes()<<" chromosomes, "<<_src->at(0)->getGenes(0)<<" genes in ch0)\n";
+//		cout<<"Model::run - Iterando por "<<_dst->size()<<" individuos ("<<_src->at(0)->getChromosomes()<<" chromosomes, "<<_src->at(0)->getGenes(0)<<" genes in ch0)\n";
 		NanoTimer timer;
 		
 		/*
@@ -93,7 +93,7 @@ namespace model{
 			}
 		}
 		
-		cout<<"Model::run - Terminado ("<<timer.getMilisec()<<" ms)\n";
+//		cout<<"Model::run - Terminado ("<<timer.getMilisec()<<" ms)\n";
 		
 	}
 	template<>

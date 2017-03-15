@@ -16,7 +16,7 @@ void Simulator::run(void){
 	Individual::setParameters(_fsettings.get_child("individual"));
 	
    for(uint32_t t=start;;t++){
-		cout<<"Simulator::run - Iteracion "<<t<<"\n";
+//		cout<<"Simulator::run - Iteracion "<<t<<"\n";
       while(!this->_evlist->empty() && this->_evlist->top()->timestamp()==t){
          Event* e=this->_evlist->top();
          this->_evlist->pop();
@@ -167,7 +167,7 @@ void Simulator::run(void){
          }
       }
       this->_pool->release();
-      cout<<"Simulator::run - Fin\n";
+//      cout<<"Simulator::run - Fin\n";
    }
 }
 vector<Population*> Simulator::populations(void){

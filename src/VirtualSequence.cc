@@ -32,7 +32,7 @@ VirtualSequence::VirtualSequence(const char *_ref, unsigned int _size, bool _rea
 	if( size & 0x3 ){
 		++data_size;
 	}
-	cout<<"VirtualSequence - Pidiendo "<<data_size<<" bytes de memoria\n";
+//	cout<<"VirtualSequence - Pidiendo "<<data_size<<" bytes de memoria\n";
 	data = new unsigned char[ data_size ];
 	memset(data, 0, data_size);
 	
@@ -83,7 +83,7 @@ VirtualSequence::VirtualSequence(const unsigned int _size, const unsigned int _s
 	if( size & 0x3 ){
 		++data_size;
 	}
-	cout<<"VirtualSequence - Pidiendo "<<data_size<<" bytes de memoria\n";
+//	cout<<"VirtualSequence - Pidiendo "<<data_size<<" bytes de memoria\n";
 	data = new unsigned char[ data_size ];
 	memset(data, 0, data_size);
 	
@@ -176,7 +176,7 @@ bool VirtualSequence::verifyDecompression(){
 			if( size & 0x3 ){
 				++data_size;
 			}
-			cout<<"VirtualSequence::verifyDecompression - Pidiendo "<<data_size<<" bytes de memoria\n";
+//			cout<<"VirtualSequence::verifyDecompression - Pidiendo "<<data_size<<" bytes de memoria\n";
 			data = new unsigned char[ data_size ];
 			//memset(data, 0, data_size);
 			memcpy(data, original_data, data_size);
