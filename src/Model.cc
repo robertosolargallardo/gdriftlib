@@ -26,7 +26,7 @@ namespace model{
 		// Padre elegido para el individuo de _dst
 		Individual *parent = NULL;
 		// Secuencia del gen que se modifica
-//		VirtualSequence *seq = NULL;
+		VirtualSequence *seq = NULL;
 		
 		// En esta version intermedia, primero creo la poblacion dst sin mutaciones para luego aplicar mutaciones al poblacion completa
 		// Para generar dst, simplemente intero por cada individuo escogiendo un padre para cada uno y copiando los datos
@@ -44,21 +44,37 @@ namespace model{
 //				}
 //			}
 		}
-		cout<<"Model::run - Padres asignados en "<<timer.getMilisec()<<" ms\n";
+//		cout<<"Model::run - Padres asignados en "<<timer.getMilisec()<<" ms\n";
 		
 		for(unsigned int chrid = 0; chrid < counter->getChromosomes(); ++chrid){
 //			Chromosome *chr = counter->chromosome(chrid)[0];
 			for(unsigned int genid = 0; genid < counter->getGenes(chrid); ++genid){
 //				Gene *gen = chr->gene(genid);
 //				double rate = gen->mutation_rate();
-				cout<<"Model::run - Iniciando mutacion de chr "<<chrid<<", gen "<<genid<<"\n";
+//				cout<<"Model::run - Iniciando mutacion de chr "<<chrid<<", gen "<<genid<<"\n";
 				double rate = counter->mutationRate(genid, chrid);
-				cout<<"Model::run - rate: "<<rate<<"\n";
+//				cout<<"Model::run - rate: "<<rate<<"\n";
 				unsigned int length = counter->getGene(genid, chrid, 0)->length();
-				cout<<"Model::run - length: "<<length<<"\n";
+//				cout<<"Model::run - length: "<<length<<"\n";
 				unsigned int total_muts = (unsigned int)(rate * length * _dst->size());
-				cout<<"Model::run - total_muts: "<<total_muts<<"\n";
+//				cout<<"Model::run - total_muts: "<<total_muts<<"\n";
 //				dst_dist
+				for(unsigned int mut = 0; mut < total_muts; ++mut){
+					// Escoger individuo para mutar
+					unsigned int mut_pos = dst_dist(rng);
+//					cout<<"Model::run - mut_pos: "<<mut_pos<<" de "<<_dst->size()<<"\n";
+					
+					// Creo una nueva secuencia con el gen actual del individuo para mutar y reemplazar
+					VirtualSequence *original = _dst->at(mut_pos)->getGene(genid, chrid, 0);
+					seq = new VirtualSequence(*original);
+//					cout<<"Model::run - mutate...\n";
+					seq->mutate();
+//					cout<<"Model::run - push...\n";
+					_pool->push(chrid, genid, seq);
+//					cout<<"Model::run - setGene...\n";
+					_dst->at(mut_pos)->setGene(genid, chrid, 0, seq);
+//					cout<<"Model::run - Fin\n";
+				}
 			}
 		}
 		*/
@@ -92,6 +108,7 @@ namespace model{
 				}
 			}
 		}
+		
 		
 //		cout<<"Model::run - Terminado ("<<timer.getMilisec()<<" ms)\n";
 		
