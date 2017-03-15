@@ -47,7 +47,7 @@ class Individual{
 		// Returns the gene of an absolute position
 		inline VirtualSequence *getGene(unsigned int pos){
 			if(pos >= n_gens){
-				cerr<<"VirtualSequence::getGene - Error, posicion "<<pos<<" invalida\n";
+				cerr<<"Individual::getGene - Error, posicion "<<pos<<" invalida\n";
 				return NULL;
 			}
 			return gens[pos];
@@ -77,6 +77,7 @@ class Individual{
 				cerr<<"VirtualSequence::setGene - Error, posicion "<<pos<<" invalida\n";
 				return;
 			}
+//			cout<<"Individual::setGene - Inicio (pos: "<<pos<<" de "<<n_gens<<")\n";
 			if( gens[pos] != NULL ){
 				gens[pos]->decrease();
 			}
@@ -102,12 +103,14 @@ class Individual{
 		// Returns the number of genes of a chromosome
 		inline unsigned int getGenes(unsigned int chr){
 			if(chr >= n_chr){
-				cerr<<"VirtualSequence::setGene - Error, chr "<<chr<<" invalido\n";
+				cerr<<"Individual::getGene - Error, chr "<<chr<<" invalido\n";
 				return 0;
 			}
 			if(chr == 0){
+//				cout<<"Individual::getGene - chr "<<chr<<", "<<gens_chr[0]<<" genes\n";
 				return gens_chr[0];
 			}
+//			cout<<"Individual::getGene - chr "<<chr<<", "<<(gens_chr[chr] - gens_chr[chr-1])<<" genes\n";
 			return (gens_chr[chr] - gens_chr[chr-1]);
 		}
 		

@@ -17,6 +17,8 @@ Pool::Pool(const boost::property_tree::ptree &_findividual){
 }
 Individual* Pool::generate(const uint32_t &_id){
 	// Crear idividuo vacio y escoger genes del pool
+//	cout<<"Pool::generate - Inicio (_id: "<<_id<<")\n";
+	
 	Individual *individual = new Individual(_id, this->_findividual);
 	
 	//void setGene(unsigned int gen, unsigned int chr, unsigned int plo, VirtualSequence *new_gene);
@@ -39,6 +41,8 @@ Individual* Pool::generate(const uint32_t &_id){
 //			}
 //		}
 //	}
+	
+//	cout<<"Pool::generate - Fin\n";
 
 	return(individual);
 }
@@ -103,7 +107,7 @@ void Pool::populate(const uint32_t &_cid,const uint32_t &_gid,const uint32_t &_n
 	*/
 	
 	// Creacion del original
-//	cout<<"Pool::populate - Creando original\n";
+//	cout<<"Pool::populate - Creando original (cid: "<<_cid<<", gid: "<<_gid<<", nucleotides: "<<_nucleotides<<", number_of_alleles: "<<_number_of_alleles<<")\n";
 	string texto_original(_nucleotides, 'A');
 	VirtualSequence *inicial_ref = new VirtualSequence(texto_original, true);
 	inicial_ref->increase();

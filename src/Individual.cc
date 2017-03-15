@@ -43,6 +43,7 @@ Individual::Individual(const uint32_t &_id, const boost::property_tree::ptree &_
 		gens = NULL;
 	}
 	else{
+//		cout<<"Individual - Reservando espacio para "<<n_gens<<" genes\n";
 		gens = new VirtualSequence*[n_gens];
 		for(unsigned int i = 0; i < n_gens; ++i){
 			gens[i] = NULL;
@@ -69,6 +70,7 @@ Individual::Individual(const uint32_t &_id, const Ploidy &_ploidy, const uint32_
 		gens = NULL;
 	}
 	else{
+//		cout<<"Individual - Reservando espacio para "<<n_gens<<" genes\n";
 		gens = new VirtualSequence*[n_gens];
 		for(unsigned int i = 0; i < n_gens; ++i){
 			gens[i] = NULL;
@@ -94,6 +96,7 @@ Individual::Individual(const Individual &_individual){
 		gens = NULL;
 	}
 	else{
+//		cout<<"Individual - Reservando espacio para "<<n_gens<<" genes\n";
 		gens = new VirtualSequence*[n_gens];
 		for(unsigned int i = 0; i < n_gens; ++i){
 			gens[i] = NULL;
@@ -103,13 +106,13 @@ Individual::Individual(const Individual &_individual){
 }
 
 void Individual::setParameters(const boost::property_tree::ptree &findividual){
-//	cout<<"Individual::setParameters - Inicio\n";
+	cout<<"Individual::setParameters - Inicio\n";
 	ploidy = Ploidy(findividual.get<uint32_t>("ploidy"));
 	n_chr = findividual.get_child("chromosomes").size();
 	if(gens_chr != NULL){
 		delete [] gens_chr;
 	}
-//	cout<<"Individual::setParameters - Guardando "<<n_chr<<" chromosomas para Ploidy "<<ploidy<<"\n";
+	cout<<"Individual::setParameters - Guardando "<<n_chr<<" chromosomas para Ploidy "<<ploidy<<"\n";
 	gens_chr = new unsigned int[n_chr];
 	
 	unsigned int total_gens = 0;
@@ -122,11 +125,12 @@ void Individual::setParameters(const boost::property_tree::ptree &findividual){
 	for(auto fchromosome : findividual.get_child("chromosomes")){
 		total_gens += fchromosome.second.get_child("genes").size();
 		gens_chr[cid] = total_gens;
-//		cout<<"Individual::setParameters - Total genes hasta chr["<<cid<<"]: "<<total_gens<<"\n";
+		cout<<"Individual::setParameters - Total genes hasta chr["<<cid<<"]: "<<total_gens<<"\n";
+		++cid;
 	}
 	gens_ploidy = total_gens;
 	n_gens = ploidy*gens_ploidy;
-//	cout<<"Individual::setParameters - gens_ploidy: "<<gens_ploidy<<", n_gens: "<<n_gens<<"\n";
+	cout<<"Individual::setParameters - gens_ploidy: "<<gens_ploidy<<", n_gens: "<<n_gens<<"\n";
 	mut_rate = new double[total_gens];
 	
 	total_gens = 0;
@@ -136,13 +140,13 @@ void Individual::setParameters(const boost::property_tree::ptree &findividual){
 		for(auto fgene : fchromosome.second.get_child("genes")){
 //			this->_chromosomes[cid][pid]->gene(fgene.second.get<uint32_t>("id"))->mutation_rate(fgene.second.get<double>("mutation.rate"));
 			mut_rate[total_gens] = fgene.second.get<double>("mutation.rate");
-//			cout<<"Individual::setParameters - mut_rate["<<total_gens<<"]: "<<mut_rate[total_gens]<<" (chr "<<cid<<")\n";
+			cout<<"Individual::setParameters - mut_rate["<<total_gens<<"]: "<<mut_rate[total_gens]<<" (chr "<<cid<<")\n";
 			++total_gens;
 		}
 //		}
 	}
 	
-//	cout<<"Individual::setParameters - Fin\n";
+	cout<<"Individual::setParameters - Fin\n";
 	
 	
 }

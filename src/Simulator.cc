@@ -25,12 +25,12 @@ void Simulator::run(void){
             
          switch(e->type()){
             case CREATE:{
-            	
+//               cout<<"Simulator::run - CREATE\n";
             	
                uint32_t size=params.get<uint32_t>("population.size");
               tuple<Population*,Population*> target(new Population(params.get<string>("population.name"),size),new Population(params.get<string>("population.name"),size));
 
-               for(uint32_t id=0U;id<params.get<uint32_t>("population.size");id++){
+               for(uint32_t id = 0U; id < params.get<uint32_t>("population.size"); id++){
                   get<0>(target)->push(this->_pool->generate(id));
                   get<1>(target)->push(new Individual(id,this->_fsettings.get_child("individual")));
                }
@@ -40,6 +40,7 @@ void Simulator::run(void){
                break;
             }
             case SPLIT:{
+//               cout<<"Simulator::run - SPLIT\n";
                vector<Population*> srcs=get<0>(this->_populations[params.get<string>("source.population.name")])->split(params.get<size_t>("partitions"));
                vector<Population*> dsts=get<1>(this->_populations[params.get<string>("source.population.name")])->split(params.get<size_t>("partitions"));
 
@@ -58,6 +59,7 @@ void Simulator::run(void){
                break;
             }
             case MIGRATION:{
+//               cout<<"Simulator::run - MIGRATION\n";
                uint32_t size=uint32_t(ceil(double(get<0>(this->_populations[params.get<string>("source.population.name")])->size())*params.get<double>("source.population.percentage")));
                tuple<Population*,Population*> target;
 
@@ -74,6 +76,7 @@ void Simulator::run(void){
                break;
             }
             case MERGE:{
+//               cout<<"Simulator::run - MERGE\n";
                uint32_t size=0U;
                tuple<Population*,Population*> target;
 
@@ -98,6 +101,7 @@ void Simulator::run(void){
                break;
             }
             case INCREMENT:{
+//               cout<<"Simulator::run - INCREMENT\n";
                uint32_t size=uint32_t(ceil(double(get<0>(this->_populations[params.get<string>("source.population.name")])->size())*params.get<double>("source.population.percentage")));
                get<0>(this->_populations[params.get<string>("source.population.name")])->increase(size);
 
@@ -106,6 +110,7 @@ void Simulator::run(void){
                break;
             }
             case DECREMENT:{
+//               cout<<"Simulator::run - DECREMENT\n";
                if(params.get<double>("source.population.percentage")==1.0){
                   delete get<0>(this->_populations[params.get<string>("source.population.name")]);
                   delete get<1>(this->_populations[params.get<string>("source.population.name")]);
@@ -120,6 +125,7 @@ void Simulator::run(void){
                break;
             }
             case ENDSIM:{
+//               cout<<"Simulator::run - ENDSIM\n";
                delete e;
                return;
             }
@@ -133,6 +139,7 @@ void Simulator::run(void){
       }
 
 //      this->_pool->decrease_all();
+//      cout<<"Simulator::run - Creando Model\n";
       Model m = Model(this->_fsettings.get_child("scenario").get<int>("model"));
       switch(m){
          case WRIGHTFISHER:{
