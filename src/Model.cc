@@ -14,8 +14,6 @@ namespace model{
 		cout<<"Model::run - Iterando por "<<_dst->size()<<" individuos ("<<_src->at(0)->getChromosomes()<<" chromosomes, "<<_src->at(0)->getGenes(0)<<" genes in ch0)\n";
 		NanoTimer timer;
 		
-		
-		
 		/*
 		// En el nuevo modelo, en lugar de iterar por individuo y gen para mutar, decidimos el numero de mutaciones primero y buscamos donde mutar la poblacion
 		// Este proceso lo realizo por gen (global a la poblacion completa) para considerar las diferentes tasas de mutacion
@@ -82,19 +80,11 @@ namespace model{
 						}
 						reference = new VirtualSequence(*original);
 						reference->mutate();
-						
 						_pool->push(cid, gid, reference);
-//						validator=_pool->push(cid,gid,reference);
-//						if(validator!=nullptr){
-//							delete reference;
-//							reference=validator;
-//						}
 						
-//						_dst->at(id)->chromosome(cid)[0]->gene(gid)->reference(reference);
 						_dst->at(id)->setGene(gid, cid, 0, reference);
 					}
 					else{
-//						_dst->at(id)->chromosome(cid)[0]->gene(gid)->reference(individual->chromosome(cid)[0]->gene(gid)->reference());
 						_dst->at(id)->setGene(gid, cid, 0, individual->getGene(gid, cid, 0));
 						
 						

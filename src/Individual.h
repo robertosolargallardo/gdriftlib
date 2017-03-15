@@ -113,10 +113,7 @@ class Individual{
 		
 		// Returns the mutarion rate of a gene, of a chromosome
 		inline double mutationRate(unsigned int gen, unsigned int chr){
-//			cout<<"Individual::mutationRate - genePosition("<<gen<<", "<<chr<<", 0)...\n";
 			unsigned int pos = genePosition(gen, chr, 0);
-//			cout<<"Individual::mutationRate - pos: "<<pos<<"\n";
-//			cout<<"Individual::mutationRate - res "<<mut_rate[pos]<<"\n";
 			return mut_rate[pos];
 		}
 		
@@ -147,11 +144,6 @@ class Individual{
 				gens[i] = parent->getGene(i);
 				gens[i]->increase();
 			}
-//			for(unsigned int i = 0; i < _n_chromosomes; ++i){
-//				for(unsigned int j = 0; j < _chromosomes[i][0]->n_genes(); ++j){
-//					_chromosomes[i][0]->gene(j)->reference(individual->chromosome(i)[0]->gene(j)->reference());
-//				}
-//			}
 		}
 		
 		static void setParameters(const boost::property_tree::ptree &findividual);

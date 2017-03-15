@@ -67,19 +67,19 @@ void Pool::release(void){
 	unsigned int total_deletes = 0;
 	cout<<"Pool::release - Inicio ("<<_pool.size()<<", "<<_pool.begin()->second.size()<<")\n";
 	for(map<pair<uint32_t,uint32_t>,vector<VirtualSequence*>>::iterator i=this->_pool.begin();i!=this->_pool.end();i++){
-//		total_deletes = i->second.size();
-//		for_each(i->second.begin(),i->second.end(),[](VirtualSequence* &reference){if(reference->count()<=0){delete reference;reference=nullptr;}});
-//		total_deletes -= i->second.size();
+		total_deletes = i->second.size();
+		for_each(i->second.begin(),i->second.end(),[](VirtualSequence* &reference){if(reference->count()<=0){delete reference;reference=nullptr;}});
 //		for(unsigned int j = 0; j < i->second.size(); ++j){
 //			VirtualSequence *reference = i->second.at(j);
-		for(vector<VirtualSequence*>::iterator it = i->second.begin(); it != i->second.end(); it++){
-			if( (*it != nullptr) && ((*it)->count() <= 0) ){
-				delete *it;
-				*it = nullptr;
-				++total_deletes;
-			}
-		}
+//		for(vector<VirtualSequence*>::iterator it = i->second.begin(); it != i->second.end(); it++){
+//			if( (*it != nullptr) && ((*it)->count() <= 0) ){
+//				delete *it;
+//				*it = nullptr;
+////				++total_deletes;
+//			}
+//		}
 		i->second.erase(std::remove_if(i->second.begin(),i->second.end(),[](VirtualSequence* &reference){return reference==nullptr;}),i->second.end());
+		total_deletes -= i->second.size();
 	}
 	cout<<"Pool::release - total_deletes: "<<total_deletes<<"\n";
 }
@@ -107,7 +107,8 @@ void Pool::populate(const uint32_t &_cid,const uint32_t &_gid,const uint32_t &_n
 	// Creacion del original
 	cout<<"Pool::populate - Creando original\n";
 	string texto_original(_nucleotides, 'A');
-	VirtualSequence *inicial_ref = new VirtualSequence(texto_original);
+	VirtualSequence *inicial_ref = new VirtualSequence(texto_original, true);
+	inicial_ref->increase();
 	this->_pool[pair<uint32_t,uint32_t>(_cid,_gid)].push_back(inicial_ref);
 	cout<<"Pool::populate - Creando "<<_number_of_alleles-1<<" mutaciones adicionales\n";
 	// Llenado con mutaciones

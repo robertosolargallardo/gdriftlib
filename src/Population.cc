@@ -85,7 +85,8 @@ vector<Population*> Population::split(const size_t &_n_populations){
    for(uint32_t i=0U;i<_n_populations;i++)
       populations[i]=new Population(size);
    
-   random_shuffle(this->_population.begin(),this->_population.end());
+   cout<<"Population::split - random_shuffle (ojo con el rng)\n";
+//   random_shuffle(this->_population.begin(),this->_population.end());
 
    while(!this->_population.empty()){
       populations[round_robin]->push(this->top());
@@ -96,7 +97,8 @@ vector<Population*> Population::split(const size_t &_n_populations){
    return(populations);
 }
 void Population::migration(Population* _population,const uint32_t &_size){
-   random_shuffle(this->_population.begin(),this->_population.end());
+   cout<<"Population::migration - random_shuffle (ojo con el rng)\n";
+//   random_shuffle(this->_population.begin(),this->_population.end());
 
    for(uint32_t i=0U;i<_size;i++){
       _population->push(this->_population.back());
@@ -104,7 +106,8 @@ void Population::migration(Population* _population,const uint32_t &_size){
    }
 }
 void Population::decrease(const uint32_t &_size){
-   random_shuffle(this->_population.begin(),this->_population.end());
+   cout<<"Population::decrease - random_shuffle (ojo con el rng)\n";
+//   random_shuffle(this->_population.begin(),this->_population.end());
 
    for(uint32_t i=0U;i<_size;i++){
       delete this->_population.back();

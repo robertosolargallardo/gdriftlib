@@ -19,8 +19,8 @@ using namespace std;
 
 
 // #define seq_size_t unsigned long long
-// #define seq_size_t unsigned int
-#define seq_size_t unsigned short
+ #define seq_size_t unsigned int
+//#define seq_size_t unsigned short
 
 // Tercera Version, texto en 2 bits por base
 // En esta version, el constructor de copia ahorra espacio (guarda solo un puntero al buff del original)

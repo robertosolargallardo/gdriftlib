@@ -241,15 +241,16 @@ class Population{
             }          
    
             boost::property_tree::ptree indices(const double &_percentage){
-               random_shuffle(this->_population.begin(),this->_population.end());
+//               random_shuffle(this->_population.begin(),this->_population.end());
                auto sample=vector<Individual*>(this->_population.begin(),this->_population.begin()+int(floor(double(this->size())*_percentage)));
 
                map<uint32_t,map<uint32_t,vector<string>>> sequences;
 //               map<uint32_t,map<uint32_t,vector<VirtualSequence*>>> sequences;
 
+               cout<<"sample[0]: "<<sample[0]->id()<<" (de " <<sample.size()<<")\n";
                for(auto& individual : sample){
                   for(unsigned int pid = 0; pid < individual->getPloidy(); pid++){
-                     for(uint32_t cid = 0U; cid < individual->getChromosomes(); cid++){
+                     for(uint32_t cid = 0; cid < individual->getChromosomes(); cid++){
                         for(uint32_t gid = 0; gid < individual->getGenes(cid); gid++){
                            sequences[cid][gid].push_back(
                            	individual->getGene(gid, cid, pid)->to_string()
@@ -260,6 +261,7 @@ class Population{
                      }
                   }
                }
+               cout<<"sequences[0][0][0]: "<<sequences[0][0][0]<<"\n";
 
                //this->rarest_nucleotides_statistics(sequences[0][0]);
    

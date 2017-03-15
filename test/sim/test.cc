@@ -1,6 +1,8 @@
 #include <iostream>
 #include <Simulator.h>
 
+#include "NanoTimer.h"
+
 using namespace std;
 random_device seed;
 mt19937 rng(seed());
@@ -19,7 +21,9 @@ int main(int argc,char** argv)
    population->clear();
 
    delete population;*/
-
+	
+	NanoTimer timer;
+	
    Simulator *sim=new Simulator(fsettings);
    sim->run();
 
@@ -32,7 +36,7 @@ int main(int argc,char** argv)
 
    delete sim;
    
-	cout<<"Test - Fin (const_str: "<<VirtualSequence::count_str<<", const_int: "<<VirtualSequence::count_int<<", const_copy: "<<VirtualSequence::count_copy<<", const_mem: "<<VirtualSequence::count_mem<<", const_del: "<<VirtualSequence::count_del<<", const_del_mem: "<<VirtualSequence::count_del_mem<<", const_mut: "<<VirtualSequence::count_mut<<")\n";
+	cout<<"Test - Fin (const_str: "<<VirtualSequence::count_str<<", const_int: "<<VirtualSequence::count_int<<", const_copy: "<<VirtualSequence::count_copy<<", const_mem: "<<VirtualSequence::count_mem<<", const_del: "<<VirtualSequence::count_del<<", const_del_mem: "<<VirtualSequence::count_del_mem<<", const_mut: "<<VirtualSequence::count_mut<<", tpo total: "<<timer.getMilisec()<<")\n";
 	
    return(0);
 }

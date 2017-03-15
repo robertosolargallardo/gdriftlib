@@ -32,8 +32,12 @@ VirtualSequence::VirtualSequence(const char *_ref, unsigned int _size, bool _rea
 	if( size & 0x3 ){
 		++data_size;
 	}
+	cout<<"VirtualSequence - Pidiendo "<<data_size<<" bytes de memoria\n";
 	data = new unsigned char[ data_size ];
 	memset(data, 0, data_size);
+	
+//	cout<<"VirtualSequence - data: "<<(unsigned long long)data<<"\n";
+	
 	unsigned char *p = data;
 	unsigned int disp = 0;
 	unsigned char value = 0;
@@ -61,7 +65,7 @@ VirtualSequence::VirtualSequence(const char *_ref, unsigned int _size, bool _rea
 	owns_data = true;
 	
 //	for(unsigned int i = 0; i < data_size; ++i){
-//		cout<<"data["<<i<<"]: "<<(unsigned int)data[i]<<"\n";
+//		cout<<"VirtualSequence - data["<<i<<"]: "<<(unsigned int)data[i]<<"\n";
 //	}
 	
 	cur_count = 0;
@@ -79,6 +83,7 @@ VirtualSequence::VirtualSequence(const unsigned int _size, const unsigned int _s
 	if( size & 0x3 ){
 		++data_size;
 	}
+	cout<<"VirtualSequence - Pidiendo "<<data_size<<" bytes de memoria\n";
 	data = new unsigned char[ data_size ];
 	memset(data, 0, data_size);
 	
@@ -96,6 +101,7 @@ VirtualSequence::VirtualSequence(const unsigned int _size, const unsigned int _s
 		new_pos = size - 1 - pos;
 		data[ (new_pos>>2) ] |= (value << ((new_pos & 0x3)<<1) );
 	}
+	owns_data = true;
 	
 //	for(unsigned int i = 0; i < data_size; ++i){
 //		cout<<"data["<<i<<"]: "<<(unsigned int)data[i]<<"\n";
@@ -143,7 +149,10 @@ VirtualSequence::~VirtualSequence(){
 	inserts.clear();
 	mutations.clear();
 	if(owns_data){
+//		cout<<"VirtualSequence::~VirtualSequence - Borrando data original\n";
 		delete [] data;
+		data = NULL;
+		owns_data = false;
 	}
 	data = NULL;
 	size = 0;
@@ -162,15 +171,15 @@ bool VirtualSequence::verifyDecompression(){
 //		cout<<"VirtualSequence::verifyDecompression - Descomprimiendo secuencia por numero de mutaciones\n";
 		if(!owns_data){
 			++count_mem;
-//			cout<<"VirtualSequence::verifyDecompression - Pidiendo memoria\n";
 			unsigned char *original_data = data;
 			unsigned int data_size = (size>>2);
 			if( size & 0x3 ){
 				++data_size;
 			}
+			cout<<"VirtualSequence::verifyDecompression - Pidiendo "<<data_size<<" bytes de memoria\n";
 			data = new unsigned char[ data_size ];
 			//memset(data, 0, data_size);
-			memcpy(data, original_data, size);
+			memcpy(data, original_data, data_size);
 			owns_data = true;
 		}
 //		set<seq_size_t>::iterator it;
@@ -232,6 +241,8 @@ void VirtualSequence::mutate(mt19937 *arg_rng){
 		arg_rng = &rng;
 	}
 	
+//	cout<<"VirtualSequence::mutate - Inicio\n";
+	
 	// Version directa en bits
 	// Notar que aqui pos representa la poscion del bit mutado, de ahi el size*2
 	uniform_int_distribution<> pos_dist(0, (size<<1) - 1);
@@ -270,6 +281,7 @@ void VirtualSequence::mutateBit(unsigned int pos){
 //		cout<<"VirtualSequence::mutateBit - Omitiendo bit "<<pos<<"\n";
 		return;
 	}
+	
 //	cout<<"VirtualSequence::mutateBit - Modificando bit "<<pos<<" (VirtualSequence "<<(unsigned long long)this<<", "<<mutations.size()<<" mutations)\n";
 	seq_size_t pos_mut = 0;
 	if(! findMutation(pos, pos_mut)){
@@ -321,7 +333,8 @@ char VirtualSequence::at(seq_size_t pos) const{
 	// Actualmente, las mutaciones puntutales SOLO se pueden aplicar a los datos (sin contar inserciones)
 	
 //	cout<<"VirtualSequence::at - Inicio (pos: "<<pos<<")\n";
-		
+	
+	/*
 	char res = 0;
 	unsigned int pos_insert;
 	pos_insert = countInserts(pos, res);
@@ -340,6 +353,7 @@ char VirtualSequence::at(seq_size_t pos) const{
 		}
 //		cout<<"VirtualSequence::at - Ajustando pos: "<<pos<<"\n";
 	}
+	*/
 	
 	
 	// Version con mutaciones a nivel de bits
@@ -363,12 +377,12 @@ char VirtualSequence::at(seq_size_t pos) const{
 	seq_size_t pos_mut = 0;
 	if( findMutation(pos_bit_1, pos_mut) ){
 		val ^= 0x1;
-//		cout<<"VirtualSequence::at - val mut bit 1: "<<(unsigned int)val<<" ('"<<alphabet[val]<<"')\n";
+//		cout<<"VirtualSequence::at - val mut bit 1: "<<(unsigned int)val<<" ('"<<alphabet[val]<<"', pos "<<pos<<", data: "<<(unsigned long long)data<<")\n";
 	}
 //	if(mutations.find(pos_bit_2) != mutations.end()){
 	if( findMutation(pos_bit_2, pos_mut) ){
 		val ^= 0x2;
-//		cout<<"VirtualSequence::at - val mut bit 2: "<<(unsigned int)val<<" ('"<<alphabet[val]<<"')\n";
+//		cout<<"VirtualSequence::at - val mut bit 2: "<<(unsigned int)val<<" ('"<<alphabet[val]<<"', pos "<<pos<<", data: "<<(unsigned long long)data<<")\n";
 	}
 //	cout<<"VirtualSequence::at - val final: "<<(unsigned int)val<<" ('"<<alphabet[val]<<"')\n";
 	return alphabet[val];
