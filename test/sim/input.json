@@ -7,7 +7,7 @@
 			"genes": [{
 				"id": "0",
 				"type": "0",
-				"nucleotides": "3000000000",
+				"nucleotides": "666",
 				"mutation": {
 					"rate": "0.0001",
 					"model": "0"

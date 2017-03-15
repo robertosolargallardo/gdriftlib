@@ -22,10 +22,10 @@ int main(int argc,char** argv)
 
    delete population;*/
 	
-	NanoTimer timer;
-	
+   NanoTimer timer;
    Simulator *sim=new Simulator(fsettings);
    sim->run();
+   cout<<"Simulator::run - Terminado en "<<timer.getMilisec()<<" ms\n";
 
 	/*for(auto p : sim->populations()){
 		boost::property_tree::ptree findices=p->indices(1.0);
@@ -36,7 +36,7 @@ int main(int argc,char** argv)
 
    delete sim;
    
-	cout<<"Test - Fin (const_str: "<<VirtualSequence::count_str<<", const_int: "<<VirtualSequence::count_int<<", const_copy: "<<VirtualSequence::count_copy<<", const_mem: "<<VirtualSequence::count_mem<<", const_del: "<<VirtualSequence::count_del<<", const_del_mem: "<<VirtualSequence::count_del_mem<<", const_mut: "<<VirtualSequence::count_mut<<", tpo total: "<<timer.getMilisec()<<")\n";
+	cout<<"Test - Fin (const_str: "<<VirtualSequence::count_str<<", const_int: "<<VirtualSequence::count_int<<", const_copy: "<<VirtualSequence::count_copy<<", const_mem: "<<VirtualSequence::count_mem<<", const_del: "<<VirtualSequence::count_del<<", const_del_mem: "<<VirtualSequence::count_del_mem<<", const_mut: "<<VirtualSequence::count_mut<<")\n";
 	
    return(0);
 }
