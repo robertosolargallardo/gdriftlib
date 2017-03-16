@@ -139,7 +139,7 @@ void Simulator::run(void){
       }
 
 //      this->_pool->decrease_all();
-//      cout<<"Simulator::run - Creando Model\n";
+//      cout<<"Simulator::run - Preparando Model::run\n";
       Model m = Model(this->_fsettings.get_child("scenario").get<int>("model"));
       switch(m){
          case WRIGHTFISHER:{
