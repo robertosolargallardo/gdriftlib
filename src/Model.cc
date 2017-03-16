@@ -6,12 +6,11 @@ namespace model{
 	void run<WRIGHTFISHER,HAPLOID>(Population* &_src, Population* &_dst, Pool* &_pool){
 		uniform_int_distribution<> src_dist(0, _src->size() - 1);
 		uniform_int_distribution<> dst_dist(0, _dst->size() - 1);
-		uniform_real_distribution<double> mutation_rate(0.0, 1.0);
+//		uniform_real_distribution<double> mutation_rate(0.0, 1.0);
 
 //		cout<<"Model::run - Iterando por "<<_dst->size()<<" individuos ("<<_src->at(0)->getChromosomes()<<" chromosomes, "<<_src->at(0)->getGenes(0)<<" genes in ch0)\n";
 		NanoTimer timer;
 		unsigned int mutations = 0;
-		
 		
 		// En el nuevo modelo, en lugar de iterar por individuo y gen para mutar, decidimos el numero de mutaciones primero y buscamos donde mutar la poblacion
 		// Este proceso lo realizo por gen (global a la poblacion completa) para considerar las diferentes tasas de mutacion
@@ -106,15 +105,16 @@ namespace model{
 		
 //		cout<<"Model::run - Terminado ("<<timer.getMilisec()<<" ms, mutations: "<<mutations<<")\n";
 		
-	}
+	}// Fin run
 	template<>
-	void run<WRIGHTFISHER,DIPLOID>(Population* &_src,Population* &_dst,Pool* &_pool){
+	void run<WRIGHTFISHER,DIPLOID>(Population* &_src, Population* &_dst, Pool* &_pool){
+	
 		constexpr uint32_t PARENTS=2U;
 		uniform_int_distribution<> coin(0U,1U);
 		uniform_int_distribution<> uniform(0U,_src->size()-1U);
 		uniform_real_distribution<double> mutation_rate(0.0,1.0);
 
-		VirtualSequence* reference=nullptr;
+		VirtualSequence *reference = nullptr;
 
 		array<Individual*, PARENTS> individual = {nullptr, nullptr};
 		array<VirtualSequence*, PARENTS> gene = {nullptr, nullptr};
@@ -143,5 +143,14 @@ namespace model{
 				}
 			}
 		}
-	}
+		
+		
+//		unsigned int parents = 2;
+//		uniform_int_distribution<> coin(0, 1);
+//		uniform_int_distribution<> uniform(0U,_src->size()-1U);
+		
+		
+		
+		
+	}// Fin run
 }

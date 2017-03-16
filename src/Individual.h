@@ -6,6 +6,8 @@
 
 enum Ploidy{HAPLOID=1,DIPLOID=2,TRIPLOID=3,TETRAPLOID=4,PENTAPLOID=5,HEXAPLOID=6,HEPTAPLOID=7,OCTAPLOID=8};
 
+extern mt19937 rng;
+
 class Individual{
 	private:
 		uint32_t		 _id;
@@ -147,6 +149,45 @@ class Individual{
 				gens[i] = parent->getGene(i);
 				gens[i]->increase();
 			}
+		}
+		
+		inline void setParents(Individual *parent1, Individual *parent2){
+			// Esta primera version solo funciona para diploides
+			uniform_int_distribution<> coin(0, 1);
+			
+			// Conjunto de cromosomas de padre 1
+			for(unsigned int i = 0; i < (n_gens>>1); ++i){
+				if(gens[i] != NULL){
+					gens[i]->decrease();
+				}
+				if( coin(rng) ){
+					gens[i] = parent1->getGene(i);
+				}
+				else{
+					gens[i] = parent1->getGene(i + gens_ploidy);
+				}
+			}
+			
+			// Conjunto de cromosomas de padre 2
+			for(unsigned int i = (n_gens>>1); i < n_gens; ++i){
+				if(gens[i] != NULL){
+					gens[i]->decrease();
+				}
+				if( coin(rng) ){
+					gens[i] = parent2->getGene(i);
+				}
+				else{
+					gens[i] = parent2->getGene(i + gens_ploidy);
+				}
+			}
+			
+//			for(unsigned int i = 0; i < n_gens; ++i){
+//				if(gens[i] != NULL){
+//					gens[i]->decrease();
+//				}
+//				gens[i] = parent->getGene(i);
+//				gens[i]->increase();
+//			}
 		}
 		
 		static void setParameters(const boost::property_tree::ptree &findividual);
