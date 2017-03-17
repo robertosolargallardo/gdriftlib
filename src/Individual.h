@@ -116,10 +116,35 @@ class Individual{
 			return (gens_chr[chr] - gens_chr[chr-1]);
 		}
 		
+		// Returns the TOTAL number of genes (the real total, considering chromosomes and ploidy)
+		inline unsigned int getGenes(){
+			return n_gens;
+		}
+		
 		// Returns the mutarion rate of a gene, of a chromosome
 		inline double mutationRate(unsigned int gen, unsigned int chr){
 			unsigned int pos = genePosition(gen, chr, 0);
 			return mut_rate[pos];
+		}
+		
+		// Returns the mutarion rate of a gene in absolute position
+		// Note that the rates repeat themselves for different ploidy sets (so we take % gens_ploidy)
+		inline double mutationRate(unsigned int gen){
+			return mut_rate[ (gen % gens_ploidy) ];
+		}
+		
+		// Returns the chromosome id of a gen in absolute position
+		// This can be implemented with a binary search (log), for new its lineal in num of chromosomes
+		inline unsigned int getChromosome(unsigned int pos){
+			if(pos >= n_gens){
+				return 0;
+			}
+			pos %= gens_ploidy;
+			unsigned int res = 0;
+			while( gens_chr[res] < pos ){
+				++res;
+			}
+			return res;
 		}
 		
 		// Fin Metodos de acceso
@@ -152,11 +177,17 @@ class Individual{
 		}
 		
 		inline void setParents(Individual *parent1, Individual *parent2){
+			
 			// Esta primera version solo funciona para diploides
+			if(ploidy != 2){
+				cerr<<"Individual::setParents - Error, metodo implementado exclusivamente para Diploides (ploidy: "<<ploidy<<")\n";
+				return;
+			}
+			
 			uniform_int_distribution<> coin(0, 1);
 			
 			// Conjunto de cromosomas de padre 1
-			for(unsigned int i = 0; i < (n_gens>>1); ++i){
+			for(unsigned int i = 0; i < gens_ploidy; ++i){
 				if(gens[i] != NULL){
 					gens[i]->decrease();
 				}
@@ -166,28 +197,23 @@ class Individual{
 				else{
 					gens[i] = parent1->getGene(i + gens_ploidy);
 				}
+				gens[i]->increase();
 			}
 			
 			// Conjunto de cromosomas de padre 2
-			for(unsigned int i = (n_gens>>1); i < n_gens; ++i){
-				if(gens[i] != NULL){
-					gens[i]->decrease();
+			for(unsigned int i = 0; i < gens_ploidy; ++i){
+				if(gens[i + gens_ploidy] != NULL){
+					gens[i + gens_ploidy]->decrease();
 				}
 				if( coin(rng) ){
-					gens[i] = parent2->getGene(i);
+					gens[i + gens_ploidy] = parent2->getGene(i);
 				}
 				else{
-					gens[i] = parent2->getGene(i + gens_ploidy);
+					gens[i + gens_ploidy] = parent2->getGene(i + gens_ploidy);
 				}
+				gens[i + gens_ploidy]->increase();
 			}
 			
-//			for(unsigned int i = 0; i < n_gens; ++i){
-//				if(gens[i] != NULL){
-//					gens[i]->decrease();
-//				}
-//				gens[i] = parent->getGene(i);
-//				gens[i]->increase();
-//			}
 		}
 		
 		static void setParameters(const boost::property_tree::ptree &findividual);

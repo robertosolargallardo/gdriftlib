@@ -21,11 +21,13 @@ int main(int argc,char** argv)
    population->clear();
 
    delete population;*/
+   
+   cout<<"Inicio (rng.max: "<<rng.max()<<")\n";
 	
    NanoTimer timer;
    Simulator *sim=new Simulator(fsettings);
    sim->run();
-   cout<<"Simulator::run - Terminado en "<<timer.getMilisec()<<" ms\n";
+   cout<<"Simulator->run erminado en "<<timer.getMilisec()<<" ms\n";
 
 	/*for(auto p : sim->populations()){
 		boost::property_tree::ptree findices=p->indices(1.0);
