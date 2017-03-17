@@ -10,18 +10,15 @@ extern mt19937 rng;
 
 class Individual{
 	private:
-		uint32_t		 _id;
-//		Ploidy			_ploidy;
-//		uint32_t		 _n_chromosomes;
-//		Chromosome***  _chromosomes;
+		uint32_t _id;
 		
-		// Total of genes (esto tambien puede ser static)
-		static unsigned int n_gens;
 		// Reference to the genes (as VirtualSequences)
 		//  - To get the gen of a (ploidy, chr, gen_pos): gens + gens_ploidy*ploidy + gens_chr[chr] + gen_pos
 		VirtualSequence **gens;
 		
 		// All this numbers can be static if we are using a single specie
+		// Total of genes (effective total, considering chromosomes AND ploidy)
+		static unsigned int n_gens;
 		// Number of chromosomes sets
 		static unsigned int ploidy;
 		// Number of chromosomes per set
@@ -41,8 +38,6 @@ class Individual{
 		Individual(const Individual&);
 		uint32_t id(void) const;
 		uint32_t n_chromosomes(void) const;
-//		Chromosome**& chromosome(const uint32_t&);
-//		Ploidy ploidy(void) const;
 		~Individual(void);
 		void clear(void);
 		

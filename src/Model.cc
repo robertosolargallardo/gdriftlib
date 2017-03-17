@@ -4,13 +4,13 @@ namespace model{
 	
 	template<>
 	void run<WRIGHTFISHER,HAPLOID>(Population* &_src, Population* &_dst, Pool* &_pool){
-		uniform_int_distribution<> src_dist(0, _src->size() - 1);
-		uniform_int_distribution<> dst_dist(0, _dst->size() - 1);
-//		uniform_real_distribution<double> mutation_rate(0.0, 1.0);
 
-		cout<<"Model::run (HAPLOID) - Iterando por "<<_dst->size()<<" individuos ("<<_src->at(0)->getChromosomes()<<" chromosomes, "<<_src->at(0)->getGenes(0)<<" genes in ch0)\n";
+//		cout<<"Model::run (HAPLOID) - Iterando por "<<_dst->size()<<" individuos ("<<_src->at(0)->getChromosomes()<<" chromosomes, "<<_src->at(0)->getGenes(0)<<" genes in ch0)\n";
 		NanoTimer timer;
 		unsigned int mutations = 0;
+	
+		uniform_int_distribution<> src_dist(0, _src->size() - 1);
+		uniform_int_distribution<> dst_dist(0, _dst->size() - 1);
 		
 		// En el nuevo modelo, en lugar de iterar por individuo y gen para mutar, decidimos el numero de mutaciones primero y buscamos donde mutar la poblacion
 		// Este proceso lo realizo por gen (global a la poblacion completa) para considerar las diferentes tasas de mutacion
@@ -32,7 +32,7 @@ namespace model{
 			parent = _src->at(src_dist(rng));
 			_dst->at(id)->setParent(parent);
 		}
-		cout<<"Model::run - Padres asignados en "<<timer.getMilisec()<<" ms\n";
+//		cout<<"Model::run - Padres asignados en "<<timer.getMilisec()<<" ms\n";
 		
 		for(unsigned int chrid = 0; chrid < ind->getChromosomes(); ++chrid){
 			for(unsigned int genid = 0; genid < ind->getGenes(chrid); ++genid){
@@ -68,40 +68,7 @@ namespace model{
 			}
 		}
 		
-		
-		/*
-		VirtualSequence* reference=nullptr;
-		Individual* individual=nullptr;
-		
-		for(uint32_t id = 0; id < _dst->size(); id++){
-			individual = _src->at(src_dist(rng));
-			
-			for(uint32_t cid = 0; cid < individual->getChromosomes(); cid++){
-				for(uint32_t gid = 0; gid < individual->getGenes(cid); gid++){
-					if(mutation_rate(rng) <= individual->mutationRate(gid, cid)){
-						
-						VirtualSequence *original = individual->getGene(gid, cid, 0);
-						if(original == NULL){
-							cerr<<"Model::run - Error\n";
-						}
-						reference = new VirtualSequence(*original);
-						reference->mutate();
-						++mutations;
-						_pool->push(cid, gid, reference);
-						
-						_dst->at(id)->setGene(gid, cid, 0, reference);
-					}
-					else{
-						_dst->at(id)->setGene(gid, cid, 0, individual->getGene(gid, cid, 0));
-						
-						
-					}
-				}
-			}
-		}
-		*/
-		
-		cout<<"Model::run - Terminado ("<<timer.getMilisec()<<" ms, mutations: "<<mutations<<")\n";
+//		cout<<"Model::run - Terminado ("<<timer.getMilisec()<<" ms, mutations: "<<mutations<<")\n";
 		
 	}// Fin run
 	template<>
@@ -110,48 +77,6 @@ namespace model{
 //		cout<<"Model::run (DIPLOID) - Iterando por "<<_dst->size()<<" individuos ("<<_src->at(0)->getChromosomes()<<" chromosomes, "<<_src->at(0)->getGenes(0)<<" genes in ch0)\n";
 		NanoTimer timer;
 		unsigned int mutations = 0;
-		
-		/*
-		// VERSION ANTIGUA
-		
-		constexpr uint32_t PARENTS=2U;
-		uniform_int_distribution<> coin(0U,1U);
-		uniform_int_distribution<> src_dist(0, _src->size() - 1);
-		uniform_real_distribution<double> mutation_rate(0.0,1.0);
-
-		VirtualSequence *reference = nullptr;
-
-		array<Individual*, PARENTS> individual = {nullptr, nullptr};
-		array<VirtualSequence*, PARENTS> gene = {nullptr, nullptr};
-
-		for(uint32_t id=0U;id<_dst->size();id++){
-			individual[0] = _src->at(src_dist(rng));
-			individual[1] = _src->at(src_dist(rng));
-
-			for(uint32_t cid = 0; cid < individual[0]->getChromosomes(); cid++){
-				for(uint32_t gid = 0; gid < individual[0]->getGenes(cid); gid++){
-					gene[0] = individual[0]->getGene(gid, cid, coin(rng));
-					gene[1] = individual[1]->getGene(gid, cid, coin(rng));
-					
-					for(uint32_t i = 0U; i < uint32_t(DIPLOID); i++){
-						if(mutation_rate(rng) <= individual[i]->mutationRate(gid, cid)){
-							reference = new VirtualSequence(*(gene[i]));
-							reference->mutate();
-							
-							_pool->push(cid, gid, reference);
-							_dst->at(id)->setGene(gid, cid, i, reference);
-
-						}
-						else
-							_dst->at(id)->setGene(gid, cid, i, gene[i]);
-					}
-				}
-			}
-		}
-		*/
-		
-		
-		// VERSION NUEVA
 		
 		uniform_int_distribution<> src_dist(0, _src->size() - 1);
 		uniform_int_distribution<> dst_dist(0, _dst->size() - 1);

@@ -6,6 +6,7 @@
 using namespace std;
 random_device seed;
 mt19937 rng(seed());
+mt19937_64 rng64(seed());
 
 int main(int argc,char** argv)
 {
@@ -22,12 +23,13 @@ int main(int argc,char** argv)
 
    delete population;*/
    
-   cout<<"Inicio (rng.max: "<<rng.max()<<")\n";
+
+   cout<<"Test - Inicio (rng.max: "<<rng.max()<<", rng64.max: "<<rng64.max()<<")\n";
 	
    NanoTimer timer;
    Simulator *sim=new Simulator(fsettings);
    sim->run();
-   cout<<"Simulator->run erminado en "<<timer.getMilisec()<<" ms\n";
+   cout<<"Test - Simulator->run Terminado en "<<timer.getMilisec()<<" ms\n";
 
 	/*for(auto p : sim->populations()){
 		boost::property_tree::ptree findices=p->indices(1.0);
