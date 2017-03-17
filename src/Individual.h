@@ -32,6 +32,8 @@ class Individual{
 		static unsigned int gens_ploidy;
 		// Mutation rate per gene
 		static double *mut_rate;
+		// Number of nucleotides per gene
+//		static unsigned int *gen_len;
 		
 	public:
 		Individual(const uint32_t&,const boost::property_tree::ptree&);
@@ -133,6 +135,12 @@ class Individual{
 			return mut_rate[ (gen % gens_ploidy) ];
 		}
 		
+//		// Returns the number of nucleotides of a gene, of a chromosome
+//		inline static unsigned int geneLength(unsigned int gen, unsigned int chr){
+//			unsigned int pos = genePosition(gen, chr, 0);
+//			return gen_len[pos];
+//		}
+		
 		// Returns the chromosome id of a gen in absolute position
 		// This can be implemented with a binary search (log), for new its lineal in num of chromosomes
 		inline unsigned int getChromosome(unsigned int pos){
@@ -184,18 +192,24 @@ class Individual{
 				return;
 			}
 			
-			uniform_int_distribution<> coin(0, 1);
+//			uniform_int_distribution<> coin(0, 1);
+			unsigned int rand_bits = rng();
+			unsigned int mask = 0x80000000;
 			
 			// Conjunto de cromosomas de padre 1
 			for(unsigned int i = 0; i < gens_ploidy; ++i){
 				if(gens[i] != NULL){
 					gens[i]->decrease();
 				}
-				if( coin(rng) ){
+				if( rand_bits & mask ){
 					gens[i] = parent1->getGene(i);
 				}
 				else{
 					gens[i] = parent1->getGene(i + gens_ploidy);
+				}
+				if( (mask >>= 1) == 0 ){
+					rand_bits = rng();
+					mask = 0x80000000;
 				}
 				gens[i]->increase();
 			}
@@ -205,11 +219,15 @@ class Individual{
 				if(gens[i + gens_ploidy] != NULL){
 					gens[i + gens_ploidy]->decrease();
 				}
-				if( coin(rng) ){
+				if( rand_bits & mask ){
 					gens[i + gens_ploidy] = parent2->getGene(i);
 				}
 				else{
 					gens[i + gens_ploidy] = parent2->getGene(i + gens_ploidy);
+				}
+				if( (mask >>= 1) == 0 ){
+					rand_bits = rng();
+					mask = 0x80000000;
 				}
 				gens[i + gens_ploidy]->increase();
 			}

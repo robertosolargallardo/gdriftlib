@@ -14,6 +14,8 @@
 		unsigned int Individual::gens_ploidy;
 		// Mutation rate per gene
 		double *Individual::mut_rate;
+		// Number of nucleotides per gene
+//		unsigned int *Individual::gen_len;
 		
 
 Individual::Individual(const uint32_t &_id, const boost::property_tree::ptree &_findividual){
@@ -132,18 +134,18 @@ void Individual::setParameters(const boost::property_tree::ptree &findividual){
 	n_gens = ploidy*gens_ploidy;
 	cout<<"Individual::setParameters - gens_ploidy: "<<gens_ploidy<<", n_gens: "<<n_gens<<"\n";
 	mut_rate = new double[total_gens];
+//	gen_len = new unsigned int[total_gens];
 	
 	total_gens = 0;
 	for(auto fchromosome : findividual.get_child("chromosomes")){
 		cid = fchromosome.second.get<uint32_t>("id");
-//		for(unsigned int pid = 0; pid < ploidy; pid++){
 		for(auto fgene : fchromosome.second.get_child("genes")){
 //			this->_chromosomes[cid][pid]->gene(fgene.second.get<uint32_t>("id"))->mutation_rate(fgene.second.get<double>("mutation.rate"));
 			mut_rate[total_gens] = fgene.second.get<double>("mutation.rate");
-			cout<<"Individual::setParameters - mut_rate["<<total_gens<<"]: "<<mut_rate[total_gens]<<" (chr "<<cid<<")\n";
+//			gen_len[total_gens] = fgene.second.get<double>("nucleotides");
+//			cout<<"Individual::setParameters - mut_rate["<<total_gens<<"]: "<<mut_rate[total_gens]<<", gen_len["<<total_gens<<"]: "<<gen_len[total_gens]<<" (chr "<<cid<<")\n";
 			++total_gens;
 		}
-//		}
 	}
 	
 	cout<<"Individual::setParameters - Fin\n";
