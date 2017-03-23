@@ -45,8 +45,11 @@ namespace model{
 				// Calcular el total de mutaciones que se realizaran para este gen en TODA la poblacion
 				// Notar que se puede hacer algo mas sofisticado aqui
 				// Por ahora, solo multiplico la probabilidad de mutacion, por el largo del gen, por toda la poblacion
-				unsigned int total_muts = (unsigned int)(rate * length * _dst->size());
-//				cout<<"Model::run - total_muts: "<<total_muts<<"\n";
+//				unsigned int total_muts = (unsigned int)(rate * length * _dst->size());
+				// Version binomial (Notar que considero rate como la prob de mutacion POR NUCLEOTIDO de cada individuo)
+				binomial_distribution<unsigned int> binomial_dist(length * _dst->size(), rate);
+				unsigned int total_muts = binomial_dist(rng);
+//				cout<<"Model::run - total_muts: "<<total_muts<<" ("<<(length * _dst->size())<<", "<<rate<<")\n";
 				
 				for(unsigned int mut = 0; mut < total_muts; ++mut){
 					// Escoger individuo para mutar
@@ -108,7 +111,10 @@ namespace model{
 					// Calcular el total de mutaciones que se realizaran para este gen en TODA la poblacion
 					// Notar que se puede hacer algo mas sofisticado aqui
 					// Por ahora, solo multiplico la probabilidad de mutacion, por el largo del gen, por toda la poblacion
-					unsigned int total_muts = (unsigned int)(rate * length * _dst->size());
+//					unsigned int total_muts = (unsigned int)(rate * length * _dst->size());
+					// Version binomial (Notar que considero rate como la prob de mutacion POR NUCLEOTIDO de cada individuo)
+					binomial_distribution<unsigned int> binomial_dist(length * _dst->size(), rate);
+					unsigned int total_muts = binomial_dist(rng);
 //					cout<<"Model::run - total_muts: "<<total_muts<<"\n";
 					for(unsigned int mut = 0; mut < total_muts; ++mut){
 						// Escoger individuo para mutar
