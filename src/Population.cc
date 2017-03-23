@@ -3,8 +3,12 @@ Population::Population(void){
    this->_name.clear();
    this->_population.clear();
 }
-Population::Population(const Ploidy &_ploidy,const boost::property_tree::ptree &_fpopulation){
+Population::Population(const Ploidy &_ploidy,const boost::property_tree::ptree &_fpopulation, const boost::property_tree::ptree &_fsettings){
+//	cout<<"Population - Inicio\n";
    int pid=0;
+   
+   Individual::setParameters(_fsettings.get_child("individual"));
+   
    this->_name=_fpopulation.get<string>("name");
    this->_population.reserve(_fpopulation.get_child("individuals").size());
 
@@ -20,15 +24,19 @@ Population::Population(const Ploidy &_ploidy,const boost::property_tree::ptree &
             // una secuencia por ploidy
             for(auto& fsequence : fgene.second.get_child("sequences")){
 //               Reference* reference=new Reference(fsequence.second.data(),false);
-               VirtualSequence* reference=new VirtualSequence(fsequence.second.data(),false);
+//				cout<<"Population - new VirtualSequence\n";
+               VirtualSequence* reference = new VirtualSequence(fsequence.second.data(),false);
 //               individual->chromosome(fchromosome.second.get<uint32_t>("id"))[pid]->gene(fgene.second.get<uint32_t>("id"))=new Gene(fgene.second.get<uint32_t>("id"),reference);
+//				cout<<"Population - setGene\n";
 				individual->setGene(fgene.second.get<uint32_t>("id"), fchromosome.second.get<uint32_t>("id"), pid, reference);
+//				cout<<"Population - ok\n";
                pid++;
             }
          }
       }
       this->_population.push_back(individual);
    }
+//	cout<<"Population - Fin\n";
 }
 vector<Individual*> Population::individuals(void){
 	return(this->_population);

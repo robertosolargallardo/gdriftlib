@@ -20,7 +20,7 @@ class Population{
             Population(const uint32_t&);
             Population(const string&);
             Population(const string&,const uint32_t&);
-            Population(const Ploidy&,const boost::property_tree::ptree&);
+            Population(const Ploidy&,const boost::property_tree::ptree&,const boost::property_tree::ptree&);
  
             uint32_t size(void);
             string name(void);

@@ -54,7 +54,7 @@ class Individual{
 		
 		inline unsigned int genePosition(unsigned int pos, unsigned int chr, unsigned int plo){
 			if(plo >= ploidy || chr >= n_chr){
-				cerr<<"VirtualSequence::genePosition - Error, datos invalidos (pos: "<<pos<<", chr: "<<chr<<", plo: "<<plo<<")\n";
+				cerr<<"Individual::genePosition - Error, datos invalidos (pos: "<<pos<<", chr: "<<chr<<", plo: "<<plo<<")\n";
 				return 0;
 			}
 			if(chr == 0){
@@ -73,7 +73,7 @@ class Individual{
 		// Sets the gene of an absolute position
 		inline void setGene(unsigned int pos, VirtualSequence *new_gene){
 			if(pos >= n_gens){
-				cerr<<"VirtualSequence::setGene - Error, posicion "<<pos<<" invalida\n";
+				cerr<<"Individual::setGene - Error, posicion "<<pos<<" invalida\n";
 				return;
 			}
 //			cout<<"Individual::setGene - Inicio (pos: "<<pos<<" de "<<n_gens<<")\n";

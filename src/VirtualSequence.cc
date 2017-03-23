@@ -68,6 +68,8 @@ VirtualSequence::VirtualSequence(const char *_ref, unsigned int _size, bool _rea
 //		cout<<"VirtualSequence - data["<<i<<"]: "<<(unsigned int)data[i]<<"\n";
 //	}
 	
+//	cout<<"VirtualSequence - Fin\n";
+	
 	cur_count = 0;
 	cur_read = _read_only;
 }

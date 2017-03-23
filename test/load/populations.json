@@ -2,6 +2,23 @@
    "id": "0", 
    "ploidy": "1", 
    "type" : "data",
+   "individual" : {
+      "ploidy" : "1",
+      "chromosomes" : [
+         {
+            "id" : "0",
+			"genes": [{
+				"id": "0",
+				"type": "0",
+				"nucleotides": "663",
+				"mutation": {
+					"rate": "0.0",
+					"model": "0"
+				}
+			}]
+         }
+      ]
+   },
    "populations":[
       {
          "name":"p1",
