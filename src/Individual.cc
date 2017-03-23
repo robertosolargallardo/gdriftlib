@@ -58,13 +58,13 @@ Individual::Individual(const Individual &_individual){
 }
 
 void Individual::setParameters(const boost::property_tree::ptree &findividual){
-	cout<<"Individual::setParameters - Inicio\n";
+	// cout<<"Individual::setParameters - Inicio\n";
 	ploidy = Ploidy(findividual.get<uint32_t>("ploidy"));
 	n_chr = findividual.get_child("chromosomes").size();
 	if(gens_chr != NULL){
 		delete [] gens_chr;
 	}
-	cout<<"Individual::setParameters - Guardando "<<n_chr<<" chromosomas para Ploidy "<<ploidy<<"\n";
+	// cout<<"Individual::setParameters - Guardando "<<n_chr<<" chromosomas para Ploidy "<<ploidy<<"\n";
 	gens_chr = new unsigned int[n_chr];
 	
 	unsigned int total_gens = 0;
@@ -72,12 +72,12 @@ void Individual::setParameters(const boost::property_tree::ptree &findividual){
 	for(auto fchromosome : findividual.get_child("chromosomes")){
 		total_gens += fchromosome.second.get_child("genes").size();
 		gens_chr[cid] = total_gens;
-		cout<<"Individual::setParameters - Total genes hasta chr["<<cid<<"]: "<<total_gens<<"\n";
+		// cout<<"Individual::setParameters - Total genes hasta chr["<<cid<<"]: "<<total_gens<<"\n";
 		++cid;
 	}
 	gens_ploidy = total_gens;
 	n_gens = ploidy*gens_ploidy;
-	cout<<"Individual::setParameters - gens_ploidy: "<<gens_ploidy<<", n_gens: "<<n_gens<<"\n";
+	// cout<<"Individual::setParameters - gens_ploidy: "<<gens_ploidy<<", n_gens: "<<n_gens<<"\n";
 	mut_rate = new double[total_gens];
 //	gen_len = new unsigned int[total_gens];
 	
@@ -87,12 +87,12 @@ void Individual::setParameters(const boost::property_tree::ptree &findividual){
 		for(auto fgene : fchromosome.second.get_child("genes")){
 			mut_rate[total_gens] = fgene.second.get<double>("mutation.rate");
 //			gen_len[total_gens] = fgene.second.get<double>("nucleotides");
-			cout<<"Individual::setParameters - mut_rate["<<total_gens<<"]: "<<mut_rate[total_gens]<<" (chr "<<cid<<")\n";
+			// cout<<"Individual::setParameters - mut_rate["<<total_gens<<"]: "<<mut_rate[total_gens]<<" (chr "<<cid<<")\n";
 			++total_gens;
 		}
 	}
 	
-	cout<<"Individual::setParameters - Fin\n";
+	// cout<<"Individual::setParameters - Fin\n";
 	
 	
 }
