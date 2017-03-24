@@ -6,12 +6,30 @@
 #include "Bitset.h"
 #include "NanoTimer.h"
 
+#include <random>
+
 using namespace std;
 random_device seed;
 mt19937 rng(seed());
 
 int main(int argc,char** argv)
 {
+	
+	/*
+	// Prueba de dist binominal
+	unsigned int n_test = 100;
+	float prob = 0.07;
+	unsigned int factor = 10;
+	binomial_distribution<unsigned int> binomial_dist(n_test, prob);
+	long double total = 0;
+	for(unsigned int i = 0; i < factor*n_test; ++i){
+		unsigned int num = binomial_dist(rng);
+		cout<<"test["<<i<<"]: "<<num<<"\n";
+		total += num;
+	}
+	total /= (factor*n_test);
+	cout<<"Media: "<<total<<" ("<<n_test<<", "<<prob<<")\n";
+	*/
 	
 	/*
 	// Prueba de correctitud de VirtualSequence

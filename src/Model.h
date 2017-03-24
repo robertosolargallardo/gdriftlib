@@ -7,6 +7,8 @@
 #include "VirtualSequence.h" 
 #include "NanoTimer.h" 
 
+#include <random>
+
 enum Model{WRIGHTFISHER=0};
 
 namespace model{
