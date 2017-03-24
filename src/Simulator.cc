@@ -13,6 +13,7 @@ void Simulator::run(void){
 	Individual::setParameters(_fsettings.get_child("individual"));
 	
    for(uint32_t t=start;;t++){
+//      cout<<"Simulator::run - Generation "<<t<<"\n";
       while(!this->_evlist->empty() && this->_evlist->top()->timestamp()==t){
          Event* e=this->_evlist->top();
          this->_evlist->pop();
@@ -134,6 +135,7 @@ void Simulator::run(void){
          delete e;
       }
 
+//      cout<<"Simulator::run - Preparing Model\n";
       Model m = Model(this->_fsettings.get_child("scenario").get<int>("model"));
       switch(m){
          case WRIGHTFISHER:{
@@ -168,6 +170,7 @@ void Simulator::run(void){
          }
       }
       this->_pool->release();
+//      cout<<"Simulator::run - Generation Finished\n";
    }
 }
 map<string,Sample*> Simulator::samples(void){

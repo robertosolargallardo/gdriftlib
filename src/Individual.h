@@ -4,6 +4,9 @@
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 
+#include <thread>
+#include <mutex>
+
 enum Ploidy{HAPLOID=1,DIPLOID=2,TRIPLOID=3,TETRAPLOID=4,PENTAPLOID=5,HEXAPLOID=6,HEPTAPLOID=7,OCTAPLOID=8};
 
 extern mt19937 rng;
@@ -11,6 +14,8 @@ extern mt19937 rng;
 class Individual{
 	private:
 		uint32_t _id;
+		
+		static mutex internal_mutex;
 		
 		// Reference to the genes (as VirtualSequences)
 		//  - To get the gen of a (ploidy, chr, gen_pos): gens + gens_ploidy*ploidy + gens_chr[chr] + gen_pos

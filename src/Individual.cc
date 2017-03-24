@@ -15,6 +15,7 @@ unsigned int Individual::gens_ploidy = 0;
 double *Individual::mut_rate = NULL;
 // Number of nucleotides per gene
 //unsigned int *Individual::gen_len;
+mutex Individual::internal_mutex;
 
 Individual::Individual(const uint32_t &_id, const boost::property_tree::ptree &_findividual){
 	this->_id=_id;
@@ -58,6 +59,9 @@ Individual::Individual(const Individual &_individual){
 }
 
 void Individual::setParameters(const boost::property_tree::ptree &findividual){
+	// RAII
+	lock_guard<mutex> lock(internal_mutex);
+	
 	// cout<<"Individual::setParameters - Inicio\n";
 	ploidy = Ploidy(findividual.get<uint32_t>("ploidy"));
 	n_chr = findividual.get_child("chromosomes").size();
