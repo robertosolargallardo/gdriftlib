@@ -18,7 +18,7 @@ int main(int argc,char** argv)
 //		cout<<"Main - Population p\n";
 //      Population* p=new Population(Ploidy(fpopulations.get<uint32_t>("ploidy")),population.second);
       Population* p=new Population(Ploidy(fpopulations.get<uint32_t>("ploidy")),population.second, fpopulations);
-		boost::property_tree::ptree findices=p->indices(1.0);
+		boost::property_tree::ptree findices=p->indices();
       stringstream ss;
       write_json(ss,findices);
       cout << ss.str() << endl;
@@ -27,7 +27,7 @@ int main(int argc,char** argv)
 //		cout<<"Main - Borrando p\n";
       delete p;
    }
-	boost::property_tree::ptree findices=all->indices(1.0);
+	boost::property_tree::ptree findices=all->indices();
    stringstream ss;
    write_json(ss,findices);
    cout << ss.str() << endl;

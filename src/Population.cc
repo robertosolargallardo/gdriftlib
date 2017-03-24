@@ -38,7 +38,7 @@ Population::Population(const Ploidy &_ploidy,const boost::property_tree::ptree &
    }
 //	cout<<"Population - Fin\n";
 }
-vector<Individual*> Population::individuals(void){
+vector<Individual*> Population::population(void){
 	return(this->_population);
 }
 Population::Population(const string &_name){
@@ -74,9 +74,9 @@ void Population::pop(void){
    this->_population.pop_back();
 }
 Population::~Population(void){
-   while(!this->_population.empty()){
-      delete this->_population.back();
-      this->_population.pop_back();
+   while(!this->empty()){
+      delete this->top();
+      this->pop();
    }
 }
 string Population::name(void){
@@ -93,7 +93,7 @@ vector<Population*> Population::split(const size_t &_n_populations){
    for(uint32_t i=0U;i<_n_populations;i++)
       populations[i]=new Population(size);
    
-   random_shuffle(this->_population.begin(),this->_population.end());
+	this->shuffle();
 
    while(!this->_population.empty()){
       populations[round_robin]->push(this->top());
@@ -104,26 +104,27 @@ vector<Population*> Population::split(const size_t &_n_populations){
    return(populations);
 }
 void Population::migration(Population* _population,const uint32_t &_size){
-   random_shuffle(this->_population.begin(),this->_population.end());
-
+	this->shuffle();
    for(uint32_t i=0U;i<_size;i++){
-      _population->push(this->_population.back());
-      this->_population.pop_back();
+      _population->push(this->top());
+      this->pop();
    }
 }
 void Population::decrease(const uint32_t &_size){
-   random_shuffle(this->_population.begin(),this->_population.end());
-
+	this->shuffle();
    for(uint32_t i=0U;i<_size;i++){
-      delete this->_population.back();
-      this->_population.pop_back();
+      delete this->top();
+      this->pop();
    }
 }
 void Population::increase(const uint32_t &_size){
    uniform_int_distribution<> uniform(0U,this->size()-1U);
 
    for(uint32_t i=0U;i<_size;i++)
-      this->_population.push_back(new Individual(*this->_population[uniform(rng)]));
+      this->push(new Individual(*this->_population[uniform(rng)]));
+}
+void Population::shuffle(void){
+   random_shuffle(this->_population.begin(),this->_population.end());
 }
 void Population::merge(Population* _population){
    while(!_population->empty()){

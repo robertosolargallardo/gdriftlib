@@ -10,41 +10,35 @@ void Simulator::run(void){
 
    uint32_t start=this->_evlist->top()->timestamp();
 
-	//_fsettings
-	
-	// Definir la especie
 	Individual::setParameters(_fsettings.get_child("individual"));
 	
    for(uint32_t t=start;;t++){
-//		cout<<"Simulator::run - Iteracion "<<t<<"\n";
       while(!this->_evlist->empty() && this->_evlist->top()->timestamp()==t){
          Event* e=this->_evlist->top();
          this->_evlist->pop();
 
-         boost::property_tree::ptree params=e->params();
+         boost::property_tree::ptree fparams=e->params();
             
          switch(e->type()){
             case CREATE:{
-//               cout<<"Simulator::run - CREATE\n";
             	
-               uint32_t size=params.get<uint32_t>("population.size");
-              tuple<Population*,Population*> target(new Population(params.get<string>("population.name"),size),new Population(params.get<string>("population.name"),size));
+               uint32_t size=fparams.get<uint32_t>("population.size");
+              tuple<Population*,Population*> target(new Population(fparams.get<string>("population.name"),size),new Population(fparams.get<string>("population.name"),size));
 
-               for(uint32_t id = 0U; id < params.get<uint32_t>("population.size"); id++){
+               for(uint32_t id = 0U; id < fparams.get<uint32_t>("population.size"); id++){
                   get<0>(target)->push(this->_pool->generate(id));
                   get<1>(target)->push(new Individual(id,this->_fsettings.get_child("individual")));
                }
-					this->_populations[params.get<string>("population.name")]=target;
+					this->_populations[fparams.get<string>("population.name")]=target;
       			
       			this->_pool->release();
                break;
             }
             case SPLIT:{
-//               cout<<"Simulator::run - SPLIT\n";
-               vector<Population*> srcs=get<0>(this->_populations[params.get<string>("source.population.name")])->split(params.get<size_t>("partitions"));
-               vector<Population*> dsts=get<1>(this->_populations[params.get<string>("source.population.name")])->split(params.get<size_t>("partitions"));
+               vector<Population*> srcs=get<0>(this->_populations[fparams.get<string>("source.population.name")])->split(fparams.get<size_t>("partitions"));
+               vector<Population*> dsts=get<1>(this->_populations[fparams.get<string>("source.population.name")])->split(fparams.get<size_t>("partitions"));
 
-               for(auto& destination : params.get_child("destination")){
+               for(auto& destination : fparams.get_child("destination")){
                   srcs.back()->name(destination.second.get<string>("population.name"));
                   dsts.back()->name(destination.second.get<string>("population.name"));
                   this->_populations[destination.second.get<string>("population.name")]=tuple<Population*,Population*>(srcs.back(),dsts.back());
@@ -52,43 +46,41 @@ void Simulator::run(void){
                   dsts.pop_back();
                }
 
-               delete get<0>(this->_populations[params.get<string>("source.population.name")]);
-               delete get<1>(this->_populations[params.get<string>("source.population.name")]);
-               this->_populations.erase(this->_populations.find(params.get<string>("source.population.name")));
+               delete get<0>(this->_populations[fparams.get<string>("source.population.name")]);
+               delete get<1>(this->_populations[fparams.get<string>("source.population.name")]);
+               this->_populations.erase(this->_populations.find(fparams.get<string>("source.population.name")));
    
                break;
             }
             case MIGRATION:{
-//               cout<<"Simulator::run - MIGRATION\n";
-               uint32_t size=uint32_t(ceil(double(get<0>(this->_populations[params.get<string>("source.population.name")])->size())*params.get<double>("source.population.percentage")));
+               uint32_t size=uint32_t(ceil(double(get<0>(this->_populations[fparams.get<string>("source.population.name")])->size())*fparams.get<double>("source.population.percentage")));
                tuple<Population*,Population*> target;
 
-               if(this->_populations.count(params.get<string>("destination.population.name"))==0)
-                  target=tuple<Population*,Population*>(new Population(params.get<string>("destination.population.name"),size),new Population(params.get<string>("destination.population.name"),size));
+               if(this->_populations.count(fparams.get<string>("destination.population.name"))==0)
+                  target=tuple<Population*,Population*>(new Population(fparams.get<string>("destination.population.name"),size),new Population(fparams.get<string>("destination.population.name"),size));
                else
-                  target=this->_populations[params.get<string>("destination.population.name")];
+                  target=this->_populations[fparams.get<string>("destination.population.name")];
 
-               get<0>(this->_populations[params.get<string>("source.population.name")])->migration(get<0>(target),size);
-               get<1>(this->_populations[params.get<string>("source.population.name")])->migration(get<1>(target),size);
+               get<0>(this->_populations[fparams.get<string>("source.population.name")])->migration(get<0>(target),size);
+               get<1>(this->_populations[fparams.get<string>("source.population.name")])->migration(get<1>(target),size);
 
-               this->_populations[params.get<string>("destination.population.name")]=target;
+               this->_populations[fparams.get<string>("destination.population.name")]=target;
 
                break;
             }
             case MERGE:{
-//               cout<<"Simulator::run - MERGE\n";
                uint32_t size=0U;
                tuple<Population*,Population*> target;
 
-               for(auto& source : params.get_child("source"))  
+               for(auto& source : fparams.get_child("source"))  
                   size+=(get<0>(this->_populations[source.second.get<string>("population.name")]))->size();
 
-               if(this->_populations.count(params.get<string>("destination.population.name"))==0)
-                  target=tuple<Population*,Population*>(new Population(params.get<string>("destination.population.name"),size),new Population(params.get<string>("destination.population.name"),size));
+               if(this->_populations.count(fparams.get<string>("destination.population.name"))==0)
+                  target=tuple<Population*,Population*>(new Population(fparams.get<string>("destination.population.name"),size),new Population(fparams.get<string>("destination.population.name"),size));
                else
-                  target=this->_populations[params.get<string>("destination.population.name")];
+                  target=this->_populations[fparams.get<string>("destination.population.name")];
 
-               for(auto& source : params.get_child("source")){
+               for(auto& source : fparams.get_child("source")){
                   get<0>(target)->merge(get<0>(this->_populations[source.second.get<string>("population.name")]));
                   get<1>(target)->merge(get<1>(this->_populations[source.second.get<string>("population.name")]));
 
@@ -97,35 +89,39 @@ void Simulator::run(void){
       
                   this->_populations.erase(this->_populations.find(source.second.get<string>("population.name")));
                }
-               this->_populations[params.get<string>("destination.population.name")]=target;
+               this->_populations[fparams.get<string>("destination.population.name")]=target;
                break;
             }
             case INCREMENT:{
-//               cout<<"Simulator::run - INCREMENT\n";
-               uint32_t size=uint32_t(ceil(double(get<0>(this->_populations[params.get<string>("source.population.name")])->size())*params.get<double>("source.population.percentage")));
-               get<0>(this->_populations[params.get<string>("source.population.name")])->increase(size);
+               uint32_t size=uint32_t(ceil(double(get<0>(this->_populations[fparams.get<string>("source.population.name")])->size())*fparams.get<double>("source.population.percentage")));
+               get<0>(this->_populations[fparams.get<string>("source.population.name")])->increase(size);
 
                for(uint32_t id=0;id<size;id++)
-                  get<1>(this->_populations[params.get<string>("source.population.name")])->push(new Individual(id,this->_fsettings.get_child("individual")));
+                  get<1>(this->_populations[fparams.get<string>("source.population.name")])->push(new Individual(id,this->_fsettings.get_child("individual")));
                break;
             }
             case DECREMENT:{
-//               cout<<"Simulator::run - DECREMENT\n";
-               if(params.get<double>("source.population.percentage")==1.0){
-                  delete get<0>(this->_populations[params.get<string>("source.population.name")]);
-                  delete get<1>(this->_populations[params.get<string>("source.population.name")]);
+               if(fparams.get<double>("source.population.percentage")==1.0){
+                  delete get<0>(this->_populations[fparams.get<string>("source.population.name")]);
+                  delete get<1>(this->_populations[fparams.get<string>("source.population.name")]);
 
-                  this->_populations.erase(this->_populations.find(params.get<string>("source.population.name")));
+                  this->_populations.erase(this->_populations.find(fparams.get<string>("source.population.name")));
                }
                else{
-                  uint32_t size=uint32_t(ceil(double(get<0>(this->_populations[params.get<string>("source.population.name")])->size())*params.get<double>("source.population.percentage")));
-                  get<0>(this->_populations[params.get<string>("source.population.name")])->decrease(size);
-                  get<1>(this->_populations[params.get<string>("source.population.name")])->decrease(size);
+                  uint32_t size=uint32_t(ceil(double(get<0>(this->_populations[fparams.get<string>("source.population.name")])->size())*fparams.get<double>("source.population.percentage")));
+                  get<0>(this->_populations[fparams.get<string>("source.population.name")])->decrease(size);
+                  get<1>(this->_populations[fparams.get<string>("source.population.name")])->decrease(size);
                }
                break;
             }
             case ENDSIM:{
-//               cout<<"Simulator::run - ENDSIM\n";
+					if(fparams.get_child_optional("sampling")){
+						uint32_t size=0U;
+						for(auto fsampling : fparams.get_child("sampling")){
+							size=uint32_t(ceil(double(get<0>(this->_populations[fsampling.second.get<string>("source.population.name")])->size())*SAMPLING_PERCENT));
+							this->_samples[fsampling.second.get<string>("name")]=new Sample(fsampling.second.get<string>("name"),get<0>(this->_populations[fsampling.second.get<string>("source.population.name")]),size);
+						}
+					}
                delete e;
                return;
             }
@@ -138,8 +134,6 @@ void Simulator::run(void){
          delete e;
       }
 
-//      this->_pool->decrease_all();
-//      cout<<"Simulator::run - Preparando Model::run\n";
       Model m = Model(this->_fsettings.get_child("scenario").get<int>("model"));
       switch(m){
          case WRIGHTFISHER:{
@@ -174,20 +168,26 @@ void Simulator::run(void){
          }
       }
       this->_pool->release();
-//      cout<<"Simulator::run - Fin\n";
    }
 }
-vector<Population*> Simulator::populations(void){
+map<string,Sample*> Simulator::samples(void){
+	return(this->_samples);
+}
+/*vector<Population*> Simulator::populations(void){
    std::vector<Population*> p;
    p.reserve(this->_populations.size());
    std::for_each(this->_populations.begin(),this->_populations.end(),[&p](const map<string,tuple<Population*,Population*>>::value_type& _p){p.push_back(get<0>(_p.second));});
    return(p);
-}
+}*/
 Simulator::~Simulator(void){
+   for(map<string,Sample*>::iterator i=this->_samples.begin();i!=this->_samples.end();i++)
+		delete i->second;
+
    for(map<string,tuple<Population*,Population*>>::iterator i=this->_populations.begin();i!=this->_populations.end();i++){
       delete get<0>(i->second);
       delete get<1>(i->second);
    }
+   this->_samples.clear();    
    this->_populations.clear();    
 
    delete this->_pool;

@@ -3,20 +3,24 @@
 #include <map>
 #include "EventList.h"
 #include "Population.h"
+#include "Sample.h"
 #include "Pool.h"
 #include "Model.h"
 using namespace std;
 
 class Simulator{
    private: map<string,tuple<Population*,Population*>> _populations;
+				map<string,Sample*> _samples;
+
             boost::property_tree::ptree _fsettings;
             Pool* _pool;
             EventList* _evlist;
+		
 
    public:  Simulator(const boost::property_tree::ptree&);
             ~Simulator(void);
          
-            vector<Population*> populations(void);
+				map<string,Sample*> samples(void);
             void run(void);
 };
 #endif

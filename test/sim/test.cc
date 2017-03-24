@@ -31,12 +31,20 @@ int main(int argc,char** argv)
    sim->run();
    cout<<"Test - Simulator->run Terminado en "<<timer.getMilisec()<<" ms\n";
 
-	/*for(auto p : sim->populations()){
-		boost::property_tree::ptree findices=p->indices(1.0);
+	Sample *all=new Sample("summary");
+	map<string,Sample*> samples=sim->samples();
+	for(map<string,Sample*>::iterator i=samples.begin();i!=samples.end();i++){
+		boost::property_tree::ptree findices=i->second->indices();
       stringstream ss;
       write_json(ss,findices);
       cout << ss.str() << endl;
-	}*/
+		all->merge(i->second);
+	}
+	boost::property_tree::ptree findices=all->indices();
+   stringstream ss;
+   write_json(ss,findices);
+   cout << ss.str() << endl;
+	delete all;
 
    delete sim;
    

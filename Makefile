@@ -4,7 +4,7 @@ TEST=test
 CXX=g++
 CXXFLAGS=-std=c++11 -Wall -g -ggdb -O3 
 
-OBJS=obj/NanoTimer.o obj/VirtualSequence.o obj/Bitset.o obj/Reference.o obj/Pool.o obj/Individual.o obj/Chromosome.o obj/Gene.o obj/Population.o obj/Event.o obj/EventList.o obj/Simulator.o obj/Model.o
+OBJS=obj/NanoTimer.o obj/VirtualSequence.o obj/Bitset.o obj/Reference.o obj/Pool.o obj/Individual.o obj/Chromosome.o obj/Gene.o obj/Population.o obj/Event.o obj/EventList.o obj/Simulator.o obj/Model.o obj/Sample.o obj/Statistics.o
 
 $(TARGET):$(OBJS)
 		ar rvs $(TARGET) $^
@@ -34,6 +34,10 @@ obj/EventList.o:src/EventList.cc src/EventList.h
 obj/Simulator.o:src/Simulator.cc src/Simulator.h
 					 $(CXX) -c $< -o $@ $(CXXFLAGS)
 obj/Model.o:src/Model.cc src/Model.h
+				$(CXX) -c $< -o $@ $(CXXFLAGS)
+obj/Sample.o:src/Sample.cc src/Sample.h
+				$(CXX) -c $< -o $@ $(CXXFLAGS)
+obj/Statistics.o:src/Statistics.cc src/Statistics.h
 				$(CXX) -c $< -o $@ $(CXXFLAGS)
 
 clean:
