@@ -165,9 +165,9 @@ bool VirtualSequence::verifyDecompression(){
 	
 	// Condicion de descompresion
 	// Las mutaciones se vuelcan en un nuevo arreglo de datos si son muchas
-	// Falta revisar esta condicion para que sea mas clara y precisa
+	// De momento desactivo esto mientras verificamos las condiciones
 //	cout<<"VirtualSequence::verifyDecompression - Mutaciones: "<<mutations.size()<<"\n";
-	if( mutations.size() >= size/2 ){
+	if( false && mutations.size() >= size/4 ){
 		// Si NO es dueño de datos, pedirlos antes de agrgar mutaciones
 		// Si ya tiene datos, bsata con agregar las mutaciones
 //		cout<<"VirtualSequence::verifyDecompression - Descomprimiendo secuencia por numero de mutaciones\n";
