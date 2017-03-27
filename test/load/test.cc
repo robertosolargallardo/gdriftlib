@@ -15,11 +15,9 @@ int main(int argc,char** argv)
 	read_json(argv[1], fpopulations);
 
 //	cout<<"Main - Creando Population all\n";
-//	Population* all = new Population("summary");
 	Sample* all = new Sample("summary");
 	for(auto& population : fpopulations.get_child("populations")){
 //		cout<<"Main - Population p\n";
-//		Population* p = new Population(Ploidy(fpopulations.get<uint32_t>("ploidy")), population.second, fpopulations);
 		Sample* p = new Sample(Ploidy(fpopulations.get<uint32_t>("ploidy")), population.second, fpopulations);
 		boost::property_tree::ptree findices = p->indices();
 		stringstream ss;

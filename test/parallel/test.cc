@@ -4,51 +4,94 @@
 #include "NanoTimer.h"
 
 using namespace std;
+
+// Soporte para extern rng
+// Esto debe ser reemplazado por una instancia de mt19937 en el thread
 random_device seed;
 mt19937 rng(seed());
-mt19937_64 rng64(seed());
+
+// Mutex global para controlar acceso a cout u otros objetos compartidos
+// Este mutex debiera pertenecer al Controller en el modelo real
+mutex global_mutex;
+
+void SimultionThread(unsigned int pid, const boost::property_tree::ptree &fsettings) {
+	
+	// Lock completo para una version secuencial de prueba
+//	lock_guard<mutex> lock(global_mutex);
+	
+	global_mutex.lock();
+	cout<<"SimultionThread["<<pid<<"] - Inicio\n";
+	global_mutex.unlock();
+	
+	NanoTimer timer;
+	Simulator sim(fsettings);
+	sim.run();
+	
+	global_mutex.lock();
+	cout<<"SimultionThread["<<pid<<"] - Simulator->run Terminado en "<<timer.getMilisec()<<" ms\n";
+	global_mutex.unlock();
+
+	Sample all("summary");
+	map<string, Sample*> samples = sim.samples();
+	for(map<string, Sample*>::iterator i = samples.begin(); i != samples.end(); ++i){
+		boost::property_tree::ptree findices = i->second->indices();
+		stringstream ss;
+		write_json(ss, findices);
+		
+		global_mutex.lock();
+//		cout << ss.str() << endl;
+		global_mutex.unlock();
+		
+		all.merge(i->second);
+	}
+	boost::property_tree::ptree findices = all.indices();
+	stringstream ss;
+	write_json(ss, findices);
+	
+	global_mutex.lock();
+//	cout << ss.str() << endl;
+	global_mutex.unlock();
+	
+}
 
 int main(int argc,char** argv)
 {
-   boost::property_tree::ptree fsettings;
-   read_json(argv[1],fsettings);
 
-   /*Population *population=new Population();
-   Individual *individual=new Individual(0U,fsettings.get_child("individual"));
-
-   population->push(individual);
-   population->push(new Individual(1U,fsettings.get_child("individual")));
-
-   population->clear();
-
-   delete population;*/
-   
-
-   cout<<"Test - Inicio (rng.max: "<<rng.max()<<", rng64.max: "<<rng64.max()<<")\n";
-	
-   NanoTimer timer;
-   Simulator *sim=new Simulator(fsettings);
-   sim->run();
-   cout<<"Test - Simulator->run Terminado en "<<timer.getMilisec()<<" ms\n";
-
-	Sample *all=new Sample("summary");
-	map<string,Sample*> samples=sim->samples();
-	for(map<string,Sample*>::iterator i=samples.begin();i!=samples.end();i++){
-		boost::property_tree::ptree findices=i->second->indices();
-      stringstream ss;
-      write_json(ss,findices);
-      cout << ss.str() << endl;
-		all->merge(i->second);
+	if(argc != 3){
+		cout<<"\nUsage: ./test json_file n_threads\n";
+		cout<<"\n";
+		return 0;
 	}
-	boost::property_tree::ptree findices=all->indices();
-   stringstream ss;
-   write_json(ss,findices);
-   cout << ss.str() << endl;
-	delete all;
 
-   delete sim;
-   
-	cout<<"Test - Fin (const_str: "<<VirtualSequence::count_str<<", const_int: "<<VirtualSequence::count_int<<", const_copy: "<<VirtualSequence::count_copy<<", const_mem: "<<VirtualSequence::count_mem<<", const_del: "<<VirtualSequence::count_del<<", const_del_mem: "<<VirtualSequence::count_del_mem<<", const_mut: "<<VirtualSequence::count_mut<<")\n";
+	boost::property_tree::ptree fsettings;
+	read_json(argv[1],fsettings);
+	unsigned int n_threads = atoi(argv[2]);
 	
-   return(0);
+	cout<<"Test - Inicio (Preparando "<<n_threads<<" threads)\n";
+	NanoTimer timer;
+	
+	vector<std::thread> threads_list;
+	for(unsigned int i = 0; i < n_threads; ++i){
+		threads_list.push_back( std::thread(SimultionThread, i, fsettings) );
+	}
+	for(unsigned int i = 0; i < n_threads; ++i){
+		threads_list[i].join();
+	}
+	
+	cout<<"Test - Fin ("<<timer.getMilisec()<<" ms, count_str: "<<VirtualSequence::count_str<<", count_copy: "<<VirtualSequence::count_copy<<", count_mem: "<<VirtualSequence::count_mem<<", count_del: "<<VirtualSequence::count_del<<", count_del_mem: "<<VirtualSequence::count_del_mem<<", count_mut: "<<VirtualSequence::count_mut<<")\n";
+	
+	return(0);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
