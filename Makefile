@@ -4,7 +4,7 @@ TEST=test
 CXX=g++
 CXXFLAGS=-std=c++11 -Wall -g -ggdb -O3 
 
-OBJS=obj/NanoTimer.o obj/VirtualSequence.o obj/Bitset.o obj/Reference.o obj/Pool.o obj/Individual.o obj/Chromosome.o obj/Gene.o obj/Population.o obj/Event.o obj/EventList.o obj/Simulator.o obj/Model.o obj/Sample.o obj/Statistics.o
+OBJS=obj/NanoTimer.o obj/VirtualSequence.o obj/Bitset.o obj/Reference.o obj/Pool.o obj/Individual.o obj/Population.o obj/Event.o obj/EventList.o obj/Simulator.o obj/Model.o obj/Sample.o obj/Statistics.o
 
 $(TARGET):$(OBJS)
 		ar rvs $(TARGET) $^
@@ -21,10 +21,6 @@ obj/Pool.o:src/Pool.cc src/Pool.h
 			  $(CXX) -c $< -o $@ $(CXXFLAGS)
 obj/Individual.o:src/Individual.cc src/Individual.h
 					  $(CXX) -c $< -o $@ $(CXXFLAGS)
-obj/Chromosome.o:src/Chromosome.cc src/Chromosome.h
-					  $(CXX) -c $< -o $@ $(CXXFLAGS)
-obj/Gene.o:src/Gene.cc src/Gene.h
-			  $(CXX) -c $< -o $@ $(CXXFLAGS)
 obj/Population.o:src/Population.cc src/Population.h
 					  $(CXX) -c $< -o $@ $(CXXFLAGS)
 obj/Event.o:src/Event.cc src/Event.h

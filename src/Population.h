@@ -7,7 +7,10 @@
 #include "Individual.h"
 #include "VirtualSequence.h"
 
-extern random_device seed;
+// De momento conservo rng externo
+// La idea es sacarlo cuando ya nadie lo use
+// El constructor referencia el externo si no recibe un objeto adecuado 
+// extern random_device seed;
 extern mt19937 rng;
 
 using namespace std;
@@ -15,13 +18,16 @@ using namespace std;
 class Population{
    protected:	vector<Individual*> _population;
             	string _name;
+            	mt19937 *rng_gen;
    
    public:  Population(void);
-            Population(const uint32_t&);
-            Population(const string&);
-            Population(const string&,const uint32_t&);
-            Population(const Ploidy&,const boost::property_tree::ptree&,const boost::property_tree::ptree&);
- 
+            Population(const uint32_t &_size);
+            Population(const string &_name);
+            Population(const string &_name,const uint32_t &_size);
+			Population(const Ploidy &_ploidy,const boost::property_tree::ptree &_fpopulation, const boost::property_tree::ptree &_fsettings);
+ 			
+ 			void setRng(mt19937 *_rng);
+ 			
             uint32_t size(void);
             string name(void);
             void name(const string&);

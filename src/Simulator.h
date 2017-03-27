@@ -10,7 +10,7 @@ using namespace std;
 
 class Simulator{
    private: map<string,tuple<Population*,Population*>> _populations;
-				map<string,Sample*> _samples;
+			map<string,Sample*> _samples;
 
             boost::property_tree::ptree _fsettings;
             Pool* _pool;
@@ -20,7 +20,7 @@ class Simulator{
    public:  Simulator(const boost::property_tree::ptree&);
             ~Simulator(void);
          
-				map<string,Sample*> samples(void);
+			map<string,Sample*> samples(void);
             void run(void);
 };
 #endif

@@ -59,7 +59,8 @@ Individual::Individual(const Individual &_individual){
 }
 
 void Individual::setParameters(const boost::property_tree::ptree &findividual){
-	// RAII
+	
+	// Protego este metodo para thread-safe
 	lock_guard<mutex> lock(internal_mutex);
 	
 	// cout<<"Individual::setParameters - Inicio\n";
@@ -97,7 +98,6 @@ void Individual::setParameters(const boost::property_tree::ptree &findividual){
 	}
 	
 	// cout<<"Individual::setParameters - Fin\n";
-	
 	
 }
 
