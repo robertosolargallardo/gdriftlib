@@ -1,12 +1,15 @@
 #ifndef _SAMPLE_H_
 #define _SAMPLE_H_
 #include "Population.h"
+
 #define SAMPLING_PERCENT 0.05
 
-class Sample:public Population{
+class Sample : public Population{
 	public:	Sample(void);
 				Sample(const string&);
 				Sample(const string&,Population*,const uint32_t&);
+				// Constructor de Population, para test/load/test.cc
+				Sample(const Ploidy &_ploidy,const boost::property_tree::ptree &_fpopulation, const boost::property_tree::ptree &_fsettings);
 				~Sample(void);
 
 				 /*indices*/

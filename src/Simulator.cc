@@ -1,21 +1,22 @@
 #include "Simulator.h"
 Simulator::Simulator(const boost::property_tree::ptree &_fsettings){
    this->_fsettings=_fsettings;
-   this->_pool=new Pool(_fsettings.get_child("individual"));
-   this->_evlist=new EventList(_fsettings.get_child("scenario"));
+   // Definition of the specie
+   Individual::setParameters(_fsettings.get_child("individual"));
+   // Preparing the pool and the EventList
+   this->_pool = new Pool(_fsettings.get_child("individual"));
+   this->_evlist = new EventList(_fsettings.get_child("scenario"));
 }
 void Simulator::run(void){
    if(this->_evlist->empty()) 
       return;
 
-   uint32_t start=this->_evlist->top()->timestamp();
-
-	Individual::setParameters(_fsettings.get_child("individual"));
+   uint32_t start = this->_evlist->top()->timestamp();
 	
    for(uint32_t t=start;;t++){
 //      cout<<"Simulator::run - Generation "<<t<<"\n";
       while(!this->_evlist->empty() && this->_evlist->top()->timestamp()==t){
-         Event* e=this->_evlist->top();
+         Event *e = this->_evlist->top();
          this->_evlist->pop();
 
          boost::property_tree::ptree fparams=e->params();
@@ -117,10 +118,10 @@ void Simulator::run(void){
             }
             case ENDSIM:{
 					if(fparams.get_child_optional("sampling")){
-						uint32_t size=0U;
+						uint32_t size = 0U;
 						for(auto fsampling : fparams.get_child("sampling")){
-							size=uint32_t(ceil(double(get<0>(this->_populations[fsampling.second.get<string>("source.population.name")])->size())*SAMPLING_PERCENT));
-							this->_samples[fsampling.second.get<string>("name")]=new Sample(fsampling.second.get<string>("name"),get<0>(this->_populations[fsampling.second.get<string>("source.population.name")]),size);
+							size = uint32_t(ceil(double(get<0>(this->_populations[fsampling.second.get<string>("source.population.name")])->size())*SAMPLING_PERCENT));
+							this->_samples[fsampling.second.get<string>("name")] = new Sample(fsampling.second.get<string>("name"),get<0>(this->_populations[fsampling.second.get<string>("source.population.name")]), size);
 						}
 					}
                delete e;
@@ -139,7 +140,7 @@ void Simulator::run(void){
       Model m = Model(this->_fsettings.get_child("scenario").get<int>("model"));
       switch(m){
          case WRIGHTFISHER:{
-            Ploidy p=Ploidy(this->_fsettings.get_child("individual").get<int>("ploidy"));
+            Ploidy p = Ploidy(this->_fsettings.get_child("individual").get<int>("ploidy"));
             switch(p){
                case HAPLOID:{
                   for(map<string,tuple<Population*,Population*>>::iterator i=this->_populations.begin();i!=this->_populations.end();i++){
