@@ -1,7 +1,7 @@
 TARGET=test
 SRC=test.cc
 LIBS=-L../../lib/
-INCLUDE=-I../../src/
+INCLUDE=-I../../include/
 CXX=g++
 CXXFLAGS=-std=c++11 -lgdrift++
 

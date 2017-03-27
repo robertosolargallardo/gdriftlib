@@ -74,6 +74,10 @@ class Sample : public Population{
                return(pair<double,double>(mean,variance));
             }
             double number_of_haplotypes(const vector<string> &_sequences){
+            	if(_sequences.size() <= 1){
+            		return 0.0;
+            	}
+            	
                map<string,double> haplotypes;
 
                for(auto& seq : _sequences) haplotypes[seq]=(haplotypes.count(seq))?haplotypes[seq]+1.0:1.0;
@@ -89,6 +93,9 @@ class Sample : public Population{
                return((N/(N-1.0))*(1.0-sum));
             }
             double number_of_haplotypes_seq(const vector<VirtualSequence*> &_sequences){
+            	if(_sequences.size() == 1){
+            		return 0.0;
+            	}
                map<string,double> haplotypes;
 
                // for(auto& seq : _sequences) haplotypes[seq]=(haplotypes.count(seq))?haplotypes[seq]+1.0:1.0;
@@ -112,7 +119,7 @@ class Sample : public Population{
                return((N/(N-1.0))*(1.0-sum));
             }
             double number_of_segregating_sites(const vector<string> &_sequences){
-               double segregating_sites=0.0;
+               double segregating_sites = 0.0;
    
                string ref=_sequences[0];
                for(size_t i=0;i<ref.length();i++){
@@ -126,7 +133,7 @@ class Sample : public Population{
                return(segregating_sites);
             }
             double number_of_segregating_sites_seq(const vector<VirtualSequence*> &_sequences){
-               double segregating_sites=0.0;
+               double segregating_sites = 0.0;
    
                VirtualSequence *ref=_sequences[0];
                for(size_t i=0;i<ref->length();i++){
@@ -140,6 +147,9 @@ class Sample : public Population{
                return(segregating_sites);
             }
             pair<double,double> pairwise_statistics(const vector<string> &_sequences){
+            	if(_sequences.size() <= 1){
+            		return pair<double, double>(0.0, 0.0);
+            	}
                vector<double> pairwise_differences;
                double mean=0.0;
    
@@ -154,7 +164,7 @@ class Sample : public Population{
                      mean+=diff;
                   }
                }
-               mean/=double(pairwise_differences.size());
+	           mean /= double(pairwise_differences.size());
    
                double variance=0.0;
                for(auto& diff : pairwise_differences)
@@ -166,6 +176,9 @@ class Sample : public Population{
                return(make_pair(mean,variance));
             }
             pair<double,double> pairwise_statistics_seq(const vector<VirtualSequence*> &_sequences){
+            	if(_sequences.size() <= 1){
+            		return pair<double, double>(0.0, 0.0);
+            	}
                vector<double> pairwise_differences;
                double mean = 0.0;
    
@@ -192,8 +205,12 @@ class Sample : public Population{
                return(make_pair(mean,variance));
             }
             double tajima_d_statistics(const double &_n,const double &_ss,const double &_mpd){
+            	if( _n <= 1 || _ss == 0 || _mpd <= 0){
+            		return 0.0;
+            	}
+            	
                double a1=0.0,a2=0.0;
-
+				
                for(size_t k=1;k<size_t(_n);k++){
                   a1+=1.0/double(k);
                   a2+=1.0/double(k*k);

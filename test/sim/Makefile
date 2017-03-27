@@ -1,9 +1,9 @@
 TARGET=test
 SRC=test.cc
 LIBS=-L../../lib/
-INCLUDE=-I../../src/
+INCLUDE=-I../../include/
 CXX=g++
-CXXFLAGS=-std=c++11 -lgdrift++ -g -ggdb
+CXXFLAGS=-std=c++11 -lgdrift++
 
 $(TARGET):$(SRC)
 			 $(CXX) $< -o $@ $(LIBS) $(INCLUDE) $(CXXFLAGS)
