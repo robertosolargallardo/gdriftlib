@@ -1,40 +1,39 @@
-#TARGET=test
+SRCDIR = src
+BINDIR = bin
+LIBDIR = obj
+DATADIR = data
+TYPE ?= -O3
 TARGET=lib/libgdrift++.a
-TEST=test
-CXX=g++
-CXXFLAGS=-std=c++11 -Wall -g -ggdb -O3 
 
-OBJS=obj/NanoTimer.o obj/VirtualSequence.o obj/Bitset.o obj/Reference.o obj/Pool.o obj/Individual.o obj/Population.o obj/Event.o obj/EventList.o obj/Simulator.o obj/Model.o obj/Sample.o obj/Statistics.o
+# CPPFLAGS = $(TYPE) -Wall -I./includes/ -L./lib/ -std=c++0x -lrt
+### Notar el -pthread para g++ 5.1 (no era necesario en el 4.6, bastaba con -std=c++0x)
+CPPFLAGS = $(TYPE) -Wall -I./include/ -L./obj/ -std=c++0x -lrt
 
-$(TARGET):$(OBJS)
-		ar rvs $(TARGET) $^
+CPP = g++
 
-obj/NanoTimer.o:src/NanoTimer.cc src/NanoTimer.h
-				 $(CXX) -c $< -o $@ $(CXXFLAGS)
-obj/VirtualSequence.o:src/VirtualSequence.cc src/VirtualSequence.h
-				 $(CXX) -c $< -o $@ $(CXXFLAGS)
-obj/Bitset.o:src/Bitset.cc src/Bitset.h
-				 $(CXX) -c $< -o $@ $(CXXFLAGS)
-obj/Reference.o:src/Reference.cc src/Reference.h
-					 $(CXX) -c $< -o $@ $(CXXFLAGS)
-obj/Pool.o:src/Pool.cc src/Pool.h
-			  $(CXX) -c $< -o $@ $(CXXFLAGS)
-obj/Individual.o:src/Individual.cc src/Individual.h
-					  $(CXX) -c $< -o $@ $(CXXFLAGS)
-obj/Population.o:src/Population.cc src/Population.h
-					  $(CXX) -c $< -o $@ $(CXXFLAGS)
-obj/Event.o:src/Event.cc src/Event.h
-				$(CXX) -c $< -o $@ $(CXXFLAGS)
-obj/EventList.o:src/EventList.cc src/EventList.h
-					 $(CXX) -c $< -o $@ $(CXXFLAGS)
-obj/Simulator.o:src/Simulator.cc src/Simulator.h
-					 $(CXX) -c $< -o $@ $(CXXFLAGS)
-obj/Model.o:src/Model.cc src/Model.h
-				$(CXX) -c $< -o $@ $(CXXFLAGS)
-obj/Sample.o:src/Sample.cc src/Sample.h
-				$(CXX) -c $< -o $@ $(CXXFLAGS)
-obj/Statistics.o:src/Statistics.cc src/Statistics.h
-				$(CXX) -c $< -o $@ $(CXXFLAGS)
+#CREATED_OBJECTS = obj/NanoTimer.o obj/VirtualSequence.o obj/Bitset.o obj/Reference.o obj/Pool.o obj/Individual.o obj/Population.o obj/Event.o obj/EventList.o obj/Simulator.o obj/Model.o obj/Sample.o obj/Statistics.o
 
+CREATED_OBJECTS = NanoTimer.o VirtualSequence.o Bitset.o Reference.o Pool.o Individual.o Population.o Event.o EventList.o Simulator.o Model.o Sample.o Statistics.o
+
+OBJECTS = $(CREATED_OBJECTS) 
+OBJECTS_LOC = $(OBJECTS:%.o=$(LIBDIR)/%.o)
+
+.PHONY: all clean
+
+$(TARGET): $(OBJECTS)
+		ar rvs $(TARGET) $(OBJECTS_LOC)
+		
+#all: 
+
+%.o: 
+	make -C src $@
+	
+#%: $(OBJECTS)
+#	$(CPP) $(OBJECTS_LOC) $(CPPFLAGS) -o $(SRCDIR)/$@.cpp
+	
+#%: obj/*.o
+#	ar rvs $(TARGET) $^
+	
 clean:
-		${RM} $(TARGET) $(OBJS)
+	rm -f obj/*.o $(TARGET)
+	
