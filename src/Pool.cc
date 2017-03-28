@@ -15,11 +15,11 @@ Pool::Pool(const boost::property_tree::ptree &_findividual){
 		}
 	}
 }
-Individual* Pool::generate(const uint32_t &_id){
+Individual* Pool::generate(const uint32_t &_id, Individual::Profile &profile){
 	// Crear idividuo vacio y escoger genes del pool
 //	cout<<"Pool::generate - Inicio (_id: "<<_id<<")\n";
 	
-	Individual *individual = new Individual(_id, this->_findividual);
+	Individual *individual = new Individual(_id, profile);
 	
 	//void setGene(unsigned int gen, unsigned int chr, unsigned int plo, VirtualSequence *new_gene);
 	for(unsigned int plo = 0; plo < individual->getPloidy(); ++plo){

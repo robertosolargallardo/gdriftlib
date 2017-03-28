@@ -20,7 +20,7 @@ class Pool{
    public:  Pool(const boost::property_tree::ptree&);
 
             void populate(const uint32_t&,const uint32_t&,const uint32_t&,const uint32_t&,const uint32_t&);
-            Individual* generate(const uint32_t&);
+            Individual* generate(const uint32_t &id, Individual::Profile &profile);
             void release(void);
             void decrease_all(void);
 //            Reference* push(const uint32_t&,const uint32_t&,Reference*);

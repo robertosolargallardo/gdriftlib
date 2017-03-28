@@ -8,13 +8,15 @@ Population::Population(void){
 Population::Population(const Ploidy &_ploidy,const boost::property_tree::ptree &_fpopulation, const boost::property_tree::ptree &_fsettings){
 //	cout<<"Population - Inicio\n";
 	
-	Individual::setParameters(_fsettings.get_child("individual"));
+//	Individual::setParameters(_fsettings.get_child("individual"));
+	profile = Individual::Profile(_fsettings.get_child("individual"));
 	
 	this->_name=_fpopulation.get<string>("name");
 	this->_population.reserve(_fpopulation.get_child("individuals").size());
 	
 	for(auto& findividual : _fpopulation.get_child("individuals")){
-		Individual* individual = new Individual(findividual.second.get<uint32_t>("id"), _ploidy, uint32_t(findividual.second.get_child("chromosomes").size()));
+//		Individual* individual = new Individual(findividual.second.get<uint32_t>("id"), _ploidy, uint32_t(findividual.second.get_child("chromosomes").size()));
+		Individual* individual = new Individual(findividual.second.get<uint32_t>("id"), profile);
 		for(auto& fchromosome : findividual.second.get_child("chromosomes")){
 			for(auto& fgene : fchromosome.second.get_child("genes")){
 				unsigned int pid = 0;

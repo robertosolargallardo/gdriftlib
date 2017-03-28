@@ -10,8 +10,10 @@ mt19937_64 rng64(seed());
 
 int main(int argc,char** argv)
 {
+   cout<<"Test - Inicio\n";
+   
    boost::property_tree::ptree fsettings;
-   read_json(argv[1],fsettings);
+   read_json(argv[1], fsettings);
 
    /*Population *population=new Population();
    Individual *individual=new Individual(0U,fsettings.get_child("individual"));
@@ -24,7 +26,6 @@ int main(int argc,char** argv)
    delete population;*/
    
 
-   cout<<"Test - Inicio (rng.max: "<<rng.max()<<", rng64.max: "<<rng64.max()<<")\n";
 	
    NanoTimer timer;
    Simulator *sim=new Simulator(fsettings);

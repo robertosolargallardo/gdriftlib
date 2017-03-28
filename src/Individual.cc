@@ -1,5 +1,6 @@
 #include "Individual.h"
 
+/*
 // Total of genes (effective total, considering chromosomes AND ploidy)
 unsigned int Individual::n_gens = 0;
 // All this numbers can be static if we are using a single specie
@@ -15,10 +16,12 @@ unsigned int Individual::gens_ploidy = 0;
 double *Individual::mut_rate = NULL;
 // Number of nucleotides per gene
 //unsigned int *Individual::gen_len;
-mutex Individual::internal_mutex;
+*/
 
+mutex Individual::internal_mutex;
+/*
 Individual::Individual(const uint32_t &_id, const boost::property_tree::ptree &_findividual){
-	this->_id=_id;
+	id = _id;
 	if(n_gens == 0){
 		gens = NULL;
 	}
@@ -31,7 +34,7 @@ Individual::Individual(const uint32_t &_id, const boost::property_tree::ptree &_
 	}
 }
 Individual::Individual(const uint32_t &_id, const Ploidy &_ploidy, const uint32_t &_n_chromosomes){
-	this->_id=_id;
+	id = _id;
 	if(n_gens == 0){
 		gens = NULL;
 	}
@@ -43,8 +46,18 @@ Individual::Individual(const uint32_t &_id, const Ploidy &_ploidy, const uint32_
 		}
 	}
 }
+*/
+
 Individual::Individual(const Individual &_individual){
-	this->_id=_individual._id;
+	id = _individual.id;
+	
+	n_gens = _individual.n_gens;
+	ploidy = _individual.ploidy;
+	n_chr = _individual.n_chr;
+	gens_ploidy = _individual.gens_ploidy;
+	gens_chr = new unsigned short[n_chr];
+	memcpy(gens_chr, _individual.gens_chr, n_chr*sizeof(short));
+	
 	if(n_gens == 0){
 		gens = NULL;
 	}
@@ -58,6 +71,34 @@ Individual::Individual(const Individual &_individual){
 	setParent((Individual*)(&_individual));
 }
 
+Individual::Individual(unsigned int _id, const Profile &_profile){
+	id = _id;
+	
+	n_gens = _profile.n_gens;
+	ploidy = _profile.ploidy;
+	n_chr = _profile.n_chr;
+	gens_ploidy = _profile.gens_ploidy;
+	gens_chr = new unsigned short[n_chr];
+	memcpy(gens_chr, _profile.gens_chr, n_chr*sizeof(short));
+	// Note that Profile stores the real number of genes per chromosome
+	// Individual needs the accumulated to accelerate its searches
+	for(unsigned int i = 1; i < n_chr; ++i){
+		gens_chr[i] += gens_chr[i-1];
+	}
+	
+	if(n_gens == 0){
+		gens = NULL;
+	}
+	else{
+//		cout<<"Individual - Reservando espacio para "<<n_gens<<" genes\n";
+		gens = new VirtualSequence*[n_gens];
+		for(unsigned int i = 0; i < n_gens; ++i){
+			gens[i] = NULL;
+		}
+	}
+}
+
+/*
 void Individual::setParameters(const boost::property_tree::ptree &findividual){
 	
 	// Protego este metodo para thread-safe
@@ -100,11 +141,12 @@ void Individual::setParameters(const boost::property_tree::ptree &findividual){
 	cout<<"Individual::setParameters - Fin\n";
 	
 }
+*/
 
-uint32_t Individual::id(void) const{
-	return(this->_id);
+uint32_t Individual::getId() const{
+	return id;
 }
-Individual::~Individual(void){
+Individual::~Individual(){
 	if(gens != NULL){
 		for(unsigned int i = 0; i < n_gens; ++i){
 			if(gens[i] != NULL){
@@ -118,7 +160,7 @@ Individual::~Individual(void){
 
 // Por que es necesario esto?
 // Creo que en nuevo modelo este metodo no es necesario
-void Individual::clear(void){
+void Individual::clear(){
 	if(gens != NULL){
 		for(unsigned int i = 0; i < n_gens; ++i){
 			if(gens[i] != NULL){

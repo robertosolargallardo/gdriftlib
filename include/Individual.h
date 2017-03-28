@@ -13,8 +13,7 @@ enum Ploidy{HAPLOID=1,DIPLOID=2,TRIPLOID=3,TETRAPLOID=4,PENTAPLOID=5,HEXAPLOID=6
 extern mt19937 rng;
 
 class Individual{
-	private:
-		uint32_t _id;
+	protected:
 		
 		static mutex internal_mutex;
 		
@@ -22,6 +21,7 @@ class Individual{
 		//  - To get the gen of a (ploidy, chr, gen_pos): gens + gens_ploidy*ploidy + gens_chr[chr] + gen_pos
 		VirtualSequence **gens;
 		
+		/*
 		// All this numbers can be static if we are using a single specie
 		// Total of genes (effective total, considering chromosomes AND ploidy)
 		static unsigned int n_gens;
@@ -37,15 +37,39 @@ class Individual{
 		static double *mut_rate;
 		// Number of nucleotides per gene
 //		static unsigned int *gen_len;
+		*/
+		
+		unsigned int id;
+		// Non static version (with smaller variables)
+		// Total of genes (effective total, considering chromosomes AND ploidy)
+		unsigned int n_gens;
+		// Number of chromosomes sets
+		unsigned char ploidy;
+		// Number of chromosomes per set
+		unsigned char n_chr;
+		// Number of genes per chromosome (array, accumulated)
+		unsigned short *gens_chr;
+		// Number of genes per ploidy (the sum of the above)
+		unsigned int gens_ploidy;
+		
+		// Mutation rate per gene
+		// This should not be in individual, but in Model or Population (as all data related to the mutation model)
+		double *mut_rate;
+		// Number of nucleotides per gene
+//		static unsigned int *gen_len;
 		
 	public:
-		Individual(const uint32_t&,const boost::property_tree::ptree&);
-		Individual(const uint32_t&,const Ploidy&,const uint32_t&);
+		// Forward declaration of Individual::Profile
+		class Profile;
+//		Individual(const uint32_t&,const boost::property_tree::ptree&);
+//		Individual(const uint32_t&,const Ploidy&,const uint32_t&);
+		Individual();
+		Individual(unsigned int _id, const Profile &_profile);
 		Individual(const Individual&);
-		uint32_t id(void) const;
-		uint32_t n_chromosomes(void) const;
-		~Individual(void);
-		void clear(void);
+		uint32_t getId() const;
+		uint32_t n_chromosomes() const;
+		~Individual();
+		void clear();
 		
 		// Metodos de acceso a nuevos miembros de clase
 		
@@ -103,6 +127,10 @@ class Individual{
 		// Returns the number of chromosome
 		inline unsigned int getChromosomes(){
 			return n_chr;
+		}
+		
+		inline unsigned int getGensPloidy(){
+			return gens_ploidy;
 		}
 		
 		// Returns the number of genes of a chromosome
@@ -235,7 +263,78 @@ class Individual{
 			
 		}
 		
-		static void setParameters(const boost::property_tree::ptree &findividual);
+//		static void setParameters(const boost::property_tree::ptree &findividual);
+	
+	// Simple class to store global information related to the individuals of the population
+	// This includes number of chromosomes, genes, mutation, etc
+	class Profile{
+	public:
+		// Total of genes (effective total, considering chromosomes AND ploidy)
+		unsigned int n_gens;
+		// Number of chromosomes sets
+		unsigned char ploidy;
+		// Number of chromosomes per set
+		unsigned char n_chr;
+		// Number of genes per ploidy (the sum of the above)
+		unsigned int gens_ploidy;
+		// Number of genes per chromosome (should they be the same across chromosome sets?, it is for now)
+		unsigned short *gens_chr;
+		// Mutation rate per gene
+		double *mut_rate;
+		Profile(){
+			n_gens = 0;
+			ploidy = 0;
+			n_chr = 0;
+			gens_ploidy = 0;
+			gens_chr = NULL;
+			mut_rate = NULL;
+		}
+		Profile(const boost::property_tree::ptree &findividual){
+			cout<<"Profile - Inicio\n";
+			ploidy = (unsigned char)(findividual.get<uint32_t>("ploidy"));
+			n_chr = (unsigned char)(findividual.get_child("chromosomes").size());
+			cout<<"Profile - Guardando "<<n_chr<<" chromosomas para Ploidy "<<ploidy<<"\n";
+			gens_chr = new unsigned short[n_chr];
+	
+			unsigned int total_gens = 0;
+			uint32_t cid = 0;
+			for(auto fchromosome : findividual.get_child("chromosomes")){
+				gens_chr[cid] = (unsigned short)(fchromosome.second.get_child("genes").size());
+				total_gens += gens_chr[cid];
+				++cid;
+			}
+			gens_ploidy = total_gens;
+			n_gens = gens_ploidy * (unsigned int)ploidy;
+			cout<<"Profile - gens_ploidy: "<<gens_ploidy<<", n_gens: "<<n_gens<<"\n";
+			mut_rate = new double[total_gens];
+	
+			total_gens = 0;
+			for(auto fchromosome : findividual.get_child("chromosomes")){
+				cid = fchromosome.second.get<uint32_t>("id");
+				for(auto fgene : fchromosome.second.get_child("genes")){
+					mut_rate[total_gens] = fgene.second.get<double>("mutation.rate");
+					cout<<"Profile - mut_rate["<<total_gens<<"]: "<<mut_rate[total_gens]<<" (chr "<<cid<<")\n";
+					++total_gens;
+				}
+			}
+		
+			cout<<"Profile - Fin\n";
+		}
+		~Profile(){
+			n_gens = 0;
+			ploidy = 0;
+			n_chr = 0;
+			gens_ploidy = 0;
+			if(gens_chr != NULL){
+				delete [] gens_chr;
+				gens_chr = NULL;
+			}
+			if(mut_rate != NULL){
+				delete [] mut_rate;
+				mut_rate = NULL;
+			}
+		}
+	};
 		
 };
 

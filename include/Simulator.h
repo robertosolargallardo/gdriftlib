@@ -1,11 +1,14 @@
 #ifndef _SIMULATOR_H_
 #define _SIMULATOR_H_
 #include <map>
+
 #include "EventList.h"
 #include "Population.h"
 #include "Sample.h"
 #include "Pool.h"
 #include "Model.h"
+#include "Individual.h"
+
 using namespace std;
 
 class Simulator{
@@ -15,6 +18,7 @@ class Simulator{
             boost::property_tree::ptree _fsettings;
             Pool* _pool;
             EventList* _evlist;
+            Individual::Profile profile;
 		
 
    public:  Simulator(const boost::property_tree::ptree&);
