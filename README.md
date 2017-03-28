@@ -10,4 +10,5 @@ mkdir libgdrift/build
 cd libgdrift/build
 cmake ..
 sudo make install
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:.:/usr/local/lib
 ```
