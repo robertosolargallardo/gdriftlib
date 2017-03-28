@@ -9,6 +9,7 @@ git clone https://github.com/robertosolargallardo/libgdrift.git
 mkdir libgdrift/build
 cd libgdrift/build
 cmake ..
+make
 sudo make install
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:.:/usr/local/lib
 ```
