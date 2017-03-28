@@ -4,9 +4,8 @@ Build
 -----
 
 ```bash
-git clone --recursive https://github.com/corvusoft/restbed.git
-mkdir restbed/build
-cd restbed/build
-cmake [-DBUILD_TESTS=YES] [-DBUILD_EXAMPLES=YES] [-DBUILD_SSL=NO] [-DBUILD_SHARED=YES] [-DCMAKE_INSTALL_PREFIX=/output-directory] ..
-make [-j CPU_CORES+1] install
-make test
+git clone https://github.com/robertosolargallardo/libgdrift.git
+mkdir libgdrift/build
+cd libgdrift/build
+cmake ..
+sudo make install
