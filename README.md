@@ -1,0 +1,1 @@
+TheLibgdriftsimulation  kernel  is  a  library  developedto  simulate  forward-in-time  population  genetics  based  on  theWright-Fisher  model.Libgdriftprovides  a  set  of  basicoperations  (events)  that  may  be  combined  in  order  to  modeland   simulate   complex   demographics   scenarios
