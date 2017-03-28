@@ -48,16 +48,24 @@ Individual::Individual(const uint32_t &_id, const Ploidy &_ploidy, const uint32_
 }
 */
 
+Individual::Individual(){
+	id = 0;
+	n_gens = 0;
+	ploidy = 0;
+	n_chr = 0;
+	gens_ploidy = 0;
+	gens_chr = NULL;
+	gens = NULL;
+}
+
 Individual::Individual(const Individual &_individual){
 	id = _individual.id;
-	
 	n_gens = _individual.n_gens;
 	ploidy = _individual.ploidy;
 	n_chr = _individual.n_chr;
 	gens_ploidy = _individual.gens_ploidy;
 	gens_chr = new unsigned short[n_chr];
 	memcpy(gens_chr, _individual.gens_chr, n_chr*sizeof(short));
-	
 	if(n_gens == 0){
 		gens = NULL;
 	}
@@ -100,6 +108,21 @@ Individual::Individual(unsigned int _id, const Profile &_profile){
 		}
 	}
 //	cout<<"Individual - Fin\n";
+}
+Individual::~Individual(){
+	if(gens != NULL){
+		for(unsigned int i = 0; i < n_gens; ++i){
+			if(gens[i] != NULL){
+				gens[i]->decrease();
+			}
+		}
+		delete [] gens;
+	}
+	gens = NULL;
+	if(gens_chr != NULL){
+		delete [] gens_chr;
+		gens_chr = NULL;
+	}
 }
 
 /*
@@ -149,17 +172,6 @@ void Individual::setParameters(const boost::property_tree::ptree &findividual){
 
 uint32_t Individual::getId() const{
 	return id;
-}
-Individual::~Individual(){
-	if(gens != NULL){
-		for(unsigned int i = 0; i < n_gens; ++i){
-			if(gens[i] != NULL){
-				gens[i]->decrease();
-			}
-		}
-		delete [] gens;
-	}
-	gens = NULL;
 }
 
 // Por que es necesario esto?

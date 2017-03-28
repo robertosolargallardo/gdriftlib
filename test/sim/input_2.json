@@ -1,0 +1,73 @@
+{
+    "id": "20000000",
+    "run": "63",
+    "batch": "0",
+    "max-number-of-simulations": "20000",
+    "individual":
+    {
+        "ploidy": "1",
+        "chromosomes":
+        [
+            {
+                "id": "0",
+                "genes":
+                [
+                    {
+                        "id": "0",
+                        "type": "0",
+                        "nucleotides": "10000",
+                        "number-of-segregating-sites": "6",
+                        "number-of-alleles": "4096",
+                        "mutation":
+                        {
+                            "model": "0",
+                            "rate": "0.0001"
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+    "scenario":
+    {
+        "id": "1",
+        "model": "0",
+        "events":
+        [
+            {
+                "id": "0",
+                "type": "create",
+                "params":
+                {
+                    "population":
+                    {
+                        "name": "p0",
+                        "size": "100000"
+                    }
+                },
+                "timestamp": "0"
+            },
+            {
+                "id": "3",
+                "type": "endsim",
+                "params":
+                {
+                    "sampling":
+                    [
+                        {
+                            "name": "sample1",
+                            "source":
+                            {
+                                "population":
+                                {
+                                    "name": "p0"
+                                }
+                            }
+                        }
+                    ]
+                },
+                "timestamp": "100"
+            }
+        ]
+    }
+}
