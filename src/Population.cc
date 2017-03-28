@@ -5,18 +5,18 @@ Population::Population(void){
 	//Soporte para extern rng
 	rng_gen = &rng;
 }
-Population::Population(const Ploidy &_ploidy,const boost::property_tree::ptree &_fpopulation, const boost::property_tree::ptree &_fsettings){
+Population::Population(const Ploidy &_ploidy, const boost::property_tree::ptree &_fpopulation, const boost::property_tree::ptree &_fsettings){
 //	cout<<"Population - Inicio\n";
 	
 //	Individual::setParameters(_fsettings.get_child("individual"));
-	profile = Individual::Profile(_fsettings.get_child("individual"));
+	profile = new Individual::Profile(_fsettings.get_child("individual"));
 	
 	this->_name=_fpopulation.get<string>("name");
 	this->_population.reserve(_fpopulation.get_child("individuals").size());
 	
 	for(auto& findividual : _fpopulation.get_child("individuals")){
 //		Individual* individual = new Individual(findividual.second.get<uint32_t>("id"), _ploidy, uint32_t(findividual.second.get_child("chromosomes").size()));
-		Individual* individual = new Individual(findividual.second.get<uint32_t>("id"), profile);
+		Individual* individual = new Individual(findividual.second.get<uint32_t>("id"), *profile);
 		for(auto& fchromosome : findividual.second.get_child("chromosomes")){
 			for(auto& fgene : fchromosome.second.get_child("genes")){
 				unsigned int pid = 0;
@@ -38,17 +38,20 @@ Population::Population(const string &_name){
 	this->_name=_name;
 	//Soporte para extern rng
 	rng_gen = &rng;
+	profile = NULL;
 }
 Population::Population(const string &_name,const uint32_t &_size){
 	this->_name=_name;
 	this->_population.reserve(_size);
 	//Soporte para extern rng
 	rng_gen = &rng;
+	profile = NULL;
 }
 Population::Population(const uint32_t &_size){
 	this->_population.reserve(_size);
 	//Soporte para extern rng
 	rng_gen = &rng;
+	profile = NULL;
 }
 
 vector<Individual*> Population::population(void){
@@ -80,6 +83,10 @@ Population::~Population(void){
 	while(!this->empty()){
 		delete this->top();
 		this->pop();
+	}
+	if(profile != NULL){
+		delete profile;
+		profile = NULL;
 	}
 }
 string Population::name(void){

@@ -72,16 +72,19 @@ Individual::Individual(const Individual &_individual){
 }
 
 Individual::Individual(unsigned int _id, const Profile &_profile){
+//	cout<<"Individual - Inicio (creando individuo "<<_id<<")\n";
 	id = _id;
-	
 	n_gens = _profile.n_gens;
 	ploidy = _profile.ploidy;
 	n_chr = _profile.n_chr;
 	gens_ploidy = _profile.gens_ploidy;
+//	cout<<"Individual - n_gens: "<<n_gens<<", ploidy: "<<(unsigned int)ploidy<<", n_chr: "<<(unsigned int)n_chr<<", gens_ploidy: "<<gens_ploidy<<"\n";
 	gens_chr = new unsigned short[n_chr];
+//	cout<<"Individual - memcpy...\n";
 	memcpy(gens_chr, _profile.gens_chr, n_chr*sizeof(short));
 	// Note that Profile stores the real number of genes per chromosome
 	// Individual needs the accumulated to accelerate its searches
+//	cout<<"Individual - acumulando...\n";
 	for(unsigned int i = 1; i < n_chr; ++i){
 		gens_chr[i] += gens_chr[i-1];
 	}
@@ -96,6 +99,7 @@ Individual::Individual(unsigned int _id, const Profile &_profile){
 			gens[i] = NULL;
 		}
 	}
+//	cout<<"Individual - Fin\n";
 }
 
 /*

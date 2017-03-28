@@ -3,7 +3,7 @@
 namespace model{
 	
 	template<>
-	void run<WRIGHTFISHER,HAPLOID>(Population* &_src, Population* &_dst, Pool* &_pool){
+	void run<WRIGHTFISHER,HAPLOID>(Population* &_src, Population* &_dst, Pool* &_pool, Individual::Profile *profile){
 
 //		cout<<"Model::run (HAPLOID) - Iterando por "<<_dst->size()<<" individuos ("<<_src->at(0)->getChromosomes()<<" chromosomes, "<<_src->at(0)->getGenes(0)<<" genes in ch0)\n";
 		NanoTimer timer;
@@ -18,7 +18,7 @@ namespace model{
 		// Para cada mutacion, decido al azar una posicion en la posicion completa (es decir, en largo_gen x n_individuos)
 		// Luego aplico la mutacion normalmente en la referencia del gen del individuo escogido
 		
-		Individual *ind = _src->at(0);
+//		Individual *ind = _src->at(0);
 		// Padre elegido para el individuo de _dst
 		Individual *parent = NULL;
 		// Secuencia del gen que se modifica
@@ -34,13 +34,15 @@ namespace model{
 		}
 //		cout<<"Model::run - Padres asignados en "<<timer.getMilisec()<<" ms\n";
 		
-		for(unsigned int chrid = 0; chrid < ind->getChromosomes(); ++chrid){
-			for(unsigned int genid = 0; genid < ind->getGenes(chrid); ++genid){
+		for(unsigned int chrid = 0; chrid < profile->getChromosomes(); ++chrid){
+			for(unsigned int genid = 0; genid < profile->getGenes(chrid); ++genid){
 //				double rate = gen->mutation_rate();
 //				cout<<"Model::run - Iniciando mutacion de chr "<<chrid<<", gen "<<genid<<"\n";
-				double rate = ind->mutationRate(genid, chrid);
+//				double rate = ind->mutationRate(genid, chrid);
+				double rate = profile->mutationRate(genid, chrid);
 //				cout<<"Model::run - rate: "<<rate<<"\n";
-				unsigned int length = ind->getGene(genid, chrid, 0)->length();
+//				unsigned int length = ind->getGene(genid, chrid, 0)->length();
+				unsigned int length = profile->geneLength(genid, chrid);
 //				cout<<"Model::run - length: "<<length<<"\n";
 				// Calcular el total de mutaciones que se realizaran para este gen en TODA la poblacion
 				// Notar que se puede hacer algo mas sofisticado aqui
@@ -75,7 +77,7 @@ namespace model{
 		
 	}// Fin run
 	template<>
-	void run<WRIGHTFISHER,DIPLOID>(Population* &_src, Population* &_dst, Pool* &_pool){
+	void run<WRIGHTFISHER,DIPLOID>(Population* &_src, Population* &_dst, Pool* &_pool, Individual::Profile *profile){
 	
 //		cout<<"Model::run (DIPLOID) - Iterando por "<<_dst->size()<<" individuos ("<<_src->at(0)->getChromosomes()<<" chromosomes, "<<_src->at(0)->getGenes(0)<<" genes in ch0)\n";
 		NanoTimer timer;
@@ -84,7 +86,7 @@ namespace model{
 		uniform_int_distribution<> src_dist(0, _src->size() - 1);
 		uniform_int_distribution<> dst_dist(0, _dst->size() - 1);
 		
-		Individual *ind = _src->at(0);
+//		Individual *ind = _src->at(0);
 		// Padres elegidos para el individuo de _dst
 		Individual *parent1 = NULL;
 		Individual *parent2 = NULL;
@@ -99,14 +101,15 @@ namespace model{
 //		cout<<"Model::run - Padres asignados en "<<timer.getMilisec()<<" ms\n";
 		
 		// Mutaciones
-		for(unsigned int plo = 0; plo < ind->getPloidy(); ++plo){
-			for(unsigned int chrid = 0; chrid < ind->getChromosomes(); ++chrid){
-				for(unsigned int genid = 0; genid < ind->getGenes(chrid); ++genid){
+		for(unsigned int plo = 0; plo < profile->getPloidy(); ++plo){
+			for(unsigned int chrid = 0; chrid < profile->getChromosomes(); ++chrid){
+				for(unsigned int genid = 0; genid < profile->getGenes(chrid); ++genid){
 //					double rate = gen->mutation_rate();
 //					cout<<"Model::run - Iniciando mutacion de chr "<<chrid<<", gen "<<genid<<", plo: "<<plo<<"\n";
-					double rate = ind->mutationRate(genid, chrid);
+					double rate = profile->mutationRate(genid, chrid);
 //					cout<<"Model::run - rate: "<<rate<<"\n";
-					unsigned int length = ind->getGene(genid, chrid, plo)->length();
+//					unsigned int length = ind->getGene(genid, chrid, plo)->length();
+					unsigned int length = profile->geneLength(genid, chrid);
 //					cout<<"Model::run - length: "<<length<<"\n";
 					// Calcular el total de mutaciones que se realizaran para este gen en TODA la poblacion
 					// Notar que se puede hacer algo mas sofisticado aqui

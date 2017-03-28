@@ -13,6 +13,6 @@ enum Model{WRIGHTFISHER=0};
 
 namespace model{
    template<Model M,Ploidy P>
-   void run(Population* &_src,Population* &_dst,Pool* &_pool);
+   void run(Population* &_src,Population* &_dst,Pool* &_pool, Individual::Profile *profile);
 }
 #endif

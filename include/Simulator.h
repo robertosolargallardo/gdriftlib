@@ -18,7 +18,7 @@ class Simulator{
             boost::property_tree::ptree _fsettings;
             Pool* _pool;
             EventList* _evlist;
-            Individual::Profile profile;
+            Individual::Profile *profile;
 		
 
    public:  Simulator(const boost::property_tree::ptree&);

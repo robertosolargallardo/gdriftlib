@@ -54,7 +54,7 @@ class Individual{
 		
 		// Mutation rate per gene
 		// This should not be in individual, but in Model or Population (as all data related to the mutation model)
-		double *mut_rate;
+//		double *mut_rate;
 		// Number of nucleotides per gene
 //		static unsigned int *gen_len;
 		
@@ -153,16 +153,16 @@ class Individual{
 		}
 		
 		// Returns the mutarion rate of a gene, of a chromosome
-		inline double mutationRate(unsigned int gen, unsigned int chr){
-			unsigned int pos = genePosition(gen, chr, 0);
-			return mut_rate[pos];
-		}
+//		inline double mutationRate(unsigned int gen, unsigned int chr){
+//			unsigned int pos = genePosition(gen, chr, 0);
+//			return mut_rate[pos];
+//		}
 		
 		// Returns the mutarion rate of a gene in absolute position
 		// Note that the rates repeat themselves for different ploidy sets (so we take % gens_ploidy)
-		inline double mutationRate(unsigned int gen){
-			return mut_rate[ (gen % gens_ploidy) ];
-		}
+//		inline double mutationRate(unsigned int gen){
+//			return mut_rate[ (gen % gens_ploidy) ];
+//		}
 		
 //		// Returns the number of nucleotides of a gene, of a chromosome
 //		inline static unsigned int geneLength(unsigned int gen, unsigned int chr){
@@ -280,7 +280,9 @@ class Individual{
 		// Number of genes per chromosome (should they be the same across chromosome sets?, it is for now)
 		unsigned short *gens_chr;
 		// Mutation rate per gene
-		double *mut_rate;
+//		double *mut_rate;
+		double **mut_rate;
+		unsigned int **gen_len;
 		Profile(){
 			n_gens = 0;
 			ploidy = 0;
@@ -288,16 +290,18 @@ class Individual{
 			gens_ploidy = 0;
 			gens_chr = NULL;
 			mut_rate = NULL;
+			gen_len = NULL;
 		}
 		Profile(const boost::property_tree::ptree &findividual){
 			cout<<"Profile - Inicio\n";
 			ploidy = (unsigned char)(findividual.get<uint32_t>("ploidy"));
 			n_chr = (unsigned char)(findividual.get_child("chromosomes").size());
-			cout<<"Profile - Guardando "<<n_chr<<" chromosomas para Ploidy "<<ploidy<<"\n";
+			cout<<"Profile - Guardando "<<(unsigned int)n_chr<<" chromosomas para Ploidy "<<(unsigned int)ploidy<<"\n";
 			gens_chr = new unsigned short[n_chr];
 	
 			unsigned int total_gens = 0;
-			uint32_t cid = 0;
+			unsigned int cid = 0;
+			unsigned int gid = 0;
 			for(auto fchromosome : findividual.get_child("chromosomes")){
 				gens_chr[cid] = (unsigned short)(fchromosome.second.get_child("genes").size());
 				total_gens += gens_chr[cid];
@@ -306,34 +310,93 @@ class Individual{
 			gens_ploidy = total_gens;
 			n_gens = gens_ploidy * (unsigned int)ploidy;
 			cout<<"Profile - gens_ploidy: "<<gens_ploidy<<", n_gens: "<<n_gens<<"\n";
-			mut_rate = new double[total_gens];
+//			mut_rate = new double[total_gens];
+			mut_rate = new double*[n_chr];
+			gen_len = new unsigned int*[n_chr];
+			for(unsigned int i = 0; i < n_chr; ++i){
+				mut_rate[i] = new double[gens_chr[i]];
+				gen_len[i] = new unsigned int[gens_chr[i]];
+			}
 	
 			total_gens = 0;
+			cid = 0;
 			for(auto fchromosome : findividual.get_child("chromosomes")){
-				cid = fchromosome.second.get<uint32_t>("id");
+				gid = 0;
 				for(auto fgene : fchromosome.second.get_child("genes")){
-					mut_rate[total_gens] = fgene.second.get<double>("mutation.rate");
-					cout<<"Profile - mut_rate["<<total_gens<<"]: "<<mut_rate[total_gens]<<" (chr "<<cid<<")\n";
-					++total_gens;
+					mut_rate[cid][gid] = fgene.second.get<double>("mutation.rate");
+					gen_len[cid][gid] = fgene.second.get<double>("nucleotides");
+					cout<<"Profile - mut_rate["<<cid<<"]["<<gid<<"]: "<<mut_rate[cid][gid]<<"\n";
+					++gid;
 				}
+				++cid;
 			}
 		
 			cout<<"Profile - Fin\n";
 		}
 		~Profile(){
-			n_gens = 0;
-			ploidy = 0;
-			n_chr = 0;
-			gens_ploidy = 0;
 			if(gens_chr != NULL){
 				delete [] gens_chr;
 				gens_chr = NULL;
 			}
 			if(mut_rate != NULL){
+				for(unsigned int i = 0; i < n_chr; ++i){
+					if(mut_rate[i] != NULL){
+						delete [] mut_rate[i];
+					}
+				}
 				delete [] mut_rate;
 				mut_rate = NULL;
 			}
+			if(gen_len != NULL){
+				for(unsigned int i = 0; i < n_chr; ++i){
+					if(gen_len[i] != NULL){
+						delete [] gen_len[i];
+					}
+				}
+				delete [] gen_len;
+				gen_len = NULL;
+			}
+			n_gens = 0;
+			ploidy = 0;
+			n_chr = 0;
+			gens_ploidy = 0;
 		}
+		
+		// Returns the length of a gene, of a chromosome
+		inline unsigned int geneLength(unsigned int gen, unsigned int chr){
+			if(chr >= n_chr || gen >= gens_chr[chr]){
+				return 0.0;
+			}
+			return gen_len[chr][gen];
+		}
+		
+		// Returns the mutarion rate of a gene, of a chromosome
+		inline double mutationRate(unsigned int gen, unsigned int chr){
+			if(chr >= n_chr || gen >= gens_chr[chr]){
+				return 0.0;
+			}
+			return mut_rate[chr][gen];
+		}
+		
+		inline unsigned int getPloidy(){
+			return ploidy;
+		}
+		
+		// Returns the number of chromosome
+		inline unsigned int getChromosomes(){
+			return n_chr;
+		}
+		
+		// Returns the number of genes of a chromosome
+		inline unsigned int getGenes(unsigned int chr){
+			if(chr >= n_chr){
+//				cerr<<"Individual::Profile::getGene - Error, chr "<<chr<<" invalido\n";
+				return 0;
+			}
+			return gens_chr[chr];
+		}
+		
+
 	};
 		
 };

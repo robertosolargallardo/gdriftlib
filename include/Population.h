@@ -21,7 +21,7 @@ class Population{
 		vector<Individual*> _population;
 		string _name;
 		mt19937 *rng_gen;
-		Individual::Profile profile;
+		Individual::Profile *profile;
    
    public: 
 		Population(void);
@@ -52,5 +52,9 @@ class Population{
         void merge(Population*);
 
         virtual ~Population(void);
+        
+//        Individual::Profile *getProfile(){
+//        	return profile;
+//        }
 };
 #endif
