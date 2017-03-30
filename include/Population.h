@@ -19,13 +19,13 @@ using namespace std;
 
 class Population{
    protected:
-		vector<Individual*> _population;
+		vector<Individual> _population;
 		string _name;
 		mt19937 *rng_gen;
 		Individual::Profile *profile;
    
    public: 
-		Population(void);
+		Population();
         Population(const uint32_t &_size);
         Population(const string &_name);
         Population(const string &_name,const uint32_t &_size);
@@ -33,21 +33,21 @@ class Population{
 		
 		void setRng(mt19937 *_rng);
 		
-        uint32_t size(void);
-        string name(void);
+        uint32_t size();
+        string name();
         void name(const string&);
-        bool empty(void);
-        Individual* top(void);
-        Individual* at(const uint32_t&);
-		vector<Individual*> population(void);
+        bool empty();
+        Individual &top();
+        Individual &at(const uint32_t);
+		vector<Individual> &population(void);
 		// Agrega un nuevo individuo a la poblacio, con id y basado en un cierto profile
 		// Lo crea vacio y le asigna datos del pool (con Pool::regenerate), si se recibe uno
 		void add(unsigned int id, Individual::Profile *profile, Pool *pool = NULL);
 
-        void push(Individual*);
-        void pop(void);
-        void clear(void);
-        void shuffle(void);
+        void push(Individual&);
+        void pop();
+        void clear();
+        void shuffle();
 
         vector<Population*> split(const size_t&);
         void migration(Population*,const uint32_t&);
@@ -55,10 +55,7 @@ class Population{
         void increase(const uint32_t&);
         void merge(Population*);
 
-        virtual ~Population(void);
+        virtual ~Population();
         
-//        Individual::Profile *getProfile(){
-//        	return profile;
-//        }
 };
 #endif

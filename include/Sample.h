@@ -18,11 +18,11 @@ class Sample : public Population{
 		// Real delete of the data (instead of just clearing the internal vector)
 		// This is for the case of just using a Sample without a parent Population
 		void deleteData(){
-			for(unsigned int i = 0; i < _population.size(); ++i){
-				if(_population[i] != NULL){
-					delete _population[i];
-				}
-			}
+//			for(unsigned int i = 0; i < _population.size(); ++i){
+//				if(_population[i] != NULL){
+//					delete _population[i];
+//				}
+//			}
 			_population.clear();
 		}
 
@@ -388,16 +388,16 @@ class Sample : public Population{
 			//random_shuffle(this->_population.begin(),this->_population.end());
 			auto sample = this->_population;//vector<Individual*>(this->_population.begin(),this->_population.begin()+int(floor(double(this->size())*_percentage)));
 
-			map<uint32_t,map<uint32_t,vector<string>>> sequences_str;
-			map<uint32_t,map<uint32_t,vector<VirtualSequence*>>> sequences;
+			map<uint32_t, map<uint32_t, vector<string>>> sequences_str;
+			map<uint32_t, map<uint32_t, vector<VirtualSequence*>>> sequences;
 
 //			cout<<"Sample::indices - Decompressing sequences from "<<sample.size()<<" individuals\n";
 			for(auto& individual : sample){
-				for(unsigned int pid = 0; pid < individual->getPloidy(); pid++){
-					for(uint32_t cid = 0; cid < individual->getChromosomes(); cid++){
-						for(uint32_t gid = 0; gid < individual->getGenes(cid); gid++){
-							sequences_str[cid][gid].push_back(individual->getGene(gid, cid, pid)->to_string());
-							sequences[cid][gid].push_back(individual->getGene(gid, cid, pid));
+				for(unsigned int pid = 0; pid < individual.getPloidy(); pid++){
+					for(uint32_t cid = 0; cid < individual.getChromosomes(); cid++){
+						for(uint32_t gid = 0; gid < individual.getGenes(cid); gid++){
+							sequences_str[cid][gid].push_back(individual.getGene(gid, cid, pid)->to_string());
+							sequences[cid][gid].push_back(individual.getGene(gid, cid, pid));
 						}
 					}
 				}
