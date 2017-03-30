@@ -32,10 +32,10 @@ void Simulator::run(void){
                );
 
                for(uint32_t id = 0U; id < fparams.get<uint32_t>("population.size"); id++){
-                  get<0>(target)->push(this->_pool->generate(id, *profile));
-                  // get<0>(target)->add(id, profile, this->_pool);
-                  get<1>(target)->push(new Individual(id, *profile));
-                  // get<1>(target)->add(id, profile);
+                  // get<0>(target)->push(this->_pool->generate(id, *profile));
+                  get<0>(target)->add(id, profile, this->_pool);
+                  // get<1>(target)->push(new Individual(id, *profile));
+                  get<1>(target)->add(id, profile);
                }
                this->_populations[fparams.get<string>("population.name")] = target;
                this->_pool->release();
@@ -108,7 +108,8 @@ void Simulator::run(void){
                get<0>(this->_populations[fparams.get<string>("source.population.name")])->increase(size);
 
                for(uint32_t id = 0; id < size; ++id){
-                  get<1>(this->_populations[fparams.get<string>("source.population.name")])->push(new Individual(id, *profile));
+                  // get<1>(this->_populations[fparams.get<string>("source.population.name")])->push(new Individual(id, *profile));
+                  get<1>(this->_populations[fparams.get<string>("source.population.name")])->add(id, profile);
                }
                break;
             }
