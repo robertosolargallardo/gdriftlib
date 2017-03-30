@@ -11,6 +11,8 @@ unsigned int VirtualSequence::count_del = 0;
 unsigned int VirtualSequence::count_del_mem = 0;
 unsigned int VirtualSequence::count_mut = 0;
 
+mutex VirtualSequence::internal_mutex;
+
 VirtualSequence::VirtualSequence(bool _read_only){
 
 	size = 0;
@@ -23,8 +25,13 @@ VirtualSequence::VirtualSequence(bool _read_only){
 
 // Constructor real que COPIA el buffer de texto
 VirtualSequence::VirtualSequence(const char *_ref, unsigned int _size, bool _read_only){
+	
+	#ifdef VS_DEBUG
+	internal_mutex.lock();
 	++count_str;
 	++count_mem;
+	internal_mutex.unlock();
+	#endif
 	
 //	cout<<"VirtualSequence - Inicio (text: "<<_ref<<", size: "<<_size<<")\n";
 	size = (seq_size_t)_size;
@@ -77,8 +84,13 @@ VirtualSequence::VirtualSequence(const char *_ref, unsigned int _size, bool _rea
 // Constructor real que COPIA el buffer de texto, pero que recibe solo 1 entero (32 bits) de secuencia
 // Llena el resto de A's (con un memset... 0)
 VirtualSequence::VirtualSequence(const unsigned int _size, const unsigned int _seq, bool _read_only){
+	
+	#ifdef VS_DEBUG
+	internal_mutex.lock();
 	++count_int;
 	++count_mem;
+	internal_mutex.unlock();
+	#endif
 	
 	size = (seq_size_t)_size;
 	unsigned int data_size = (size>>2);
@@ -124,7 +136,12 @@ VirtualSequence::VirtualSequence(const string &_ref, bool _read_only)
 // Constructor de copia que solo almacena un puntero al buffer de texto
 // Tambien incluye las mutaciones del original en el mapa de la nueva instancia
 VirtualSequence::VirtualSequence(const VirtualSequence &original){
+	
+	#ifdef VS_DEBUG
+	internal_mutex.lock();
 	++count_copy;
+	internal_mutex.unlock();
+	#endif
 	
 //	cout<<"VirtualSequence - Copia\n";
 	size = original.size;
@@ -143,12 +160,18 @@ VirtualSequence::VirtualSequence(const VirtualSequence &original){
 
 VirtualSequence::~VirtualSequence(){
 //	cout<<"VirtualSequence::~VirtualSequence \n";
+	
+	#ifdef VS_DEBUG
+	internal_mutex.lock();
 	if(owns_data){
 		++count_del_mem;
 	}
 	else{
 		++count_del;
 	}
+	internal_mutex.unlock();
+	#endif
+	
 	inserts.clear();
 	mutations.clear();
 	if(owns_data){
@@ -238,7 +261,12 @@ bool VirtualSequence::findMutation(seq_size_t pos, seq_size_t &mut_pos) const{
 
 // Este metodo puede entrar en conflicto con insert
 void VirtualSequence::mutate(mt19937 *arg_rng){
+	
+	#ifdef VS_DEBUG
+	internal_mutex.lock();
 	++count_mut;
+	internal_mutex.unlock();
+	#endif
 	
 	if(arg_rng == NULL){
 		arg_rng = &rng;
@@ -309,7 +337,13 @@ void VirtualSequence::mutateBit(unsigned int pos){
 // Aplica una mutacion cambiando TODOS los bits de mask, partiendo desde el byte byte_ini de data
 // Notar que esto puede modificar un maximo de 4 bytes (32 bits de mask)
 void VirtualSequence::mutateBitMask(unsigned int mask, unsigned int byte_ini){
+
+	#ifdef VS_DEBUG
+	internal_mutex.lock();
 	++count_mut;
+	internal_mutex.unlock();
+	#endif
+	
 	unsigned int bit_ini = (byte_ini<<3);
 	unsigned int test_mask = 0x1;
 	for(unsigned int pos_mask = 0; pos_mask < 32; ++pos_mask){

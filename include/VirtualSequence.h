@@ -15,12 +15,17 @@
 #include <vector>
 #include <random>
 
+#include <thread>
+#include <mutex>
+
 using namespace std;
 
 
 // #define seq_size_t unsigned long long
- #define seq_size_t unsigned int
+#define seq_size_t unsigned int
 //#define seq_size_t unsigned short
+
+// #define VS_DEBUG
 
 // Tercera Version, texto en 2 bits por base
 // En esta version, el constructor de copia ahorra espacio (guarda solo un puntero al buff del original)
@@ -31,6 +36,8 @@ extern mt19937 rng;
 class VirtualSequence{
 
 protected:
+		
+	static mutex internal_mutex;
 
 	static const unsigned int alphabet_size;
 	static const char alphabet[];
