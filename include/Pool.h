@@ -21,12 +21,13 @@ class Pool{
 
             void populate(const uint32_t&,const uint32_t&,const uint32_t&,const uint32_t&,const uint32_t&);
             Individual* generate(const uint32_t &id, Individual::Profile &profile);
+            // Borra el contenido (con clear) y regenera un individuo
+            void regenerate(Individual *individual);
             void release(void);
             void decrease_all(void);
-//            Reference* push(const uint32_t&,const uint32_t&,Reference*);
             VirtualSequence* push(const uint32_t&,const uint32_t&,VirtualSequence*);
             uint32_t size(void);
-      
+      		
             ~Pool(void);
 };
 #endif

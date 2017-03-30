@@ -7,6 +7,7 @@
 
 #include "Individual.h"
 #include "VirtualSequence.h"
+#include "Pool.h"
 
 // De momento conservo rng externo
 // La idea es sacarlo cuando ya nadie lo use
@@ -39,6 +40,9 @@ class Population{
         Individual* top(void);
         Individual* at(const uint32_t&);
 		vector<Individual*> population(void);
+		// Agrega un nuevo individuo a la poblacio, con id y basado en un cierto profile
+		// Lo crea vacio y le asigna datos del pool (con Pool::regenerate), si se recibe uno
+		void add(unsigned int id, Individual::Profile *profile, Pool *pool = NULL);
 
         void push(Individual*);
         void pop(void);

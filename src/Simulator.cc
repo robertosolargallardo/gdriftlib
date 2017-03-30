@@ -32,12 +32,10 @@ void Simulator::run(void){
                );
 
                for(uint32_t id = 0U; id < fparams.get<uint32_t>("population.size"); id++){
-//                  cout<<"Simulator::run - et<0>(target)->push\n";
-//                  get<0>(target)->push(this->_pool->generate(id));
                   get<0>(target)->push(this->_pool->generate(id, *profile));
-//                  cout<<"Simulator::run - et<1>(target)->push\n";
-//                  get<1>(target)->push(new Individual(id, this->_fsettings.get_child("individual")));
+                  // get<0>(target)->add(id, profile, this->_pool);
                   get<1>(target)->push(new Individual(id, *profile));
+                  // get<1>(target)->add(id, profile);
                }
                this->_populations[fparams.get<string>("population.name")] = target;
                this->_pool->release();
@@ -109,8 +107,7 @@ void Simulator::run(void){
                uint32_t size=uint32_t(ceil(double(get<0>(this->_populations[fparams.get<string>("source.population.name")])->size())*fparams.get<double>("source.population.percentage")));
                get<0>(this->_populations[fparams.get<string>("source.population.name")])->increase(size);
 
-               for(uint32_t id=0;id<size;id++){
-//                  get<1>(this->_populations[fparams.get<string>("source.population.name")])->push(new Individual(id,this->_fsettings.get_child("individual")));
+               for(uint32_t id = 0; id < size; ++id){
                   get<1>(this->_populations[fparams.get<string>("source.population.name")])->push(new Individual(id, *profile));
                }
                break;

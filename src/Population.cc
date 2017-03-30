@@ -8,14 +8,12 @@ Population::Population(void){
 Population::Population(const Ploidy &_ploidy, const boost::property_tree::ptree &_fpopulation, const boost::property_tree::ptree &_fsettings){
 //	cout<<"Population - Inicio\n";
 	
-//	Individual::setParameters(_fsettings.get_child("individual"));
 	profile = new Individual::Profile(_fsettings.get_child("individual"));
 	
 	this->_name=_fpopulation.get<string>("name");
 	this->_population.reserve(_fpopulation.get_child("individuals").size());
 	
 	for(auto& findividual : _fpopulation.get_child("individuals")){
-//		Individual* individual = new Individual(findividual.second.get<uint32_t>("id"), _ploidy, uint32_t(findividual.second.get_child("chromosomes").size()));
 		Individual* individual = new Individual(findividual.second.get<uint32_t>("id"), *profile);
 		for(auto& fchromosome : findividual.second.get_child("chromosomes")){
 			for(auto& fgene : fchromosome.second.get_child("genes")){
@@ -57,15 +55,26 @@ Population::Population(const uint32_t &_size){
 vector<Individual*> Population::population(void){
 	return(this->_population);
 }
-void Population::push(Individual* _individual){
-	this->_population.push_back(_individual);
+
+// Agrega un nuevo individuo a la poblacio, con id y basado en un cierto profile
+// Lo crea vacio y le asigna datos del pool, si se entrega
+void Population::add(unsigned int id, Individual::Profile *profile, Pool *pool){
+	Individual *individual = new Individual(id, *profile);
+	if(pool != NULL){
+		pool->regenerate(individual);
+	}
+	_population.push_back(individual);
 }
-Individual* Population::at(const uint32_t &_id){
-	if(_id>=this->size()){
-		cerr << "Error::Cannot access position " << _id << endl;
+
+void Population::push(Individual* individual){
+	this->_population.push_back(individual);
+}
+Individual* Population::at(const uint32_t &pos){
+	if(pos >= this->size()){
+		cerr << "Error::Cannot access position " << pos << endl;
 		exit(EXIT_FAILURE);
 	}
-	return(this->_population[_id]);
+	return(this->_population[pos]);
 }
 uint32_t Population::size(void){
 	return(this->_population.size());
@@ -93,15 +102,15 @@ string Population::name(void){
 	return(this->_name);
 }
 void Population::name(const string &_name){
-	this->_name=_name;
+	this->_name = _name;
 }
 vector<Population*> Population::split(const size_t &_n_populations){
 	uint32_t round_robin=0U;
 	vector<Population*> populations(_n_populations);
-	size_t size=size_t(ceil(this->size()/_n_populations));
+	size_t size = size_t(ceil(this->size()/_n_populations));
 
 	for(uint32_t i=0U;i<_n_populations;i++)
-		populations[i]=new Population(size);
+		populations[i] = new Population(size);
 	
 	this->shuffle();
 
@@ -127,11 +136,11 @@ void Population::decrease(const uint32_t &_size){
 		this->pop();
 	}
 }
-void Population::increase(const uint32_t &_size){
+void Population::increase(const uint32_t &size){
 	uniform_int_distribution<> uniform(0, this->size() - 1);
-
-	for(uint32_t i=0U;i<_size;i++)
+	for(uint32_t i=0; i < size; ++i){
 		this->push(new Individual(*this->_population[uniform(*rng_gen)]));
+	}
 }
 void Population::shuffle(void){
 	std::shuffle(this->_population.begin(),this->_population.end(), *rng_gen);
