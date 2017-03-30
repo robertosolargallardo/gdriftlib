@@ -126,7 +126,7 @@ VirtualSequence::VirtualSequence(const string &_ref, bool _read_only)
 VirtualSequence::VirtualSequence(const VirtualSequence &original){
 	++count_copy;
 	
-	//cout<<"VirtualSequence - Copia\n";
+//	cout<<"VirtualSequence - Copia\n";
 	size = original.size;
 	data = original.data;
 	owns_data = false;
@@ -142,6 +142,7 @@ VirtualSequence::VirtualSequence(const VirtualSequence &original){
 }
 
 VirtualSequence::~VirtualSequence(){
+//	cout<<"VirtualSequence::~VirtualSequence \n";
 	if(owns_data){
 		++count_del_mem;
 	}

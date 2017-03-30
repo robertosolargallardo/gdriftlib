@@ -110,6 +110,7 @@ Individual::Individual(unsigned int _id, const Profile &_profile){
 //	cout<<"Individual - Fin\n";
 }
 Individual::~Individual(){
+//	cout<<"Individual::~Individual \n";
 	if(gens != NULL){
 		for(unsigned int i = 0; i < n_gens; ++i){
 			if(gens[i] != NULL){

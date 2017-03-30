@@ -109,6 +109,15 @@ public:
 	// Metodo para debug
 	void printData();
 	
+	// Metodos de acceso directo a los datos
+	// Esto es para calcular estadisticas mas rapido
+	unsigned char *getData(){
+		return data;
+	}
+	vector<seq_size_t> &getMutations(){;
+		return mutations;
+	}
+	
 	// Contador de constructores
 	static unsigned int count_str;
 	static unsigned int count_int;

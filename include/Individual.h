@@ -292,11 +292,52 @@ class Individual{
 			mut_rate = NULL;
 			gen_len = NULL;
 		}
+		Profile(unsigned char _ploidy, unsigned char _n_chr, 
+					const vector<unsigned int> &_gens_chr, 
+					const vector<vector<double>> &_mut_rate = {}, 
+					const vector<vector<unsigned int>> &_gen_len = {}
+					){
+			ploidy = _ploidy;
+			n_chr = _n_chr;
+			gens_chr = new unsigned short[n_chr];
+			
+			unsigned int total_gens = 0;
+			for(unsigned int cid = 0; cid < n_chr; ++cid){
+				gens_chr[cid] = _gens_chr[cid];
+				total_gens += gens_chr[cid];
+			}
+			gens_ploidy = total_gens;
+			n_gens = gens_ploidy * (unsigned int)ploidy;
+			
+			mut_rate = NULL;
+			gen_len = NULL;
+			
+			if(!_mut_rate.empty()){
+				mut_rate = new double*[n_chr];
+				for(unsigned int cid = 0; cid < n_chr; ++cid){
+					mut_rate[cid] = new double[gens_chr[cid]];
+					for(unsigned int gid = 0; gid < gens_chr[cid]; ++gid){
+						mut_rate[cid][gid] = _mut_rate[cid][gid];
+					}
+				}
+			}
+			
+			if(!_gen_len.empty()){
+				gen_len = new unsigned int*[n_chr];
+				for(unsigned int cid = 0; cid < n_chr; ++cid){
+					gen_len[cid] = new unsigned int[gens_chr[cid]];
+					for(unsigned int gid = 0; gid < gens_chr[cid]; ++gid){
+						gen_len[cid][gid] = _gen_len[cid][gid];
+					}
+				}
+			}
+			
+		}
 		Profile(const boost::property_tree::ptree &findividual){
-			cout<<"Profile - Inicio\n";
+//			cout<<"Profile - Inicio\n";
 			ploidy = (unsigned char)(findividual.get<uint32_t>("ploidy"));
 			n_chr = (unsigned char)(findividual.get_child("chromosomes").size());
-			cout<<"Profile - Guardando "<<(unsigned int)n_chr<<" chromosomas para Ploidy "<<(unsigned int)ploidy<<"\n";
+//			cout<<"Profile - Guardando "<<(unsigned int)n_chr<<" chromosomas para Ploidy "<<(unsigned int)ploidy<<"\n";
 			gens_chr = new unsigned short[n_chr];
 	
 			unsigned int total_gens = 0;
@@ -309,7 +350,7 @@ class Individual{
 			}
 			gens_ploidy = total_gens;
 			n_gens = gens_ploidy * (unsigned int)ploidy;
-			cout<<"Profile - gens_ploidy: "<<gens_ploidy<<", n_gens: "<<n_gens<<"\n";
+//			cout<<"Profile - gens_ploidy: "<<gens_ploidy<<", n_gens: "<<n_gens<<"\n";
 //			mut_rate = new double[total_gens];
 			mut_rate = new double*[n_chr];
 			gen_len = new unsigned int*[n_chr];
@@ -325,13 +366,13 @@ class Individual{
 				for(auto fgene : fchromosome.second.get_child("genes")){
 					mut_rate[cid][gid] = fgene.second.get<double>("mutation.rate");
 					gen_len[cid][gid] = fgene.second.get<double>("nucleotides");
-					cout<<"Profile - mut_rate["<<cid<<"]["<<gid<<"]: "<<mut_rate[cid][gid]<<"\n";
+//					cout<<"Profile - mut_rate["<<cid<<"]["<<gid<<"]: "<<mut_rate[cid][gid]<<"\n";
 					++gid;
 				}
 				++cid;
 			}
 		
-			cout<<"Profile - Fin\n";
+//			cout<<"Profile - Fin\n";
 		}
 		~Profile(){
 			if(gens_chr != NULL){
