@@ -117,6 +117,24 @@ public:
 	vector<seq_size_t> &getMutations(){;
 		return mutations;
 	}
+	string codeMutations(){
+//		cout<<"VirtualSequence::codeMutations - Inicio\n";
+		string seq;
+		if(mutations.empty()){
+			return seq;
+		}
+		// De momento uso un buff de largo 16 para cada mutacion
+		// Estoy asumiendo que cada mutacion solo es un numero, tipo 4.000.000.000, mas los 2 chars ", "
+		char buff[16];
+		sprintf(buff, "%u", mutations[0]);
+		seq.append(buff);
+		for(unsigned int i = 1; i < mutations.size(); ++i){
+			sprintf(buff, ", %u", mutations[i]);
+			seq.append(buff);
+		}
+//		cout<<"VirtualSequence::codeMutations - \""<<seq<<"\"\n";
+		return seq;
+	}
 	
 	// Contador de constructores
 	static unsigned int count_str;

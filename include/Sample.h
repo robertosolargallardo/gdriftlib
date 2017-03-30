@@ -105,7 +105,7 @@ class Sample : public Population{
 			}
 			
 			map<string,double> haplotypes;
-
+			
 			for(auto& seq : _sequences) haplotypes[seq]=(haplotypes.count(seq))?haplotypes[seq]+1.0:1.0;
 
 			double sum = 0.0;
@@ -118,26 +118,50 @@ class Sample : public Population{
 //			cout<<"Sample::number_of_haplotypes - Fin ("<<timer.getMilisec()<<" ms)\n";
 			return ((N/(N-1.0))*(1.0-sum));
 		}
-		double number_of_haplotypes_seq(const vector<VirtualSequence*> &_sequences){
+		
+		// Este metodo resulto ser mas lento que la version string
+		double number_of_haplotypes_seq(const vector<VirtualSequence*> &sequences){
 //			cout<<"Sample::number_of_haplotypes_seq - Inicio\n";
 //			NanoTimer timer;
-			if(_sequences.size() == 1){
+			if(sequences.size() == 1){
 				return 0.0;
 			}
-			map<string,double> haplotypes;
+			map<string, double> haplotypes;
 
-			// for(auto& seq : _sequences) haplotypes[seq]=(haplotypes.count(seq))?haplotypes[seq]+1.0:1.0;
+			// for(auto& seq : sequences) haplotypes[seq]=(haplotypes.count(seq))?haplotypes[seq]+1.0:1.0;
+//			string str;
+//			for(unsigned int i = 0; i < sequences.size(); ++i){
+//				str = sequences[i]->to_string();
+//				haplotypes.emplace(str, 0.0);
+//				haplotypes[str] += 1;
+//			}
+			
+			// En lugar de almacenar todas las secuencias completas, puedo almacenar un string diferente
+			// Tomo una como referencia, si data es igual, almaceno una codificacion de las mutaciones
+			// Si es diferente, almaceno la secuencia completa
+			// Lo importante es que la codificacion de mutaciones no choquen, pero para eso basta con codificar los numeros directamente
+			VirtualSequence *ref = sequences[0];
 			string str;
-			for(unsigned int i = 0; i < _sequences.size(); ++i){
-				str = _sequences[i]->to_string();
+			for(unsigned int i = 0; i < sequences.size(); ++i){
+				if( ref->getData() == sequences[i]->getData() ){
+					str = sequences[i]->codeMutations();
+				}
+				else{
+					str = sequences[i]->to_string();
+				}
 				haplotypes.emplace(str, 0.0);
 				haplotypes[str] += 1;
 			}
-
-			double sum=0.0;
-			double N=double(_sequences.size());
+			
+//			// Test
+//			for(auto& h : haplotypes){
+//				cout<<"["<<(h.first)<<"]: "<<(h.second)<<"\n";
+//			}
+			
+			double sum = 0.0;
+			double N = double(sequences.size());
 			for(auto& h : haplotypes){
-				double x=double(h.second)/N;
+				double x = double(h.second) / N;
 				sum+=(x*x);
 			}
 
@@ -212,6 +236,8 @@ class Sample : public Population{
 //			cout<<"Sample::pairwise_statistics - Fin ("<<timer.getMilisec()<<" ms)\n";
 			return(make_pair(mean,variance));
 		}
+		
+		// Cost (n_seqs^2 * n_muts) in the best case, (n_seqs^2 * seq_len) in worst case
 		pair<double,double> pairwise_statistics_seq(const vector<VirtualSequence*> &sequences){
 //			cout<<"Sample::pairwise_statistics_seq - Inicio\n";
 //			NanoTimer timer;
@@ -234,9 +260,7 @@ class Sample : public Population{
 						
 						// Lo siguiente asume que los arreglos de mutaciones estan ORDENADOS
 						// En caso contrario, habria que copiar y ordenar
-//						cout<<"Sample::pairwise_statistics_seq - set_symmetric_difference ("<<i<<", "<<j<<")\n";
 						std::set_symmetric_difference(muts_i.begin(), muts_i.end(), muts_j.begin(), muts_j.end(), back_inserter(res));
-//						cout<<"Sample::pairwise_statistics_seq - res: "<<res.size()<<"\n";
 						diff += res.size();
 						
 						// De las mutaciones reultantes, descuento las que se aplican a un mismo caracter
@@ -258,7 +282,6 @@ class Sample : public Population{
 								diff += 1.0;
 						}
 					}
-//					cout<<"Sample::pairwise_statistics_seq - diff: "<<diff<<"\n";
 					
 					pairwise_differences.push_back(diff);
 					mean += diff;
@@ -339,17 +362,9 @@ class Sample : public Population{
 
 					boost::property_tree::ptree findices;
 					
-//					findices.put("number-of-haplotypes",this->number_of_haplotypes(sequences_str[cid][gid]));
-//					findices.put("number-of-segregating-sites",this->number_of_segregating_sites(sequences_str[cid][gid]));
-//					tie(mean_of_the_number_of_pairwise_differences,variance_of_the_number_of_pairwise_differences)=this->pairwise_statistics(sequences_str[cid][gid]);
-					
 					findices.put("number-of-haplotypes",this->number_of_haplotypes_seq(sequences[cid][gid]));
 					findices.put("number-of-segregating-sites",this->number_of_segregating_sites_seq(sequences[cid][gid]));
 					tie(mean_of_the_number_of_pairwise_differences,variance_of_the_number_of_pairwise_differences)=this->pairwise_statistics_seq(sequences[cid][gid]);
-//					
-//					findices.put("number-of-haplotypes",this->number_of_haplotypes(sequences_str[cid][gid]));
-//					findices.put("number-of-segregating-sites",this->number_of_segregating_sites(sequences_str[cid][gid]));
-//					tie(mean_of_the_number_of_pairwise_differences, variance_of_the_number_of_pairwise_differences) = this->pairwise_statistics_seq(sequences[cid][gid]);
 					
 					findices.put("mean-of-the-number-of-pairwise-differences", mean_of_the_number_of_pairwise_differences);
 					findices.put("variance-of-the-number-of-pairwise-differences", variance_of_the_number_of_pairwise_differences);
