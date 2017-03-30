@@ -17,6 +17,8 @@
 
 using namespace std;
 
+// Number of nucleotides, equal to alphabet_size
+#define N_NUCLEOTIDES 4
 
 // #define seq_size_t unsigned long long
  #define seq_size_t unsigned int
