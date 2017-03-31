@@ -147,15 +147,16 @@ VirtualSequence::VirtualSequence(const VirtualSequence &original){
 	size = original.size;
 	data = original.data;
 	owns_data = false;
-	//cout<<"VirtualSequence - size: "<<size<<". data[0]: "<<((data==NULL)?(0xffffffff):(unsigned int)data[0])<<"\n";
+//	cout<<"VirtualSequence - size: "<<size<<". data[0]: "<<((data==NULL)?(0xffffffff):(unsigned int)data[0])<<"\n";
 	
 	cur_count = 0;
 	cur_read = original.cur_read;
 	
 	// Muaciones
-	//cout<<"VirtualSequence - Agregando "<<original.mutations.size()<<" mutaciones\n";
+//	cout<<"VirtualSequence - Agregando "<<original.mutations.size()<<" mutaciones\n";
 //	mutations.insert(original.mutations.begin(), original.mutations.end());
 	mutations.insert(mutations.begin(), original.mutations.begin(), original.mutations.end());
+//	cout<<"VirtualSequence - Fin\n";
 }
 
 VirtualSequence::~VirtualSequence(){

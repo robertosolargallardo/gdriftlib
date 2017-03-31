@@ -41,25 +41,28 @@ int main(int argc,char** argv)
 	gens.push_back(1);
 	Individual::Profile profile(1, 1, gens);
 	
-	
-	Individual *original = new Individual(0, profile);
+	cout<<"Test - Creando Secuencia Original\n";
 	string str(len, 'A');
 	VirtualSequence *seq_original = new VirtualSequence(str);
 	pool.push_back(seq_original);
-	original->setGene(0, 0, 0, seq_original);
+	cout<<"Test - Agregando Individuo\n";
+	sample.add(0, &profile);
+	cout<<"Test - Asociando secuencia\n";
+	sample.at(0).setGene(0, 0, 0, seq_original);
 	
-	sample.push( original );
+	cout<<"Test - Iterando\n";
 	for(unsigned int i = 1; i < n_sample; ++i){
-		Individual *ind = new Individual(i, profile);
+		cout<<"Test - Creando Secuencia "<<i<<"\n";
 		VirtualSequence *seq = new VirtualSequence(*seq_original);
 		// Mutar seq
 		for(unsigned int j = 0; j < n_muts; ++j){
 			seq->mutate();
 		}
 		pool.push_back(seq);
-		ind->setGene(0, 0, 0, seq);
-		
-		sample.push( ind );
+		cout<<"Test - Agregando Individuo\n";
+		sample.add(i, &profile);
+		cout<<"Test - Asociando secuencia\n";
+		sample.at(i).setGene(0, 0, 0, seq);
 	}
 	stringstream ss;
 	
@@ -70,7 +73,6 @@ int main(int argc,char** argv)
 	findices = sample.indices_seq();
 	write_json(ss, findices);
 	cout << ss.str() << endl;
-	
 	
 	// Borrado de la poblacion
 	sample.deleteData();

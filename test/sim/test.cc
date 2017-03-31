@@ -12,6 +12,8 @@ int main(int argc,char** argv)
 {
 	cout<<"Test - Inicio\n";
 	
+	rng.seed(0);
+	
 	boost::property_tree::ptree fsettings;
 	read_json(argv[1], fsettings);
 

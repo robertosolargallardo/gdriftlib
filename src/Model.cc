@@ -5,7 +5,7 @@ namespace model{
 	template<>
 	void run<WRIGHTFISHER,HAPLOID>(Population* &_src, Population* &_dst, Pool* &_pool, Individual::Profile *profile){
 
-//		cout<<"Model::run (HAPLOID) - Iterando por "<<_dst->size()<<" individuos ("<<_src->at(0)->getChromosomes()<<" chromosomes, "<<_src->at(0)->getGenes(0)<<" genes in ch0)\n";
+//		cout<<"Model::run (HAPLOID) - Iterando por "<<_dst->size()<<" individuos ("<<profile->getChromosomes()<<" chromosomes, "<<profile->getGenes(0)<<" genes in ch0)\n";
 		NanoTimer timer;
 		unsigned int mutations = 0;
 	
@@ -20,7 +20,8 @@ namespace model{
 		
 //		Individual *ind = _src->at(0);
 		// Padre elegido para el individuo de _dst
-		Individual *parent = NULL;
+//		Individual *parent = NULL;
+		unsigned int parent = 0;
 		// Secuencia del gen que se modifica
 		VirtualSequence *seq = NULL;
 		
@@ -29,8 +30,10 @@ namespace model{
 		// Quizas eso se pueda hace de modo mas eficiente
 		
 		for(unsigned int id = 0; id < _dst->size(); ++id){
-			parent = _src->at(src_dist(rng));
-			_dst->at(id)->setParent(parent);
+//			parent = _src->at(src_dist(rng));
+//			_dst->at(id)->setParent(parent);
+			parent = src_dist(rng);
+			_dst->at(id).setParent(_src->at(parent));
 		}
 //		cout<<"Model::run - Padres asignados en "<<timer.getMilisec()<<" ms\n";
 		
@@ -59,7 +62,8 @@ namespace model{
 //					cout<<"Model::run - mut_pos: "<<mut_pos<<" de "<<_dst->size()<<"\n";
 					
 					// Creo una nueva secuencia con el gen actual del individuo para mutar y reemplazar
-					VirtualSequence *original = _dst->at(mut_pos)->getGene(genid, chrid, 0);
+					VirtualSequence *original = _dst->at(mut_pos).getGene(genid, chrid, 0);
+//					cout<<"Model::run - Crando secuencia para mutar (original NULL? "<<(original==NULL)<<", size: "<<((original!=NULL)?original->length():0)<<")\n";
 					seq = new VirtualSequence(*original);
 //					cout<<"Model::run - mutate...\n";
 					seq->mutate();
@@ -67,7 +71,7 @@ namespace model{
 //					cout<<"Model::run - push...\n";
 					_pool->push(chrid, genid, seq);
 //					cout<<"Model::run - setGene...\n";
-					_dst->at(mut_pos)->setGene(genid, chrid, 0, seq);
+					_dst->at(mut_pos).setGene(genid, chrid, 0, seq);
 //					cout<<"Model::run - Fin\n";
 				}
 			}
@@ -88,15 +92,20 @@ namespace model{
 		
 //		Individual *ind = _src->at(0);
 		// Padres elegidos para el individuo de _dst
-		Individual *parent1 = NULL;
-		Individual *parent2 = NULL;
+//		Individual *parent1 = NULL;
+//		Individual *parent2 = NULL;
+		unsigned int parent1 = 0;
+		unsigned int parent2 = 0;
 		// Secuencia del gen que se modifica
 		VirtualSequence *seq = NULL;
 		
 		for(unsigned int id = 0; id < _dst->size(); ++id){
-			parent1 = _src->at(src_dist(rng));
-			parent2 = _src->at(src_dist(rng));
-			_dst->at(id)->setParents(parent1, parent2);
+//			parent1 = _src->at(src_dist(rng));
+//			parent2 = _src->at(src_dist(rng));
+//			_dst->at(id)->setParents(parent1, parent2);
+			parent1 = src_dist(rng);
+			parent2 = src_dist(rng);
+			_dst->at(id).setParents(_src->at(parent1), _src->at(parent2));
 		}
 //		cout<<"Model::run - Padres asignados en "<<timer.getMilisec()<<" ms\n";
 		
@@ -124,12 +133,12 @@ namespace model{
 						unsigned int mut_pos = dst_dist(rng);
 					
 						// Creo una nueva secuencia con el gen actual del individuo para mutar y reemplazar
-						VirtualSequence *original = _dst->at(mut_pos)->getGene(genid, chrid, plo);
+						VirtualSequence *original = _dst->at(mut_pos).getGene(genid, chrid, plo);
 						seq = new VirtualSequence(*original);
 						seq->mutate();
 						++mutations;
 						_pool->push(chrid, genid, seq);
-						_dst->at(mut_pos)->setGene(genid, chrid, plo, seq);
+						_dst->at(mut_pos).setGene(genid, chrid, plo, seq);
 					}
 				}
 			}

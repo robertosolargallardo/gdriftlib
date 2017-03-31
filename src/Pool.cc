@@ -15,38 +15,37 @@ Pool::Pool(const boost::property_tree::ptree &_findividual){
 		}
 	}
 }
-Individual* Pool::generate(const uint32_t &_id, Individual::Profile &profile){
+Individual* Pool::generate(const uint32_t &_id, const Individual::Profile &profile){
 	// Crear idividuo vacio y escoger genes del pool
 //	cout<<"Pool::generate - Inicio (_id: "<<_id<<")\n";
-	
 	Individual *individual = new Individual(_id, profile);
-	
 	//void setGene(unsigned int gen, unsigned int chr, unsigned int plo, VirtualSequence *new_gene);
 	for(unsigned int plo = 0; plo < individual->getPloidy(); ++plo){
 		for(unsigned int chr = 0; chr < individual->getChromosomes(); ++chr){
 			for(unsigned int gen = 0; gen < individual->getGenes(chr); ++gen){
 				uniform_int_distribution<> uniform(0, _pool[pair<uint32_t, uint32_t>(chr, gen)].size() - 1);
-				VirtualSequence *reference = _pool[pair<uint32_t, uint32_t>(chr, gen)][uniform(rng)];
-				individual->setGene(gen, chr, plo, reference);
+				VirtualSequence *seq = _pool[pair<uint32_t, uint32_t>(chr, gen)][uniform(rng)];
+				individual->setGene(gen, chr, plo, seq);
 			}
 		}
 	}
-	
-//	for(uint32_t cid = 0U; cid < individual->n_chromosomes(); cid++){
-//		for(uint32_t p = 0U; p < individual->getPloidy(); p++){
-//			for(uint32_t gid = 0U; gid < individual->chromosome(cid)[p]->n_genes(); gid++){
-//				uniform_int_distribution<> uniform(0, this->_pool[pair<uint32_t, uint32_t>(cid, gid)].size() - 1);
-//				VirtualSequence *reference = this->_pool[pair<uint32_t, uint32_t>(cid, gid)][uniform(rng)];
-//				individual->chromosome(cid)[p]->gene(gid)->reference(reference);
-//			}
-//		}
-//	}
-	
 //	cout<<"Pool::generate - Fin\n";
-
-	return(individual);
+	return individual;
 }
-
+void Pool::regenerate(Individual *individual){
+//	cout<<"Pool::regenerate - Inicio (_id: "<<_id<<")\n";
+	individual->clear();
+	for(unsigned int plo = 0; plo < individual->getPloidy(); ++plo){
+		for(unsigned int chr = 0; chr < individual->getChromosomes(); ++chr){
+			for(unsigned int gen = 0; gen < individual->getGenes(chr); ++gen){
+				uniform_int_distribution<> uniform(0, _pool[pair<uint32_t, uint32_t>(chr, gen)].size() - 1);
+				VirtualSequence *seq = _pool[pair<uint32_t, uint32_t>(chr, gen)][uniform(rng)];
+				individual->setGene(gen, chr, plo, seq);
+			}
+		}
+	}
+//	cout<<"Pool::regenerate - Fin\n";
+}
 VirtualSequence* Pool::push(const uint32_t &_cid,const uint32_t &_gid,VirtualSequence* _reference){
 //	for(vector<VirtualSequence*>::iterator i=this->_pool[pair<uint32_t,uint32_t>(_cid,_gid)].begin();i!=this->_pool[pair<uint32_t,uint32_t>(_cid,_gid)].end();i++)
 //		if((**i)==(*_reference)) return(*i);
