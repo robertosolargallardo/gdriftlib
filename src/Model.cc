@@ -5,7 +5,7 @@ namespace model{
 	template<>
 	void run<WRIGHTFISHER,HAPLOID>(Population* &_src, Population* &_dst, Pool* &_pool, Individual::Profile *profile){
 
-		cout<<"Model::run (HAPLOID) - Iterando por "<<_dst->size()<<" individuos ("<<profile->getChromosomes()<<" chromosomes, "<<profile->getGenes(0)<<" genes in ch0)\n";
+//		cout<<"Model::run (HAPLOID) - Iterando por "<<_dst->size()<<" individuos ("<<profile->getChromosomes()<<" chromosomes, "<<profile->getGenes(0)<<" genes in ch0)\n";
 		NanoTimer timer;
 		unsigned int mutations = 0;
 	
@@ -77,7 +77,7 @@ namespace model{
 			}
 		}
 		
-		cout<<"Model::run - Terminado ("<<timer.getMilisec()<<" ms, mutations: "<<mutations<<")\n";
+//		cout<<"Model::run - Terminado ("<<timer.getMilisec()<<" ms, mutations: "<<mutations<<")\n";
 		
 	}// Fin run
 	template<>

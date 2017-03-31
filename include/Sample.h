@@ -330,7 +330,7 @@ class Sample : public Population{
 
 			map<uint32_t,map<uint32_t,vector<VirtualSequence*>>> sequences;
 
-			cout<<"Sample::indices - Decompressing sequences from "<<_population.size()<<" individuals\n";
+//			cout<<"Sample::indices - Decompressing sequences from "<<_population.size()<<" individuals\n";
 			for(auto& individual : _population){
 				for(unsigned int pid = 0; pid < individual.getPloidy(); pid++){
 					for(uint32_t cid = 0; cid < individual.getChromosomes(); cid++){
@@ -340,7 +340,7 @@ class Sample : public Population{
 					}
 				}
 			}
-			cout<<"Sample::indices - Evaluating statistics\n";
+//			cout<<"Sample::indices - Evaluating statistics\n";
 
 			//this->rarest_nucleotides_statistics(sequences[0][0]);
 
@@ -379,7 +379,7 @@ class Sample : public Population{
 			}
 			fpopulation.push_back(std::make_pair("chromosomes",fchromosomes));					
 
-			cout<<"Sample::indices - End\n";
+//			cout<<"Sample::indices - End\n";
 			return(fpopulation);
 		}
 		
@@ -389,7 +389,7 @@ class Sample : public Population{
 			map<uint32_t, map<uint32_t, vector<string>>> sequences_str;
 			map<uint32_t, map<uint32_t, vector<VirtualSequence*>>> sequences;
 
-			cout<<"Sample::indices - Decompressing sequences from "<<_population.size()<<" individuals\n";
+//			cout<<"Sample::indices - Decompressing sequences from "<<_population.size()<<" individuals\n";
 			for(auto& individual : _population){
 				for(unsigned int pid = 0; pid < individual.getPloidy(); pid++){
 					for(uint32_t cid = 0; cid < individual.getChromosomes(); cid++){
@@ -400,7 +400,7 @@ class Sample : public Population{
 					}
 				}
 			}
-			cout<<"Sample::indices - Evaluating statistics\n";
+//			cout<<"Sample::indices - Evaluating statistics\n";
 
 			//this->rarest_nucleotides_statistics(sequences[0][0]);
 
@@ -447,7 +447,7 @@ class Sample : public Population{
 			}
 			fpopulation.push_back(std::make_pair("chromosomes",fchromosomes));					
 
-			cout<<"Sample::indices - End\n";
+//			cout<<"Sample::indices - End\n";
 			return(fpopulation);
 		}
 		
