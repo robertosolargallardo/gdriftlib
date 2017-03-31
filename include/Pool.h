@@ -20,7 +20,7 @@ class Pool{
    public:  Pool(const boost::property_tree::ptree&);
 
             void populate(const uint32_t&,const uint32_t&,const uint32_t&,const uint32_t&,const uint32_t&);
-            Individual* generate(const uint32_t &id, Individual::Profile *profile);
+            Individual* generate(const uint32_t &id, const Individual::Profile &profile);
             // Borra el contenido (con clear) y regenera un individuo
             void regenerate(Individual *individual);
             void release(void);

@@ -61,14 +61,54 @@ class Individual{
 	public:
 		// Forward declaration of Individual::Profile
 		class Profile;
-//		Individual(const uint32_t&,const boost::property_tree::ptree&);
-//		Individual(const uint32_t&,const Ploidy&,const uint32_t&);
+		
 		Individual();
-		Individual(unsigned int _id, Profile *_profile);
+		Individual(unsigned int _id, const Profile &_profile);
 		Individual(const Individual&);
+		~Individual();
+		
+		// TODO: copy assignment operator
+		Individual& operator=(const Individual& original){
+			if (this != &original){
+				// borrar, pedir, copiar
+				//cout<<"Individual::operator= - Inicio\n";
+				clear();
+				if( gens_chr != NULL ){
+					delete [] gens_chr;
+					gens_chr = NULL;
+				}
+				if( gens != NULL ){
+					delete [] gens;
+					gens = NULL;
+				}
+				
+				id = original.id;
+				n_gens = original.n_gens;
+				ploidy = original.ploidy;
+				n_chr = original.n_chr;
+				gens_ploidy = original.gens_ploidy;
+				gens_chr = new unsigned short[n_chr];
+				memcpy(gens_chr, original.gens_chr, n_chr*sizeof(short));
+				if(n_gens == 0){
+					gens = NULL;
+				}
+				else{
+					//cout<<"Individual::operator= - Reservando espacio para "<<n_gens<<" genes\n";
+					gens = new VirtualSequence*[n_gens];
+					for(unsigned int i = 0; i < n_gens; ++i){
+						gens[i] = NULL;
+					}
+				}
+				// Notar que lo que sigue NO es recomendable por seguridad
+				// En este caso es necesario, setParent DEBE recibir un non-const para increase de sus genes
+				setParent(const_cast<Individual&>(original));
+				
+			}	
+			return *this;
+		}
+		
 		uint32_t getId() const;
 		uint32_t n_chromosomes() const;
-		~Individual();
 		void clear();
 		
 		// Metodos de acceso a nuevos miembros de clase
@@ -106,7 +146,7 @@ class Individual{
 				cerr<<"Individual::setGene - Error, posicion "<<pos<<" invalida\n";
 				return;
 			}
-//			cout<<"Individual::setGene - Inicio (pos: "<<pos<<" de "<<n_gens<<")\n";
+//			cout<<"Individual::setGene - Inicio (pos: "<<pos<<" de "<<n_gens<<", null? "<<(new_gene==NULL)<<")\n";
 			if( gens[pos] != NULL ){
 				gens[pos]->decrease();
 			}
@@ -203,13 +243,15 @@ class Individual{
 		}
 		*/
 		
-		inline void setParent(Individual *parent){
+		// Notar que lo ideal seria que parent fuese const
+		// Lamentablemente, el increase / decrease de los genes lo impide
+		inline void setParent(Individual &parent){
 //			cout<<"Individual::setParent - Inicio\n";
 			for(unsigned int i = 0; i < n_gens; ++i){
 				if(gens[i] != NULL){
 					gens[i]->decrease();
 				}
-				gens[i] = parent->getGene(i);
+				gens[i] = parent.getGene(i);
 				if(gens[i] != NULL){
 					gens[i]->increase();
 				}
@@ -217,7 +259,9 @@ class Individual{
 //			cout<<"Individual::setParent - Fin\n";
 		}
 		
-		inline void setParents(Individual *parent1, Individual *parent2){
+		// Notar que lo ideal seria que parent fuese const
+		// Lamentablemente, el increase / decrease de los genes lo impide
+		inline void setParents(Individual &parent1, Individual &parent2){
 			
 			// Esta primera version solo funciona para diploides
 			if(ploidy != 2){
@@ -235,16 +279,18 @@ class Individual{
 					gens[i]->decrease();
 				}
 				if( rand_bits & mask ){
-					gens[i] = parent1->getGene(i);
+					gens[i] = parent1.getGene(i);
 				}
 				else{
-					gens[i] = parent1->getGene(i + gens_ploidy);
+					gens[i] = parent1.getGene(i + gens_ploidy);
 				}
 				if( (mask >>= 1) == 0 ){
 					rand_bits = rng();
 					mask = 0x80000000;
 				}
-				gens[i]->increase();
+				if(gens[i] != NULL){
+					gens[i]->increase();
+				}
 			}
 			
 			// Conjunto de cromosomas de padre 2
@@ -253,16 +299,18 @@ class Individual{
 					gens[i + gens_ploidy]->decrease();
 				}
 				if( rand_bits & mask ){
-					gens[i + gens_ploidy] = parent2->getGene(i);
+					gens[i + gens_ploidy] = parent2.getGene(i);
 				}
 				else{
-					gens[i + gens_ploidy] = parent2->getGene(i + gens_ploidy);
+					gens[i + gens_ploidy] = parent2.getGene(i + gens_ploidy);
 				}
 				if( (mask >>= 1) == 0 ){
 					rand_bits = rng();
 					mask = 0x80000000;
 				}
-				gens[i + gens_ploidy]->increase();
+				if(gens[i + gens_ploidy] != NULL){
+					gens[i + gens_ploidy]->increase();
+				}
 			}
 			
 		}

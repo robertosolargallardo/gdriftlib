@@ -58,15 +58,15 @@ Individual::Individual(){
 	gens = NULL;
 }
 
-Individual::Individual(const Individual &_individual){
+Individual::Individual(const Individual &original){
 //	cout<<"Individual - Inicio (copiando)\n";
-	id = _individual.id;
-	n_gens = _individual.n_gens;
-	ploidy = _individual.ploidy;
-	n_chr = _individual.n_chr;
-	gens_ploidy = _individual.gens_ploidy;
+	id = original.id;
+	n_gens = original.n_gens;
+	ploidy = original.ploidy;
+	n_chr = original.n_chr;
+	gens_ploidy = original.gens_ploidy;
 	gens_chr = new unsigned short[n_chr];
-	memcpy(gens_chr, _individual.gens_chr, n_chr*sizeof(short));
+	memcpy(gens_chr, original.gens_chr, n_chr*sizeof(short));
 	if(n_gens == 0){
 		gens = NULL;
 	}
@@ -77,20 +77,22 @@ Individual::Individual(const Individual &_individual){
 			gens[i] = NULL;
 		}
 	}
-	setParent((Individual*)(&_individual));
+	// Notar que lo que sigue NO es recomendable por seguridad
+	// En este caso es necesario, setParent DEBE recibir un non-const para increase de sus genes
+	setParent(const_cast<Individual&>(original));
 }
 
-Individual::Individual(unsigned int _id, Profile *_profile){
+Individual::Individual(unsigned int _id, const Profile &profile){
 //	cout<<"Individual - Inicio (creando individuo "<<_id<<")\n";
 	id = _id;
-	n_gens = _profile->n_gens;
-	ploidy = _profile->ploidy;
-	n_chr = _profile->n_chr;
-	gens_ploidy = _profile->gens_ploidy;
+	n_gens = profile.n_gens;
+	ploidy = profile.ploidy;
+	n_chr = profile.n_chr;
+	gens_ploidy = profile.gens_ploidy;
 //	cout<<"Individual - n_gens: "<<n_gens<<", ploidy: "<<(unsigned int)ploidy<<", n_chr: "<<(unsigned int)n_chr<<", gens_ploidy: "<<gens_ploidy<<"\n";
 	gens_chr = new unsigned short[n_chr];
 //	cout<<"Individual - memcpy...\n";
-	memcpy(gens_chr, _profile->gens_chr, n_chr*sizeof(short));
+	memcpy(gens_chr, profile.gens_chr, n_chr*sizeof(short));
 	// Note that Profile stores the real number of genes per chromosome
 	// Individual needs the accumulated to accelerate its searches
 //	cout<<"Individual - acumulando...\n";
