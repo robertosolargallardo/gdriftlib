@@ -32,48 +32,51 @@ int main(int argc,char** argv)
 	cout<<"Test - Inicio\n";
 	NanoTimer timer;
 	
-	Sample sample("Test Sample");
+	Sample *sample = new Sample("Test Sample");
 	// Notar que hay que mantener las secuencias en un pool, independiente de la poblacion
 	// Ni la poblacion, ni los individuos borran secuencias, eso es trabajo del pool
 	vector<VirtualSequence*> pool;
 	
 	vector<unsigned int> gens;
 	gens.push_back(1);
-	Individual::Profile profile(1, 1, gens);
+	Individual::Profile *profile = new Individual::Profile(1, 1, gens);
 	
-	
-	Individual *original = new Individual(0, profile);
+	cout<<"Test - Creando Secuencia Original\n";
 	string str(len, 'A');
 	VirtualSequence *seq_original = new VirtualSequence(str);
 	pool.push_back(seq_original);
-	original->setGene(0, 0, 0, seq_original);
+	cout<<"Test - Agregando Individuo\n";
+	sample->add(0, profile);
+	cout<<"Test - Asociando secuencia\n";
+	sample->at(0).setGene(0, 0, 0, seq_original);
 	
-	sample.push( original );
+	cout<<"Test - Iterando\n";
 	for(unsigned int i = 1; i < n_sample; ++i){
-		Individual *ind = new Individual(i, profile);
+		cout<<"Test - Creando Secuencia "<<i<<"\n";
 		VirtualSequence *seq = new VirtualSequence(*seq_original);
 		// Mutar seq
 		for(unsigned int j = 0; j < n_muts; ++j){
 			seq->mutate();
 		}
 		pool.push_back(seq);
-		ind->setGene(0, 0, 0, seq);
-		
-		sample.push( ind );
+		cout<<"Test - Agregando Individuo\n";
+		sample->add(i, profile);
+		cout<<"Test - Asociando secuencia\n";
+		sample->at(i).setGene(0, 0, 0, seq);
 	}
 	stringstream ss;
 	
-	boost::property_tree::ptree findices = sample.indices();
+	boost::property_tree::ptree findices = sample->indices();
 	write_json(ss, findices);
 	cout << ss.str() << endl;
 	
-	findices = sample.indices_seq();
+	findices = sample->indices_seq();
 	write_json(ss, findices);
 	cout << ss.str() << endl;
 	
 	
 	// Borrado de la poblacion
-	sample.deleteData();
+	sample->deleteData();
 	// Borrado del pool
 	for(unsigned int i = 0; i < pool.size(); ++i){
 		if(pool[i] != NULL){
@@ -81,6 +84,8 @@ int main(int argc,char** argv)
 		}
 	}
 	pool.clear();
+	delete profile;
+	delete sample;
 	
 	cout<<"Test - Fin (count_str: "<<VirtualSequence::count_str<<", count_int: "<<VirtualSequence::count_int<<", count_copy: "<<VirtualSequence::count_copy<<", count_mem: "<<VirtualSequence::count_mem<<", count_del: "<<VirtualSequence::count_del<<", count_del_mem: "<<VirtualSequence::count_del_mem<<", count_mut: "<<VirtualSequence::count_mut<<")\n";
 	

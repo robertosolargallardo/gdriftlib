@@ -64,7 +64,7 @@ class Individual{
 //		Individual(const uint32_t&,const boost::property_tree::ptree&);
 //		Individual(const uint32_t&,const Ploidy&,const uint32_t&);
 		Individual();
-		Individual(unsigned int _id, const Profile &_profile);
+		Individual(unsigned int _id, Profile *_profile);
 		Individual(const Individual&);
 		uint32_t getId() const;
 		uint32_t n_chromosomes() const;
@@ -204,13 +204,17 @@ class Individual{
 		*/
 		
 		inline void setParent(Individual *parent){
+//			cout<<"Individual::setParent - Inicio\n";
 			for(unsigned int i = 0; i < n_gens; ++i){
 				if(gens[i] != NULL){
 					gens[i]->decrease();
 				}
 				gens[i] = parent->getGene(i);
-				gens[i]->increase();
+				if(gens[i] != NULL){
+					gens[i]->increase();
+				}
 			}
+//			cout<<"Individual::setParent - Fin\n";
 		}
 		
 		inline void setParents(Individual *parent1, Individual *parent2){

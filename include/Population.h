@@ -42,7 +42,7 @@ class Population{
 		vector<Individual> &population(void);
 		// Agrega un nuevo individuo a la poblacio, con id y basado en un cierto profile
 		// Lo crea vacio y le asigna datos del pool (con Pool::regenerate), si se recibe uno
-		void add(unsigned int id, Individual::Profile *profile, Pool *pool = NULL);
+		void add(unsigned int id, Individual::Profile *_profile, Pool *pool = NULL);
 
         void push(Individual&);
         void pop();

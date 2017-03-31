@@ -327,21 +327,20 @@ class Sample : public Population{
 		
 		boost::property_tree::ptree indices_seq(void){
 			//random_shuffle(this->_population.begin(),this->_population.end());
-			auto sample = this->_population;//vector<Individual*>(this->_population.begin(),this->_population.begin()+int(floor(double(this->size())*_percentage)));
 
 			map<uint32_t,map<uint32_t,vector<VirtualSequence*>>> sequences;
 
-//			cout<<"Sample::indices - Decompressing sequences from "<<sample.size()<<" individuals\n";
-			for(auto& individual : sample){
-				for(unsigned int pid = 0; pid < individual->getPloidy(); pid++){
-					for(uint32_t cid = 0; cid < individual->getChromosomes(); cid++){
-						for(uint32_t gid = 0; gid < individual->getGenes(cid); gid++){
-							sequences[cid][gid].push_back(individual->getGene(gid, cid, pid));
+			cout<<"Sample::indices - Decompressing sequences from "<<_population.size()<<" individuals\n";
+			for(auto& individual : _population){
+				for(unsigned int pid = 0; pid < individual.getPloidy(); pid++){
+					for(uint32_t cid = 0; cid < individual.getChromosomes(); cid++){
+						for(uint32_t gid = 0; gid < individual.getGenes(cid); gid++){
+							sequences[cid][gid].push_back(individual.getGene(gid, cid, pid));
 						}
 					}
 				}
 			}
-//			cout<<"Sample::indices - Evaluating statistics\n";
+			cout<<"Sample::indices - Evaluating statistics\n";
 
 			//this->rarest_nucleotides_statistics(sequences[0][0]);
 
@@ -380,19 +379,18 @@ class Sample : public Population{
 			}
 			fpopulation.push_back(std::make_pair("chromosomes",fchromosomes));					
 
-//			cout<<"Sample::indices - End\n";
+			cout<<"Sample::indices - End\n";
 			return(fpopulation);
 		}
 		
 		boost::property_tree::ptree indices(void){
 			//random_shuffle(this->_population.begin(),this->_population.end());
-			auto sample = this->_population;//vector<Individual*>(this->_population.begin(),this->_population.begin()+int(floor(double(this->size())*_percentage)));
 
 			map<uint32_t, map<uint32_t, vector<string>>> sequences_str;
 			map<uint32_t, map<uint32_t, vector<VirtualSequence*>>> sequences;
 
-//			cout<<"Sample::indices - Decompressing sequences from "<<sample.size()<<" individuals\n";
-			for(auto& individual : sample){
+			cout<<"Sample::indices - Decompressing sequences from "<<_population.size()<<" individuals\n";
+			for(auto& individual : _population){
 				for(unsigned int pid = 0; pid < individual.getPloidy(); pid++){
 					for(uint32_t cid = 0; cid < individual.getChromosomes(); cid++){
 						for(uint32_t gid = 0; gid < individual.getGenes(cid); gid++){
@@ -402,7 +400,7 @@ class Sample : public Population{
 					}
 				}
 			}
-//			cout<<"Sample::indices - Evaluating statistics\n";
+			cout<<"Sample::indices - Evaluating statistics\n";
 
 			//this->rarest_nucleotides_statistics(sequences[0][0]);
 
@@ -449,7 +447,7 @@ class Sample : public Population{
 			}
 			fpopulation.push_back(std::make_pair("chromosomes",fchromosomes));					
 
-//			cout<<"Sample::indices - End\n";
+			cout<<"Sample::indices - End\n";
 			return(fpopulation);
 		}
 		

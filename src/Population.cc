@@ -14,7 +14,7 @@ Population::Population(const Ploidy &_ploidy, const boost::property_tree::ptree 
 	this->_population.reserve(_fpopulation.get_child("individuals").size());
 	
 	for(auto& findividual : _fpopulation.get_child("individuals")){
-		Individual individual(findividual.second.get<uint32_t>("id"), *profile);
+		Individual individual(findividual.second.get<uint32_t>("id"), profile);
 		for(auto& fchromosome : findividual.second.get_child("chromosomes")){
 			for(auto& fgene : fchromosome.second.get_child("genes")){
 				unsigned int pid = 0;
@@ -58,12 +58,18 @@ vector<Individual> &Population::population(void){
 
 // Agrega un nuevo individuo a la poblacio, con id y basado en un cierto profile
 // Lo crea vacio y le asigna datos del pool, si se entrega
-void Population::add(unsigned int id, Individual::Profile *profile, Pool *pool){
-	Individual individual(id, *profile);
+void Population::add(unsigned int id, Individual::Profile *_profile, Pool *pool){
+//	cout<<"Population::add - Inicio ("<<_population.size()<<")\n";
+	Individual individual(id, _profile);
+//	cout<<"Population::add - Verificando pool\n";
 	if(pool != NULL){
 		pool->regenerate(&individual);
 	}
+//	cout<<"Population::add - Push back\n";
 	_population.push_back(individual);
+	
+//	cout<<"Population::add - Fin\n";
+	
 }
 
 void Population::push(Individual &individual){
