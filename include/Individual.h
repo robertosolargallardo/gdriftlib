@@ -67,7 +67,6 @@ class Individual{
 		Individual(const Individual&);
 		~Individual();
 		
-		// TODO: copy assignment operator
 		Individual& operator=(const Individual& original){
 			if (this != &original){
 				// borrar, pedir, copiar

@@ -9,6 +9,9 @@
 #include "Model.h"
 #include "Individual.h"
 
+//#include "Model.h"
+#include "ModelWF.h"
+
 using namespace std;
 
 class Simulator{

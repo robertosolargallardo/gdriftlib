@@ -1,12 +1,25 @@
 #include "Simulator.h"
+
 Simulator::Simulator(const boost::property_tree::ptree &_fsettings){
-   this->_fsettings=_fsettings;
-   // Definition of the specie
-//   Individual::setParameters(_fsettings.get_child("individual"));
+	this->_fsettings=_fsettings;
+	// Definition of the specie
 	profile = new Individual::Profile(_fsettings.get_child("individual"));
-   // Preparing the pool and the EventList
-   this->_pool = new Pool(_fsettings.get_child("individual"));
-   this->_evlist = new EventList(_fsettings.get_child("scenario"));
+	// Preparing the pool and the EventList
+	this->_pool = new Pool(_fsettings.get_child("individual"));
+	this->_evlist = new EventList(_fsettings.get_child("scenario"));
+	
+//	int model_code = this->_fsettings.get_child("scenario").get<int>("model");
+//	switch(model_code){
+//		case WRIGHTFISHER :{
+//			model = new ModelWF();
+//			break;
+//		}
+//		default : {
+//			cerr << "Error::Model " << this->_fsettings.get_child("scenario").get<uint32_t>("model") << " not Supported" << endl;
+//			exit(EXIT_FAILURE);
+//		}
+//	}
+	
 }
 void Simulator::run(void){
    if(this->_evlist->empty()) 
@@ -150,13 +163,22 @@ void Simulator::run(void){
       }
 
 //      cout<<"Simulator::run - Preparing Model\n";
+//		for(map<string,tuple<Population*, Population*>>::iterator i = this->_populations.begin(); i != this->_populations.end(); i++){
+//			model->run(
+//				get<0>(i->second), get<1>(i->second), this->_pool, profile
+//			);
+//			swap(get<0>(i->second),get<1>(i->second));
+//			get<1>(i->second)->clear();
+//		}
+                  
+
       Model m = Model(this->_fsettings.get_child("scenario").get<int>("model"));
       switch(m){
          case WRIGHTFISHER:{
             Ploidy p = Ploidy(this->_fsettings.get_child("individual").get<int>("ploidy"));
             switch(p){
                case HAPLOID:{
-                  for(map<string,tuple<Population*,Population*>>::iterator i = this->_populations.begin(); i != this->_populations.end(); i++){
+                  for(map<string,tuple<Population*, Population*>>::iterator i = this->_populations.begin(); i != this->_populations.end(); i++){
                      model::run<WRIGHTFISHER,HAPLOID>(
                      	get<0>(i->second), get<1>(i->second), this->_pool, profile
                      	);
@@ -166,7 +188,7 @@ void Simulator::run(void){
                   break;
                }  
                case DIPLOID:{
-                  for(map<string,tuple<Population*,Population*>>::iterator i=this->_populations.begin();i!=this->_populations.end();i++){
+                  for(map<string,tuple<Population*, Population*>>::iterator i=this->_populations.begin();i!=this->_populations.end();i++){
                      model::run<WRIGHTFISHER,DIPLOID>(
                      	get<0>(i->second), get<1>(i->second), this->_pool, profile
                      	);   
@@ -204,7 +226,7 @@ Simulator::~Simulator(void){
    for(map<string,Sample*>::iterator i=this->_samples.begin();i!=this->_samples.end();i++)
 		delete i->second;
 
-   for(map<string,tuple<Population*,Population*>>::iterator i=this->_populations.begin();i!=this->_populations.end();i++){
+   for(map<string,tuple<Population*,Population*>>::iterator i = this->_populations.begin(); i != this->_populations.end(); i++){
       delete get<0>(i->second);
       delete get<1>(i->second);
    }

@@ -34,11 +34,11 @@ int main(int argc,char** argv)
 	timer.reset();
 
 	Sample all("summary");
-	map<string,Sample*> samples = sim.samples();
-	for(map<string,Sample*>::iterator i=samples.begin();i!=samples.end();i++){
-		boost::property_tree::ptree findices=i->second->indices();
+	map<string, Sample*> samples = sim.samples();
+	for(map<string,Sample*>::iterator i = samples.begin();i != samples.end(); ++i){
+		boost::property_tree::ptree findices = i->second->indices();
 		stringstream ss;
-		write_json(ss,findices);
+		write_json(ss, findices);
 		cout << ss.str() << endl;
 		all.merge(i->second);
 	}
