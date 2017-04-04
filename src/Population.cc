@@ -20,7 +20,7 @@ Population::Population(const Ploidy &_ploidy, const boost::property_tree::ptree 
 				unsigned int pid = 0;
 				// una secuencia por ploidy
 				for(auto& fsequence : fgene.second.get_child("sequences")){
-					VirtualSequence* reference = new VirtualSequence(fsequence.second.data(),false);
+					VirtualSequence* reference = new VirtualSequenceDNA(fsequence.second.data());
 					individual.setGene(fgene.second.get<uint32_t>("id"), fchromosome.second.get<uint32_t>("id"), pid, reference);
 					++pid;
 				}

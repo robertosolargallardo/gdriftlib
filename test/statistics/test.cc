@@ -3,9 +3,9 @@
 
 #include "Individual.h"
 #include "VirtualSequence.h"
+#include "VirtualSequenceDNA.h"
 
 #include "NanoTimer.h"
-
 #include "Sample.h"
 
 #include <random>
@@ -43,7 +43,7 @@ int main(int argc,char** argv)
 	
 	cout<<"Test - Creando Secuencia Original\n";
 	string str(len, 'A');
-	VirtualSequence *seq_original = new VirtualSequence(str);
+	VirtualSequence *seq_original = new VirtualSequenceDNA(str);
 	pool.push_back(seq_original);
 	cout<<"Test - Agregando Individuo\n";
 	sample.add(0, &profile);
@@ -53,7 +53,7 @@ int main(int argc,char** argv)
 	cout<<"Test - Iterando\n";
 	for(unsigned int i = 1; i < n_sample; ++i){
 		cout<<"Test - Creando Secuencia "<<i<<"\n";
-		VirtualSequence *seq = new VirtualSequence(*seq_original);
+		VirtualSequence *seq = seq_original->clone();
 		// Mutar seq
 		for(unsigned int j = 0; j < n_muts; ++j){
 			seq->mutate();

@@ -7,6 +7,8 @@ Sample::Sample(const string &_name) : Population(_name){
 }
 Sample::Sample(const string &_name, Population *_population, const uint32_t &_size) : Population(_name){
 	this->_population.reserve(_size);
+	// Ralizar shuffle de la poblacion padre NO ES CORRECTO
+	// Esto requiere una copia local del vector, luego shuffle, y luego SACAR el resto (dejando al padre intacto)
 	_population->shuffle();
 	uniform_int_distribution<> uniform(0, _population->size()-1);
 

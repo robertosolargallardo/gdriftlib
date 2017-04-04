@@ -8,6 +8,7 @@
 
 #include "Individual.h"
 #include "VirtualSequence.h"
+#include "VirtualSequenceDNA.h"
 
 extern random_device seed;
 extern mt19937 rng;

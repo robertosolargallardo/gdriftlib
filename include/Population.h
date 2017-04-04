@@ -6,8 +6,10 @@
 #include <map>
 
 #include "Individual.h"
-#include "VirtualSequence.h"
 #include "Pool.h"
+
+#include "VirtualSequence.h"
+#include "VirtualSequenceDNA.h"
 
 // De momento conservo rng externo
 // La idea es sacarlo cuando ya nadie lo use

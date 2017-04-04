@@ -27,10 +27,7 @@ using namespace std;
 #define seq_size_t unsigned int
 //#define seq_size_t unsigned short
 
-// #define VS_DEBUG
-
-// Tercera Version, texto en 2 bits por base
-// En esta version, el constructor de copia ahorra espacio (guarda solo un puntero al buff del original)
+#define VS_DEBUG
 
 extern random_device seed;
 extern mt19937 rng;
@@ -44,108 +41,44 @@ protected:
 	static const unsigned int alphabet_size;
 	static const char alphabet[];
 	
-//	static mt19937 class_rng;
-	
-	// Texto de referencia de la INSTANCIA (=> ahorra espacio solo el constructor de copia)
-	// Notar que size es el largo del TEXTO (n_bytes = size/4)
-	seq_size_t size;
-	unsigned char *data;
-	bool owns_data;
-	
-	// Variables de la instancia (mutaciones)
-//	set<seq_size_t> mutations;
-	vector<seq_size_t> mutations;
-	
-	// Estructura para inserciones
-	vector< pair<seq_size_t, char> > inserts;
-	
+	// Contador de uso
 	uint32_t cur_count;
-	bool cur_read;
-	
-	// Verifica si el espacio de mutaciones es demasiado, para aplicar descompresion
-	// En ese caso, pide memoria (si no tiene ya reservada), vuelca las mutaciones en data y elimina las mutaciones
-	// Deberia llamarse a este metodo luego de aplicar cualquier mutacion
-	// Este metodo debe considerar las diferentes formas de mutacion para el espacio
-	bool verifyDecompression();
-	
-	// Cuenta el numero de inserts hasta pos
-	// Si pos calza exactamente con un insert, retorna el caracter
-	seq_size_t countInserts(seq_size_t pos, char &res) const;
-	
-//	const static unsigned int NOT_FOUND = 0xffffffff;
-//	unsigned int findMutation(seq_size_t pos) const;
-	bool findMutation(seq_size_t pos, seq_size_t &pos_mut) const;
 
 public:
 	
-	VirtualSequence(bool _read_only = true);
-	VirtualSequence(const char *_ref, unsigned int _size, bool _read_only = true);
-	VirtualSequence(const string &_ref, bool _read_only = true);
-	VirtualSequence(const unsigned int _size, const unsigned int _seq, bool _read_only = true);
+	VirtualSequence();
 	VirtualSequence(const VirtualSequence &original);
-	
 	virtual ~VirtualSequence();
+	virtual VirtualSequence *clone();
+		
+//	VirtualSequence& operator=(const VirtualSequence& original);
 	
-	void mutate(mt19937 *arg_rng = NULL);
-	char at(seq_size_t pos) const;
+	// Aqui hay que hacer comparacion de tipo antes de comparar los datos
+	virtual bool operator==(const VirtualSequence&);
 	
-	// Aplica una mutacion cambiando el BIT de la posicion absoluta pos 
-	// Este metodo puede entrar en conflicto con insert
-	void mutateBit(unsigned int pos);
+	virtual void mutate(mt19937 *arg_rng = NULL);
+	virtual char at(seq_size_t pos) const;
 	
-	// Un metodo para aplicar varias mutaciones de una vez puede ser mejor
-	// Esto es porque, al ser un vector, hay que hacer ajustes con cada insercion
-	// Se podria implementar una version que prepare las inserciones y solo haga un sort al final
-	// void mutateMany(unsigned int num_mutations);
-	
-	// Aplica una mutacion cambiando TODOS los bits de mask, partiendo desde el byte byte_ini de data
-	// Notar que esto puede modificar un maximo de 4 bytes (32 bits de mask)
-	// Este metodo puede entrar en conflicto con insert
-	void mutateBitMask(unsigned int mask, unsigned int byte_ini = 0);
-	
-	// Este metodo puede entrar en conflicto con insert
-	void mutateInsert(seq_size_t pos, char c);
-	
-	string to_string();
-	
+	// Metodos relacionados con el contador de uso NO son virtuales
+	// Esto es fijo para todas las clases
+	unsigned int count() const;
 	void increase();
 	void decrease();
-	uint32_t count() const;
-	bool read_only() const;
-	bool operator==(const VirtualSequence&);
-	unsigned int length() const;
+	
+	// Esto podria ser redefinido si una secuencia permite insert/delete
+	virtual unsigned int length() const;
+	
+	// Convertir la secuencia completa en string
+	virtual string to_string();
+	
+	// Este metodo es similar a to_string pero solo codifica las mutaciones de la secuencia
+	// Notar que esto deberia poder usarse con otros tipos de secuencia, incluso MS
+	virtual string codeMutations() const;
 	
 	// Metodo para debug
-	void printData();
+	virtual void printData();
 	
-	// Metodos de acceso directo a los datos
-	// Esto es para calcular estadisticas mas rapido
-	unsigned char *getData(){
-		return data;
-	}
-	vector<seq_size_t> &getMutations(){;
-		return mutations;
-	}
-	string codeMutations(){
-//		cout<<"VirtualSequence::codeMutations - Inicio\n";
-		string seq;
-		if(mutations.empty()){
-			return seq;
-		}
-		// De momento uso un buff de largo 16 para cada mutacion
-		// Estoy asumiendo que cada mutacion solo es un numero, tipo 4.000.000.000, mas los 2 chars ", "
-		char buff[16];
-		sprintf(buff, "%u", mutations[0]);
-		seq.append(buff);
-		for(unsigned int i = 1; i < mutations.size(); ++i){
-			sprintf(buff, ", %u", mutations[i]);
-			seq.append(buff);
-		}
-//		cout<<"VirtualSequence::codeMutations - \""<<seq<<"\"\n";
-		return seq;
-	}
-	
-	// Contador de constructores
+	// Contador de la clase
 	static unsigned int count_str;
 	static unsigned int count_int;
 	static unsigned int count_copy;
