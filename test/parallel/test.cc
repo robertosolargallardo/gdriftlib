@@ -39,7 +39,7 @@ void SimultionThread(unsigned int pid, const boost::property_tree::ptree &fsetti
 		write_json(ss, findices);
 		
 		global_mutex.lock();
-//		cout << ss.str() << endl;
+		cout << ss.str() << endl;
 		global_mutex.unlock();
 		
 		all.merge(i->second);
@@ -49,7 +49,7 @@ void SimultionThread(unsigned int pid, const boost::property_tree::ptree &fsetti
 	write_json(ss, findices);
 	
 	global_mutex.lock();
-//	cout << ss.str() << endl;
+	cout << ss.str() << endl;
 	global_mutex.unlock();
 	
 }

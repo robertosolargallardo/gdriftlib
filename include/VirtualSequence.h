@@ -27,7 +27,7 @@ using namespace std;
 #define seq_size_t unsigned int
 //#define seq_size_t unsigned short
 
-#define VS_DEBUG
+//#define VS_DEBUG
 
 extern random_device seed;
 extern mt19937 rng;

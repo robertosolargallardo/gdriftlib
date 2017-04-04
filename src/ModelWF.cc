@@ -2,9 +2,9 @@
 
 
 ModelWF::ModelWF(){
-	cout<<"ModelWF - Inicio\n";
+//	cout<<"ModelWF - Inicio\n";
 	
-	cout<<"ModelWF - Fin\n";
+//	cout<<"ModelWF - Fin\n";
 }
 
 //ModelWF::ModelWF(const ModelWF &original){}
@@ -20,7 +20,7 @@ ModelWF::~ModelWF(){}
 
 void ModelWF::run(Population *src, Population *dst, Pool *pool, Individual::Profile *profile){
 	
-	cout<<"ModelWF::run - Iterando por "<<dst->size()<<" individuos ("<<profile->getChromosomes()<<" chromosomes)\n";
+//	cout<<"ModelWF::run - Iterando por "<<dst->size()<<" individuos ("<<profile->getChromosomes()<<" chromosomes)\n";
 	
 	NanoTimer timer;
 	unsigned int mutations = 0;
@@ -66,7 +66,7 @@ void ModelWF::run(Population *src, Population *dst, Pool *pool, Individual::Prof
 		}// for... chromosome
 	}// for... ploidy
 	
-	cout<<"ModelWF::run - Terminado ("<<timer.getMilisec()<<" ms, mutations: "<<mutations<<")\n";
+//	cout<<"ModelWF::run - Terminado ("<<timer.getMilisec()<<" ms, mutations: "<<mutations<<")\n";
 
 }
 
