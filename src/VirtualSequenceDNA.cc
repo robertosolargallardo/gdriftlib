@@ -174,12 +174,33 @@ VirtualSequenceDNA::~VirtualSequenceDNA(){
 	size = 0;
 }
 
-//VirtualSequence& VirtualSequenceDNA::operator=(const VirtualSequence& original){
-//	if (this != &original){
-//		// borrar, pedir, copiar
-//	}	
-//	return *this;
-//}
+VirtualSequenceDNA& VirtualSequenceDNA::operator=(const VirtualSequenceDNA& original){
+	if (this != &original){
+		// borrar, pedir, copiar
+		if(data != NULL){
+			delete [] data;
+		}
+		
+		#ifdef VS_DEBUG
+		internal_mutex.lock();
+		++count_copy;
+		internal_mutex.unlock();
+		#endif
+	
+		//cout<<"VirtualSequenceDNA - Copia\n";
+		size = original.size;
+		data = original.data;
+		owns_data = false;
+		//cout<<"VirtualSequenceDNA - size: "<<size<<". data[0]: "<<((data==NULL)?(0xffffffff):(unsigned int)data[0])<<"\n";
+	
+		// Muaciones
+		//cout<<"VirtualSequenceDNA - Agregando "<<original.mutations.size()<<" mutaciones\n";
+		mutations.insert(mutations.begin(), original.mutations.begin(), original.mutations.end());
+		//cout<<"VirtualSequenceDNA - Fin\n";
+
+	}
+	return *this;
+}
 
 // Ajustar este metodo para cada tipo de mutacion
 bool VirtualSequenceDNA::verifyDecompression(){
@@ -210,12 +231,16 @@ bool VirtualSequenceDNA::verifyDecompression(){
 		seq_size_t pos;
 		unsigned int pos_byte;
 		unsigned int pos_bit;
+		
+		// TODO: cambiar esto a nueva mutacion
+		// Eso requiere 
 		for(it = mutations.begin(); it != mutations.end(); it++){
 			pos = *it;
 			pos_byte = (pos >> 3);
 			pos_bit = (pos & 0x7);
 			data[pos_byte] ^= (0x1 << pos_bit);
 		}
+		
 		mutations.clear();
 		
 		return true;

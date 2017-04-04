@@ -191,24 +191,6 @@ class Individual{
 			return n_gens;
 		}
 		
-		// Returns the mutarion rate of a gene, of a chromosome
-//		inline double mutationRate(unsigned int gen, unsigned int chr){
-//			unsigned int pos = genePosition(gen, chr, 0);
-//			return mut_rate[pos];
-//		}
-		
-		// Returns the mutarion rate of a gene in absolute position
-		// Note that the rates repeat themselves for different ploidy sets (so we take % gens_ploidy)
-//		inline double mutationRate(unsigned int gen){
-//			return mut_rate[ (gen % gens_ploidy) ];
-//		}
-		
-//		// Returns the number of nucleotides of a gene, of a chromosome
-//		inline static unsigned int geneLength(unsigned int gen, unsigned int chr){
-//			unsigned int pos = genePosition(gen, chr, 0);
-//			return gen_len[pos];
-//		}
-		
 		// Returns the chromosome id of a gen in absolute position
 		// This can be implemented with a binary search (log), for new its lineal in num of chromosomes
 		inline unsigned int getChromosome(unsigned int pos){
@@ -331,9 +313,14 @@ class Individual{
 		// Number of genes per chromosome (should they be the same across chromosome sets?, it is for now)
 		unsigned short *gens_chr;
 		// Mutation rate per gene
-//		double *mut_rate;
 		double **mut_rate;
 		unsigned int **gen_len;
+		
+		// Aqui debe almacenarse toda la informacion de mutaciones
+		// Eso incluye potenciales tablas de prob de conversion por nucleotido para modelos mas complejos
+		// Notar que eso, ademas, es por gen (quizas sea conveniente poner eso en una estructura en lugar de arreglos)
+		// Tambien con tanta complejidad, quizas sea razonable separar esto en una clase independiente
+		
 		Profile(){
 			n_gens = 0;
 			ploidy = 0;

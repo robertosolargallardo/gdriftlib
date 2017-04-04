@@ -48,7 +48,7 @@ public:
 	virtual ~VirtualSequenceDNA();
 	virtual VirtualSequence *clone();
 		
-//	VirtualSequence& operator=(const VirtualSequence& original);
+	VirtualSequenceDNA& operator=(const VirtualSequenceDNA& original);
 	virtual bool operator==(const VirtualSequenceDNA&);
 	
 	virtual void mutate(mt19937 *arg_rng = NULL);

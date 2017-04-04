@@ -29,12 +29,12 @@ VirtualSequence::~VirtualSequence(){
 //	cout<<"VirtualSequence::~VirtualSequence\n";
 }
 
-//VirtualSequence& VirtualSequence::operator=(const VirtualSequence& original){
-//	if (this != &original){
-//		// borrar, pedir, copiar
-//	}	
-//	return *this;
-//}
+VirtualSequence& VirtualSequence::operator=(const VirtualSequence& original){
+	if (this != &original){
+		// borrar, pedir, copiar
+	}
+	return *this;
+}
 
 VirtualSequence *VirtualSequence::clone(){
 //	cout<<"VirtualSequence::clone\n";
