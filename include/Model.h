@@ -9,10 +9,15 @@
 
 #include <random>
 
-enum Model{WRIGHTFISHER=0};
+class Model{
+private:
+public:
+	Model();
+	virtual ~Model();
+	
+	virtual void run(Population *src, Population *dst, Pool *pool, Individual::Profile *profile);	
+	
+};
 
-namespace model{
-   template<Model M,Ploidy P>
-   void run(Population* &_src,Population* &_dst,Pool* &_pool, Individual::Profile *profile);
-}
+
 #endif

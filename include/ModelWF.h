@@ -1,38 +1,23 @@
 #ifndef _MODEL_WF_H_
 #define _MODEL_WF_H_
 
-#include "Population.h" 
-#include "Pool.h" 
-#include "Individual.h" 
-#include "VirtualSequence.h" 
-#include "NanoTimer.h" 
-
-//Population *dst, Pool *pool, Individual::Profile *profile
+#include "Model.h" 
 
 #include <random>
 
-//namespace model{
-//   template<Model M,Ploidy P>
-//   void run(Population* &_src,Population* &_dst,Pool* &_pool, Individual::Profile *profile);
-//}
 
-
-
-class ModelWF{
+class ModelWF : public Model{
 
 private:
+	unsigned int processDNAGenes(Population *dst, Pool *pool, Individual::Profile *profile, unsigned int plo, unsigned int chrid, unsigned int genid);
+//	unsigned int processMSGenes(Population *dst, Pool *pool, Individual::Profile *profile, unsigned int plo, unsigned int chrid, unsigned int genid);
 	
 public:	
-	ModelWF(){}
-//	ModelWF(const ModelWF &original){}
-	~ModelWF(){}
+	ModelWF();
+//	ModelWF(const ModelWF &original);
+	~ModelWF();
 	
-//	ModelWF& operator=(const ModelWF &original){
-//		if (this != &original){
-//		
-//		}
-//		return *this;
-//	}
+//	ModelWF& operator=(const ModelWF &original);
 	
 	void run(Population *src, Population *dst, Pool *pool, Individual::Profile *profile);
 

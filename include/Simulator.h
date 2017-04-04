@@ -6,28 +6,32 @@
 #include "Population.h"
 #include "Sample.h"
 #include "Pool.h"
-#include "Model.h"
 #include "Individual.h"
 
-//#include "Model.h"
+#include "Model.h"
 #include "ModelWF.h"
+
+// Esto podria ser de un factory de Model
+// Por ahora, ese trabajo esta en el Simulator
+enum MODEL_CODE { WRIGHTFISHER = 0 };
 
 using namespace std;
 
 class Simulator{
-   private: map<string,tuple<Population*,Population*>> _populations;
+   private: map<string,tuple<Population*,Population*>> populations;
 			map<string,Sample*> _samples;
 
             boost::property_tree::ptree _fsettings;
-            Pool* _pool;
-            EventList* _evlist;
+            Pool *pool;
+            EventList *evlist;
             Individual::Profile *profile;
+            Model *model;
 		
 
    public:  Simulator(const boost::property_tree::ptree&);
             ~Simulator(void);
          
-			map<string,Sample*> samples(void);
+			map<string,Sample*> &samples();
             void run(void);
 };
 #endif
