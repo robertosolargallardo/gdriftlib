@@ -78,7 +78,7 @@ unsigned int ModelWF::processDNAGenes(Population *dst, Pool *pool, Individual::P
 	VirtualSequence *seq = NULL;
 	
 //	double rate = gen->mutation_rate();
-	cout<<"ModelWF::processDNAGenes - Iniciando mutacion de chr "<<chrid<<", gen "<<genid<<"\n";
+//	cout<<"ModelWF::processDNAGenes - Iniciando mutacion de chr "<<chrid<<", gen "<<genid<<"\n";
 	double rate = profile->mutationRate(genid, chrid);
 //	cout<<"ModelWF::processDNAGenes - rate: "<<rate<<"\n";
 	unsigned int length = profile->geneLength(genid, chrid);
@@ -90,7 +90,7 @@ unsigned int ModelWF::processDNAGenes(Population *dst, Pool *pool, Individual::P
 	// Version binomial (Notar que considero rate como la prob de mutacion POR NUCLEOTIDO de cada individuo)
 	binomial_distribution<unsigned int> binomial_dist(length * dst->size(), rate);
 	unsigned int total_muts = binomial_dist(rng);
-	cout<<"ModelWF::processDNAGenes - total_muts: "<<total_muts<<" ("<<(length * dst->size())<<", "<<rate<<")\n";
+//	cout<<"ModelWF::processDNAGenes - total_muts: "<<total_muts<<" ("<<(length * dst->size())<<", "<<rate<<")\n";
 	
 	for(unsigned int mut = 0; mut < total_muts; ++mut){
 		// Escoger individuo para mutar
