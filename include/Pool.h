@@ -9,6 +9,7 @@
 #include "Individual.h"
 #include "VirtualSequence.h"
 #include "VirtualSequenceDNA.h"
+#include "NanoTimer.h"
 
 extern random_device seed;
 extern mt19937 rng;
@@ -28,5 +29,6 @@ class Pool{
             uint32_t size(void);
       		
             ~Pool(void);
+			map<pair<uint32_t,uint32_t>, vector<VirtualSequence*>> reuse;
 };
 #endif
