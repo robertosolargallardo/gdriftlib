@@ -90,17 +90,30 @@ unsigned int ModelWF::processDNAGenes(Population *dst, Pool *pool, Individual::P
 	// Version binomial (Notar que considero rate como la prob de mutacion POR NUCLEOTIDO de cada individuo)
 	binomial_distribution<unsigned int> binomial_dist(length * dst->size(), rate);
 	unsigned int total_muts = binomial_dist(rng);
-//	cout<<"ModelWF::processDNAGenes - total_muts: "<<total_muts<<" ("<<(length * dst->size())<<", "<<rate<<")\n";
-	
+	pair<uint32_t, uint32_t> par(chrid, genid);
+	unsigned int reusados = 0;
+//	cout<<"ModelWF::processDNAGenes - total_muts: "<<total_muts<<" ("<<(length * dst->size())<<", "<<rate<<", pool->reuse: "<<pool->reuse[par].size()<<")\n";
 	for(unsigned int mut = 0; mut < total_muts; ++mut){
 		// Escoger individuo para mutar
 		unsigned int mut_pos = dst_dist(rng);
 //		cout<<"ModelWF::processDNAGenes - mut_pos: "<<mut_pos<<" de "<<dst->size()<<"\n";
-		// Creo una nueva secuencia con el gen actual del individuo para mutar y reemplazar
-		VirtualSequence *original = dst->at(mut_pos).getGene(genid, chrid, plo);
-//		cout<<"ModelWF::processDNAGenes - Crando secuencia para mutar (original NULL? "<<(original==NULL)<<", size: "<<((original!=NULL)?original->length():0)<<")\n";
-//		seq = new VirtualSequence(*original);
-		seq = original->clone();
+		
+		
+		// Notar que usar el pool de este modo elimina la posibilidad de que se apliquen dos mutaciones al mismo individuo
+		if( pool->reuse[par].size() > 0 ){
+			seq = pool->reuse[par].back();
+			pool->reuse[par].pop_back();
+			++reusados;
+		}
+		else{
+			// Creo una nueva secuencia con el gen actual del individuo para mutar y reemplazar
+			VirtualSequence *original = dst->at(mut_pos).getGene(genid, chrid, plo);
+//			cout<<"ModelWF::processDNAGenes - Crando secuencia para mutar (original NULL? "<<(original==NULL)<<", size: "<<((original!=NULL)?original->length():0)<<")\n";
+//			seq = new VirtualSequence(*original);
+			seq = original->clone();
+		}
+		
+		
 //		cout<<"ModelWF::processDNAGenes - mutate...\n";
 		seq->mutate();
 		++mutations;
@@ -111,6 +124,8 @@ unsigned int ModelWF::processDNAGenes(Population *dst, Pool *pool, Individual::P
 //		cout<<"ModelWF::processDNAGenes - Fin\n";
 
 	}
+	
+//	cout<<"ModelWF::processDNAGenes - Fin (reusados: "<<reusados<<" de "<<total_muts<<", pool->reuse: "<<pool->reuse[par].size()<<")\n";
 	
 	return mutations;	
 }

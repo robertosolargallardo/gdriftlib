@@ -62,21 +62,61 @@ void Pool::decrease_all(void){
 }
 void Pool::release(void){
 	unsigned int total_deletes = 0;
-//	cout<<"Pool::release - Inicio ("<<_pool.size()<<", "<<_pool.begin()->second.size()<<")\n";
+//	NanoTimer timer;
+//	cout<<"Pool::release - Inicio ("<<_pool.size()<<", "<<_pool.begin()->second.size()<<", reuse.begin: "<<reuse.begin()->second.size()<<")\n";
+	/*
 	for(map<pair<uint32_t,uint32_t>,vector<VirtualSequence*>>::iterator i=this->_pool.begin();i!=this->_pool.end();i++){
 		total_deletes = i->second.size();
 		for_each(i->second.begin(),i->second.end(),[](VirtualSequence* &reference){if(reference->count()<=0){delete reference;reference=nullptr;}});
+		i->second.erase(std::remove_if(i->second.begin(),i->second.end(),[](VirtualSequence* &reference){return reference==nullptr;}),i->second.end());
+		total_deletes -= i->second.size();
+	}
+	// ms: 0.02 / 2.7 / 7.1 ... / 33
+	*/
+	
+	
+	vector<VirtualSequence*> swap_arr;
+	for(map<pair<uint32_t,uint32_t>, vector<VirtualSequence*>>::iterator i = this->_pool.begin(); i != this->_pool.end(); ++i){
+		
 //		for(vector<VirtualSequence*>::iterator it = i->second.begin(); it != i->second.end(); it++){
 //			if( (*it != nullptr) && ((*it)->count() <= 0) ){
 //				delete *it;
 //				*it = nullptr;
-////				++total_deletes;
+//				++total_deletes;
 //			}
 //		}
-		i->second.erase(std::remove_if(i->second.begin(),i->second.end(),[](VirtualSequence* &reference){return reference==nullptr;}),i->second.end());
-		total_deletes -= i->second.size();
+//		i->second.erase(std::remove_if(i->second.begin(),i->second.end(),[](VirtualSequence* &reference){return reference==nullptr;}),i->second.end());
+//		// ms: 0.02 / 2.7 / 7.3 ... / 33
+		
+//		vector<VirtualSequence*>::iterator it = i->second.begin();
+//		while( it != i->second.end() ){
+//			if( (*it)->count() == 0 ){
+//				reuse[i->first].push_back(*it);
+//				it = i->second.erase(it);
+//				++total_deletes;
+//			}
+//			else{
+//				it++;
+//			}
+//		}
+//		// ms: 0.02 / 653 / 2290 ... / 3307
+		
+		for(vector<VirtualSequence*>::iterator it = i->second.begin(); it != i->second.end(); it++){
+			if( (*it)->count() == 0 ){
+				reuse[i->first].push_back(*it);
+				++total_deletes;
+			}
+			else{
+				swap_arr.push_back(*it);
+			}
+		}
+		i->second.swap(swap_arr);
+		swap_arr.clear();
+		// ms: 
+		
 	}
-//	cout<<"Pool::release - total_deletes: "<<total_deletes<<"\n";
+	
+//	cout<<"Pool::release - total_deletes: "<<total_deletes<<" (total reuse.begin: "<<reuse.begin()->second.size()<<", "<<timer.getMilisec()<<" ms)\n";
 }
 void Pool::populate(const uint32_t &_cid,const uint32_t &_gid,const uint32_t &_nucleotides,const uint32_t &_number_of_alleles,const uint32_t &_number_of_segregating_sites){
 	if(_number_of_alleles>pow(N_NUCLEOTIDES,_number_of_segregating_sites)){
@@ -111,9 +151,28 @@ void Pool::populate(const uint32_t &_cid,const uint32_t &_gid,const uint32_t &_n
 	
 }
 Pool::~Pool(void){
-	for(map<pair<uint32_t,uint32_t>,vector<VirtualSequence*>>::iterator i=this->_pool.begin();i!=this->_pool.end();i++){
-		for_each(i->second.begin(),i->second.end(),[](VirtualSequence* &reference){delete reference;reference=nullptr;});
+	for(map<pair<uint32_t,uint32_t>,vector<VirtualSequence*>>::iterator i = this->_pool.begin(); i != this->_pool.end(); ++i){
+		for(vector<VirtualSequence*>::iterator it = i->second.begin(); it != i->second.end(); it++){
+			delete (*it);
+		}
 		i->second.clear();
 	}
 	this->_pool.clear();
+	
+	for(map<pair<uint32_t,uint32_t>, vector<VirtualSequence*>>::iterator i = reuse.begin(); i != reuse.end(); ++i){
+		for(vector<VirtualSequence*>::iterator it = i->second.begin(); it != i->second.end(); it++){
+			delete (*it);
+		}
+		i->second.clear();
+	}
+	reuse.clear();
 }
+
+
+
+
+
+
+
+
+
