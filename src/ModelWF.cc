@@ -20,7 +20,7 @@ ModelWF::~ModelWF(){}
 
 void ModelWF::run(Population *src, Population *dst, Pool *pool, Individual::Profile *profile){
 	
-	cout<<"ModelWF::run - Iterando por "<<dst->size()<<" individuos ("<<profile->getChromosomes()<<" chromosomes)\n";
+//	cout<<"ModelWF::run - Iterando por "<<dst->size()<<" individuos ("<<profile->getChromosomes()<<" chromosomes)\n";
 	
 	NanoTimer timer;
 	unsigned int mutations = 0;
@@ -35,7 +35,7 @@ void ModelWF::run(Population *src, Population *dst, Pool *pool, Individual::Prof
 			parent = src_dist(rng);
 			dst->at(id).setParent(src->at(parent));
 		}
-		cout<<"ModelWF::run - Padres asignados en "<<timer.getMilisec()<<" ms\n";
+//		cout<<"ModelWF::run - Padres asignados en "<<timer.getMilisec()<<" ms\n";
 	}
 	else if(profile->getPloidy() == 2){
 		// Posiciones de padres elegidos para el individuo de dst
@@ -47,7 +47,7 @@ void ModelWF::run(Population *src, Population *dst, Pool *pool, Individual::Prof
 			parent2 = src_dist(rng);
 			dst->at(id).setParents(src->at(parent1), src->at(parent2));
 		}
-		cout<<"ModelWF::run - Padres asignados en "<<timer.getMilisec()<<" ms\n";
+//		cout<<"ModelWF::run - Padres asignados en "<<timer.getMilisec()<<" ms\n";
 	}
 	else{
 		cerr<<"ModelWF::run - Ploidy "<<profile->getPloidy()<<" not implemented.\n";
@@ -66,7 +66,7 @@ void ModelWF::run(Population *src, Population *dst, Pool *pool, Individual::Prof
 		}// for... chromosome
 	}// for... ploidy
 	
-	cout<<"ModelWF::run - Terminado ("<<timer.getMilisec()<<" ms, mutations: "<<mutations<<")\n";
+//	cout<<"ModelWF::run - Terminado ("<<timer.getMilisec()<<" ms, mutations: "<<mutations<<")\n";
 
 }
 
@@ -78,7 +78,7 @@ unsigned int ModelWF::processDNAGenes(Population *dst, Pool *pool, Individual::P
 	VirtualSequence *seq = NULL;
 	
 //	double rate = gen->mutation_rate();
-	cout<<"ModelWF::processDNAGenes - Iniciando mutacion de chr "<<chrid<<", gen "<<genid<<"\n";
+//	cout<<"ModelWF::processDNAGenes - Iniciando mutacion de chr "<<chrid<<", gen "<<genid<<"\n";
 	double rate = profile->mutationRate(genid, chrid);
 //	cout<<"ModelWF::processDNAGenes - rate: "<<rate<<"\n";
 	unsigned int length = profile->geneLength(genid, chrid);
@@ -92,7 +92,7 @@ unsigned int ModelWF::processDNAGenes(Population *dst, Pool *pool, Individual::P
 	unsigned int total_muts = binomial_dist(rng);
 	pair<uint32_t, uint32_t> par(chrid, genid);
 	unsigned int reusados = 0;
-	cout<<"ModelWF::processDNAGenes - total_muts: "<<total_muts<<" ("<<(length * dst->size())<<", "<<rate<<", pool->reuse: "<<pool->reuse[par].size()<<")\n";
+//	cout<<"ModelWF::processDNAGenes - total_muts: "<<total_muts<<" ("<<(length * dst->size())<<", "<<rate<<", pool->reuse: "<<pool->reuse[par].size()<<")\n";
 	for(unsigned int mut = 0; mut < total_muts; ++mut){
 		// Escoger individuo para mutar
 		unsigned int mut_pos = dst_dist(rng);
@@ -125,7 +125,7 @@ unsigned int ModelWF::processDNAGenes(Population *dst, Pool *pool, Individual::P
 
 	}
 	
-	cout<<"ModelWF::processDNAGenes - Fin (reusados: "<<reusados<<" de "<<total_muts<<", pool->reuse: "<<pool->reuse[par].size()<<")\n";
+//	cout<<"ModelWF::processDNAGenes - Fin (reusados: "<<reusados<<" de "<<total_muts<<", pool->reuse: "<<pool->reuse[par].size()<<")\n";
 	
 	return mutations;	
 }
