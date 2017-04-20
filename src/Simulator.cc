@@ -122,10 +122,9 @@ void Simulator::run(void){
                break;
             }
             case INCREMENT:{
-               cout<<"Simulator::run - INCREMENT\n";
                uint32_t size=uint32_t(ceil(double(get<0>(populations[fparams.get<string>("source.population.name")])->size())*fparams.get<double>("source.population.percentage")));
+               cout<<"Simulator::run - INCREMENT ("<<size<<")\n";
                get<0>(populations[fparams.get<string>("source.population.name")])->increase(size);
-
                for(uint32_t id = 0; id < size; ++id){
                   // get<1>(populations[fparams.get<string>("source.population.name")])->push(new Individual(id, *profile));
                   get<1>(populations[fparams.get<string>("source.population.name")])->add(id, profile);
@@ -134,16 +133,19 @@ void Simulator::run(void){
                break;
             }
             case DECREMENT:{
-               cout<<"Simulator::run - DECREMENT\n";
-               if(fparams.get<double>("source.population.percentage")==1.0){
+               cout<<"Simulator::run - DECREMENT (percentage: "<<fparams.get<double>("source.population.percentage")<<")\n";
+               if(fparams.get<double>("source.population.percentage") == 1.0){
+                  cout<<"Simulator::run - caso 1\n";
                   delete get<0>(populations[fparams.get<string>("source.population.name")]);
                   delete get<1>(populations[fparams.get<string>("source.population.name")]);
-
+                  cout<<"Simulator::run - erase...\n";
                   populations.erase(populations.find(fparams.get<string>("source.population.name")));
                }
                else{
-                  uint32_t size=uint32_t(ceil(double(get<0>(populations[fparams.get<string>("source.population.name")])->size())*fparams.get<double>("source.population.percentage")));
+                  uint32_t size = uint32_t(ceil(double(get<0>(populations[fparams.get<string>("source.population.name")])->size())*fparams.get<double>("source.population.percentage")));
+                  cout<<"Simulator::run - caso 2, size: "<<size<<"\n";
                   get<0>(populations[fparams.get<string>("source.population.name")])->decrease(size);
+                  cout<<"Simulator::run - decrease...\n";
                   get<1>(populations[fparams.get<string>("source.population.name")])->decrease(size);
                }
                cout<<"Simulator::run - Fin DECREMENT\n";
