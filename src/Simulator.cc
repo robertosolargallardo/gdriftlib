@@ -27,10 +27,11 @@ Simulator::Simulator(const boost::property_tree::ptree &_fsettings){
 void Simulator::run(void){
    if(evlist->empty()) 
       return;
+	
+//	cout<<"Simulator::run - Inicio\n";
 
    uint32_t start = evlist->top()->timestamp();
-	
-   for(uint32_t t=start;;t++){
+   for(uint32_t t = start; ; t++){
 //      cout<<"Simulator::run - Generation "<<t<<"\n";
       while(!evlist->empty() && evlist->top()->timestamp()==t){
          Event *e = evlist->top();
@@ -40,8 +41,8 @@ void Simulator::run(void){
             
          switch(e->type()){
             case CREATE:{
-//               cout<<"Simulator::run - CREATE\n";
                uint32_t size = fparams.get<uint32_t>("population.size");
+               cout<<"Simulator::run - CREATE ("<<size<<")\n";
                tuple<Population*,Population*> target(
                   new Population(fparams.get<string>("population.name"), size), 
                   new Population(fparams.get<string>("population.name"), size)
@@ -53,10 +54,11 @@ void Simulator::run(void){
                }
                populations[fparams.get<string>("population.name")] = target;
                pool->release();
+               cout<<"Simulator::run - Fin CREATE\n";
                break;
             }
             case SPLIT:{
-//               cout<<"Simulator::run - SPLIT\n";
+               cout<<"Simulator::run - SPLIT\n";
                vector<Population*> srcs = get<0>(populations[fparams.get<string>("source.population.name")])->split(fparams.get<size_t>("partitions"));
                vector<Population*> dsts = get<1>(populations[fparams.get<string>("source.population.name")])->split(fparams.get<size_t>("partitions"));
 
@@ -72,10 +74,11 @@ void Simulator::run(void){
                delete get<1>(populations[fparams.get<string>("source.population.name")]);
                populations.erase(populations.find(fparams.get<string>("source.population.name")));
    
+               cout<<"Simulator::run - Fin SPLIT\n";
                break;
             }
             case MIGRATION:{
-//               cout<<"Simulator::run - MIGRATION\n";
+               cout<<"Simulator::run - MIGRATION\n";
                uint32_t size=uint32_t(ceil(double(get<0>(populations[fparams.get<string>("source.population.name")])->size())*fparams.get<double>("source.population.percentage")));
                tuple<Population*,Population*> target;
 
@@ -89,10 +92,11 @@ void Simulator::run(void){
 
                populations[fparams.get<string>("destination.population.name")]=target;
 
+               cout<<"Simulator::run - Fin MIGRATION\n";
                break;
             }
             case MERGE:{
-//               cout<<"Simulator::run - MERGE\n";
+               cout<<"Simulator::run - MERGE\n";
                uint32_t size=0U;
                tuple<Population*,Population*> target;
 
@@ -114,10 +118,11 @@ void Simulator::run(void){
                   populations.erase(populations.find(source.second.get<string>("population.name")));
                }
                populations[fparams.get<string>("destination.population.name")]=target;
+               cout<<"Simulator::run - Fin MERGE\n";
                break;
             }
             case INCREMENT:{
-//               cout<<"Simulator::run - INCREMENT\n";
+               cout<<"Simulator::run - INCREMENT\n";
                uint32_t size=uint32_t(ceil(double(get<0>(populations[fparams.get<string>("source.population.name")])->size())*fparams.get<double>("source.population.percentage")));
                get<0>(populations[fparams.get<string>("source.population.name")])->increase(size);
 
@@ -125,10 +130,11 @@ void Simulator::run(void){
                   // get<1>(populations[fparams.get<string>("source.population.name")])->push(new Individual(id, *profile));
                   get<1>(populations[fparams.get<string>("source.population.name")])->add(id, profile);
                }
+               cout<<"Simulator::run - Fin INCREMENT\n";
                break;
             }
             case DECREMENT:{
-//               cout<<"Simulator::run - DECREMENT\n";
+               cout<<"Simulator::run - DECREMENT\n";
                if(fparams.get<double>("source.population.percentage")==1.0){
                   delete get<0>(populations[fparams.get<string>("source.population.name")]);
                   delete get<1>(populations[fparams.get<string>("source.population.name")]);
@@ -140,10 +146,11 @@ void Simulator::run(void){
                   get<0>(populations[fparams.get<string>("source.population.name")])->decrease(size);
                   get<1>(populations[fparams.get<string>("source.population.name")])->decrease(size);
                }
+               cout<<"Simulator::run - Fin DECREMENT\n";
                break;
             }
             case ENDSIM:{
-//               cout<<"Simulator::run - ENDSIM\n";
+               cout<<"Simulator::run - ENDSIM\n";
 					if(fparams.get_child_optional("sampling")){
 						uint32_t size = 0U;
 						for(auto fsampling : fparams.get_child("sampling")){
@@ -152,6 +159,7 @@ void Simulator::run(void){
 						}
 					}
                delete e;
+               cout<<"Simulator::run - Fin ENDSIM\n";
                return;
             }
             default:{
@@ -175,6 +183,7 @@ void Simulator::run(void){
       pool->release();
 //      cout<<"Simulator::run - Generation Finished\n";
    }
+//	cout<<"Simulator::run - Fin\n";
 }
 map<string,Sample*> &Simulator::samples(){
 	return _samples;

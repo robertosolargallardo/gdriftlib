@@ -6,8 +6,11 @@ EventList::EventList(void){
 EventList::EventList(const boost::property_tree::ptree &_scenario_file){
 	this->_lvt=0U;
 
-   for(auto& e : _scenario_file.get_child("events"))
-      this->_list.push(new Event(e.second.get<uint32_t>("timestamp"),EventType(util::hash(e.second.get<string>("type"))),e.second.get_child("params")));
+   for(auto& e : _scenario_file.get_child("events")){
+      uint32_t timestamp = e.second.get<uint32_t>("timestamp");
+      cout<<"EventList - Event timestamp "<<timestamp<<"\n";
+      this->_list.push(new Event(timestamp, EventType(util::hash(e.second.get<string>("type"))),e.second.get_child("params")));
+   }
 }
 Event* EventList::top(void){
 	return(this->_list.empty()?nullptr:this->_list.top());
