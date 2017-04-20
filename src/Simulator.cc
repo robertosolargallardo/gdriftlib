@@ -156,8 +156,12 @@ void Simulator::run(void){
 					if(fparams.get_child_optional("sampling")){
 						uint32_t size = 0U;
 						for(auto fsampling : fparams.get_child("sampling")){
-							size = uint32_t(ceil(double(get<0>(populations[fsampling.second.get<string>("source.population.name")])->size())*SAMPLING_PERCENT));
-							_samples[fsampling.second.get<string>("name")] = new Sample(fsampling.second.get<string>("name"),get<0>(populations[fsampling.second.get<string>("source.population.name")]), size);
+							uint32_t pop_size = get<0>(populations[fsampling.second.get<string>("source.population.name")])->size();
+                                                        size = (uint32_t)( (double)pop_size*SAMPLING_PERCENT );
+							if( size < 100 ){
+                                                           size = (pop_size<100)?pop_size:100;
+                                                        }
+                                                        _samples[fsampling.second.get<string>("name")] = new Sample(fsampling.second.get<string>("name"),get<0>(populations[fsampling.second.get<string>("source.population.name")]), size);
 						}
 					}
                delete e;
