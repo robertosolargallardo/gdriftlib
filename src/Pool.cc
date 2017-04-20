@@ -116,7 +116,7 @@ void Pool::release(void){
 		
 	}
 	
-//	cout<<"Pool::release - total_deletes: "<<total_deletes<<" (total reuse.begin: "<<reuse.begin()->second.size()<<", "<<timer.getMilisec()<<" ms)\n";
+//	cout<<"Pool::release - Fin (total_deletes: "<<total_deletes<<", total reuse.begin: "<<reuse.begin()->second.size()<<", "<<timer.getMilisec()<<" ms)\n";
 }
 void Pool::populate(const uint32_t &_cid,const uint32_t &_gid,const uint32_t &_nucleotides,const uint32_t &_number_of_alleles,const uint32_t &_number_of_segregating_sites){
 	if(_number_of_alleles>pow(N_NUCLEOTIDES,_number_of_segregating_sites)){
