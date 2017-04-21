@@ -19,7 +19,7 @@ protected:
 	bool owns_data;
 	
 	// Variables de la instancia (mutaciones)
-	vector<seq_size_t> mutations;
+	vector< pair<seq_size_t, char> > mutations;
 	
 	// Estructura para inserciones
 	vector< pair<seq_size_t, char> > inserts;
@@ -37,7 +37,12 @@ protected:
 //	const static unsigned int NOT_FOUND = 0xffffffff;
 //	unsigned int findMutation(seq_size_t pos) const;
 	bool findMutation(seq_size_t pos, seq_size_t &pos_mut) const;
-
+	
+	const static char mut_table_a[];
+	const static char mut_table_c[];
+	const static char mut_table_g[];
+	const static char mut_table_t[];
+	
 public:
 	
 	VirtualSequenceDNA();
@@ -54,14 +59,17 @@ public:
 	virtual void mutate(mt19937 *arg_rng = NULL);
 	virtual char at(seq_size_t pos) const;
 	
+	// Aplica mutacion puntual en el nuevo modelo
+	void mutatePoint(seq_size_t pos, char c);
+	
 	// Aplica una mutacion cambiando el BIT de la posicion absoluta pos 
 	// Este metodo puede entrar en conflicto con insert
-	void mutateBit(unsigned int pos);
+//	void mutateBit(unsigned int pos);
 	
 	// Aplica una mutacion cambiando TODOS los bits de mask, partiendo desde el byte byte_ini de data
 	// Notar que esto puede modificar un maximo de 4 bytes (32 bits de mask)
 	// Este metodo puede entrar en conflicto con insert
-	void mutateBitMask(unsigned int mask, unsigned int byte_ini = 0);
+//	void mutateBitMask(unsigned int mask, unsigned int byte_ini = 0);
 	
 	// Este metodo puede entrar en conflicto con insert
 	void mutateInsert(seq_size_t pos, char c);
@@ -83,7 +91,7 @@ public:
 	unsigned char *getData(){
 		return data;
 	}
-	vector<seq_size_t> &getMutations(){;
+	vector< pair<seq_size_t, char> > &getMutations(){
 		return mutations;
 	}
 	
