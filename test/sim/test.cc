@@ -30,7 +30,11 @@ int main(int argc,char** argv)
 	NanoTimer timer;
 	Simulator sim(fsettings);
 	sim.run();
-	cout<<"Test - Simulator->run Terminado en "<<timer.getMilisec()<<" ms\n";
+	cout<<"Test - Simulator->run Terminado en "<<timer.getMilisec()<<" ms, esperando para calcular estadisticos\n";
+	
+	string str_in;
+	cin>>str_in;
+	
 	timer.reset();
 
 	Sample all("summary");
