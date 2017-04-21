@@ -15,13 +15,13 @@
                     {
                         "id": "0",
                         "type": "0",
-                        "nucleotides": "10000",
+                        "nucleotides": "1000000",
                         "number-of-segregating-sites": "6",
                         "number-of-alleles": "4096",
                         "mutation":
                         {
                             "model": "0",
-                            "rate": "0.0001"
+                            "rate": "0.00000001"
                         }
                     }
                 ]
