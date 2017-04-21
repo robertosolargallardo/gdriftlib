@@ -88,8 +88,10 @@ unsigned int ModelWF::processDNAGenes(Population *dst, Pool *pool, Individual::P
 	// Por ahora, solo multiplico la probabilidad de mutacion, por el largo del gen, por toda la poblacion
 //	unsigned int total_muts = (unsigned int)(rate * length * dst->size());
 	// Version binomial (Notar que considero rate como la prob de mutacion POR NUCLEOTIDO de cada individuo)
-	binomial_distribution<unsigned int> binomial_dist(length * dst->size(), rate);
-	unsigned int total_muts = binomial_dist(rng);
+	//binomial_distribution<unsigned int> binomial_dist(length * dst->size(), rate);
+	//unsigned int total_muts = binomial_dist(rng);
+	binomial_distribution<unsigned long long> binomial_dist(static_cast<unsigned long long>(length) * static_cast<unsigned long long>(dst->size()), rate);
+	unsigned int total_muts = static_cast<unsigned int>(binomial_dist(rng));
 	pair<uint32_t, uint32_t> par(chrid, genid);
 	unsigned int reusados = 0;
 //	cout<<"ModelWF::processDNAGenes - total_muts: "<<total_muts<<" ("<<(length * dst->size())<<", "<<rate<<", pool->reuse: "<<pool->reuse[par].size()<<")\n";
