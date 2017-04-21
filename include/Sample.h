@@ -250,33 +250,35 @@ class Sample : public Population{
 			
 			for(size_t i = 0; i < sequences.size(); i++){
 				seq_i = static_cast<VirtualSequenceDNA*>(sequences[i]);
-				vector<seq_size_t> muts_i = seq_i->getMutations();
+				vector< pair<seq_size_t, char> > muts_i = seq_i->getMutations();
 				
 				for(size_t j = i+1; j < sequences.size(); j++){
 					double diff = 0.0;
 					seq_j = static_cast<VirtualSequenceDNA*>(sequences[j]);
 					if( seq_i->getData() == seq_j->getData() ){
 						// Caso rapido, solo usar mutaciones
-						vector<seq_size_t> muts_j = seq_j->getMutations();
+						vector< pair<seq_size_t, char> > muts_j = seq_j->getMutations();
 						
-						vector<seq_size_t> res;
+						vector< pair<seq_size_t, char> > res;
 						
 						// Lo siguiente asume que los arreglos de mutaciones estan ORDENADOS
 						// En caso contrario, habria que copiar y ordenar
 						std::set_symmetric_difference(muts_i.begin(), muts_i.end(), muts_j.begin(), muts_j.end(), back_inserter(res));
 						diff += res.size();
 						
+						// Lo que sigue YA NO ES NECESARIO pues las mutaciones ahora se aplican una por caracter
 						// De las mutaciones reultantes, descuento las que se aplican a un mismo caracter
 						// Las mutaciones son posicionales en bit, y cada letra tiene 2 bits, uno par y uno impar
 						// Si dos mutaciones son consecutivas, y la menor es par, entonces se aplican a la misma letra
-						for(unsigned int k = 1; k < res.size(); ++k){
-							// La condicion es:
-							// Si la mutacion k es consecutiva a la anterior Y si la anterior a k era par
-							if( (res[k] == (res[k-1] + 1)) 
-								&& ((res[k-1] & 0x1) == 0) ){
-								diff -= 1;
-							}
-						}
+//						for(unsigned int k = 1; k < res.size(); ++k){
+//							// La condicion es:
+//							// Si la mutacion k es consecutiva a la anterior Y si la anterior a k era par
+//							if( (res[k] == (res[k-1] + 1)) 
+//								&& ((res[k-1] & 0x1) == 0) ){
+//								diff -= 1;
+//							}
+//						}
+						
 					}
 					else{
 						// Caso lento, comparar con at
