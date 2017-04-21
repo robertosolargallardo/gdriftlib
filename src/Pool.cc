@@ -143,7 +143,9 @@ void Pool::populate(const uint32_t &_cid,const uint32_t &_gid,const uint32_t &_n
 //		VirtualSequence *reference = new VirtualSequenceDNA(*inicial_ref);
 		VirtualSequence *reference = inicial_ref->clone();
 		// Notar el static_cast solo es valido porque acabo de definir a inicial_ref como VirtualSequenceDNA
-		static_cast<VirtualSequenceDNA*>(reference)->mutateBitMask(sequence);
+//		static_cast<VirtualSequenceDNA*>(reference)->mutateBitMask(sequence);
+		// Por ahora dejo una mutacion simple, esto NO GARANTIZA que las secuencias del pool sean diferentes
+		static_cast<VirtualSequenceDNA*>(reference)->mutate();
 		this->_pool[pair<uint32_t,uint32_t>(_cid,_gid)].push_back(reference);
 	}
 //	cout<<"Pool::populate - Fin\n";
