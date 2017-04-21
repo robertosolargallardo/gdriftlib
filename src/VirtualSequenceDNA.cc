@@ -13,7 +13,7 @@
 
 VirtualSequenceDNA::VirtualSequenceDNA() : VirtualSequence() {
 	size = 0;
-	data = NULL;
+//	data = NULL;
 	owns_data = false;
 }
 
@@ -34,12 +34,12 @@ VirtualSequenceDNA::VirtualSequenceDNA(const char *_ref, unsigned int _size) : V
 		++data_size;
 	}
 //	cout<<"VirtualSequenceDNA - Pidiendo "<<data_size<<" bytes de memoria\n";
-	data = new unsigned char[ data_size ];
-	memset(data, 0, data_size);
+//	data = new unsigned char[ data_size ];
+//	memset(data, 0, data_size);
 	
 //	cout<<"VirtualSequenceDNA - data: "<<(unsigned long long)data<<"\n";
 	
-	unsigned char *p = data;
+//	unsigned char *p = data;
 	unsigned int disp = 0;
 	unsigned char value = 0;
 	for(unsigned int i = 0; i < size; ++i){
@@ -54,12 +54,12 @@ VirtualSequenceDNA::VirtualSequenceDNA(const char *_ref, unsigned int _size) : V
 //		cout<<"Escribiendo "<<_ref[i]<<" (value: "<<(unsigned int)value<<", disp: "<<disp<<")\n";
 		value <<= disp;
 //		cout<<"New value: "<<(unsigned int)value<<"\n";
-		*p |= value;
+//		*p |= value;
 //		cout<<"*p: "<<(unsigned int)(*p)<<"\n";
 		disp += 2;
 		//if(disp == 8)
 		if(disp > 6){
-			++p;
+//			++p;
 			disp = 0;
 		}
 	}
@@ -89,8 +89,8 @@ VirtualSequenceDNA::VirtualSequenceDNA(const unsigned int _size, const unsigned 
 		++data_size;
 	}
 //	cout<<"VirtualSequenceDNA - Pidiendo "<<data_size<<" bytes de memoria\n";
-	data = new unsigned char[ data_size ];
-	memset(data, 0, data_size);
+//	data = new unsigned char[ data_size ];
+//	memset(data, 0, data_size);
 	
 	// Leo cada numero e invierto su posicion
 	// Para la lectura, itero por cada numero de seq y voy moviendo mask
@@ -99,12 +99,12 @@ VirtualSequenceDNA::VirtualSequenceDNA(const unsigned int _size, const unsigned 
 	// Uso la posicion inversa para escoger el byte (/4, es decir >>2)
 	// ... y para mover los bits (el resto, es decir &0x3, <<1 pues son 2 bits por valor)
 	unsigned int mask = 0x3;
-	unsigned int new_pos = 0;
-	unsigned int value = 0;
+//	unsigned int new_pos = 0;
+//	unsigned int value = 0;
 	for(unsigned int pos = 0; pos < size; ++pos, mask<<=2){
-		value = (_seq & mask) >> (pos<<1);
-		new_pos = size - 1 - pos;
-		data[ (new_pos>>2) ] |= (value << ((new_pos & 0x3)<<1) );
+//		value = (_seq & mask) >> (pos<<1);
+//		new_pos = size - 1 - pos;
+//		data[ (new_pos>>2) ] |= (value << ((new_pos & 0x3)<<1) );
 	}
 	owns_data = true;
 	
@@ -133,7 +133,7 @@ VirtualSequenceDNA::VirtualSequenceDNA(const VirtualSequenceDNA &original) : Vir
 	
 //	cout<<"VirtualSequenceDNA - Copia\n";
 	size = original.size;
-	data = original.data;
+//	data = original.data;
 	owns_data = false;
 //	cout<<"VirtualSequenceDNA - size: "<<size<<". data[0]: "<<((data==NULL)?(0xffffffff):(unsigned int)data[0])<<"\n";
 	
@@ -166,20 +166,20 @@ VirtualSequenceDNA::~VirtualSequenceDNA(){
 	mutations.clear();
 	if(owns_data){
 //		cout<<"VirtualSequenceDNA::~VirtualSequenceDNA - Borrando data original\n";
-		delete [] data;
-		data = NULL;
+//		delete [] data;
+//		data = NULL;
 		owns_data = false;
 	}
-	data = NULL;
+//	data = NULL;
 	size = 0;
 }
 
 VirtualSequenceDNA& VirtualSequenceDNA::operator=(const VirtualSequenceDNA& original){
 	if (this != &original){
 		// borrar, pedir, copiar
-		if(data != NULL){
-			delete [] data;
-		}
+//		if(data != NULL){
+//			delete [] data;
+//		}
 		
 		#ifdef VS_DEBUG
 		internal_mutex.lock();
@@ -189,7 +189,7 @@ VirtualSequenceDNA& VirtualSequenceDNA::operator=(const VirtualSequenceDNA& orig
 	
 		//cout<<"VirtualSequenceDNA - Copia\n";
 		size = original.size;
-		data = original.data;
+//		data = original.data;
 		owns_data = false;
 		//cout<<"VirtualSequenceDNA - size: "<<size<<". data[0]: "<<((data==NULL)?(0xffffffff):(unsigned int)data[0])<<"\n";
 	
@@ -215,30 +215,30 @@ bool VirtualSequenceDNA::verifyDecompression(){
 //		cout<<"VirtualSequenceDNA::verifyDecompression - Descomprimiendo secuencia por numero de mutaciones\n";
 		if(!owns_data){
 			++count_mem;
-			unsigned char *original_data = data;
+//			unsigned char *original_data = data;
 			unsigned int data_size = (size>>2);
 			if( size & 0x3 ){
 				++data_size;
 			}
 //			cout<<"VirtualSequenceDNA::verifyDecompression - Pidiendo "<<data_size<<" bytes de memoria\n";
-			data = new unsigned char[ data_size ];
+//			data = new unsigned char[ data_size ];
 			//memset(data, 0, data_size);
-			memcpy(data, original_data, data_size);
+//			memcpy(data, original_data, data_size);
 			owns_data = true;
 		}
 //		set<seq_size_t>::iterator it;
 		vector<seq_size_t>::iterator it;
-		seq_size_t pos;
-		unsigned int pos_byte;
-		unsigned int pos_bit;
+//		seq_size_t pos;
+//		unsigned int pos_byte;
+//		unsigned int pos_bit;
 		
 		// TODO: cambiar esto a nueva mutacion
 		// Eso requiere 
 		for(it = mutations.begin(); it != mutations.end(); it++){
-			pos = *it;
-			pos_byte = (pos >> 3);
-			pos_bit = (pos & 0x7);
-			data[pos_byte] ^= (0x1 << pos_bit);
+//			pos = *it;
+//			pos_byte = (pos >> 3);
+//			pos_bit = (pos & 0x7);
+//			data[pos_byte] ^= (0x1 << pos_bit);
 		}
 		
 		mutations.clear();
@@ -307,7 +307,8 @@ void VirtualSequenceDNA::mutate(mt19937 *arg_rng){
 void VirtualSequenceDNA::printData(){
 	cout<<"VirtualSequenceDNA["<<(unsigned long long)this<<"]: |";
 	for(unsigned int i = 0; i < ( (size>16)?16:size ); ++i){
-		cout<<(unsigned int)data[i]<<" |";
+//		cout<<(unsigned int)data[i]<<" |";
+		cout<<"0 |";
 	}
 	cout<<"\n";
 	cout<<"Mutations ("<<mutations.size()<<"): ";
@@ -372,10 +373,10 @@ void VirtualSequenceDNA::mutateBitMask(unsigned int mask, unsigned int byte_ini)
 }
 
 char VirtualSequenceDNA::at(seq_size_t pos) const{
-	if(pos >= length() || data == NULL){
-		// exception !
-		return 0;
-	}
+//	if(pos >= length() || data == NULL){
+//		// exception !
+//		return 0;
+//	}
 	
 	// Si hay inserciones y borrados, la posicion puede no corresponder a la posicion directa de los datos
 	// En ese caso sera necesario usar una pos ajustada
@@ -412,7 +413,8 @@ char VirtualSequenceDNA::at(seq_size_t pos) const{
 	
 	// Version con mutaciones a nivel de bits
 	// Primero tomo el byte (data en posicion pos/4)
-	unsigned char byte = data[ pos>>2 ];
+//	unsigned char byte = data[ pos>>2 ];
+	unsigned char byte = 0;
 //	cout<<"VirtualSequenceDNA::at - pos: "<<pos<<", byte: "<<(unsigned int)byte<<"\n";
 	// Ahora tomo el valor correcto del byte, los 2 bits que busco
 	// Para eso aplico la mascara 0x3 (2 bits) corrida en el resto de pos/4, x2
@@ -500,9 +502,9 @@ void VirtualSequenceDNA::mutateInsert(seq_size_t pos, char c){
 
 string VirtualSequenceDNA::to_string(){
 	string seq;
-	if(length() == 0 || data == NULL){
-		return seq;
-	}
+//	if(length() == 0 || data == NULL){
+//		return seq;
+//	}
 //	cout<<"VirtualSequenceDNA::to_string - Decodificando "<<length()<<" caracteres\n";
 	for(unsigned int i = 0; i < length(); ++i){
 		// La logica de la decodificacion y aplicacion de mutaciones esta en at()
@@ -544,7 +546,8 @@ bool VirtualSequenceDNA::operator==(const VirtualSequenceDNA &seq){
 	}
 	// Creo que esta comparacion hay que hacerla al reves, verificar si son iguales para acelerar, revisar por caracter si no se puede
 	// Eso es porque los datos PUEDEN ser diferentes y aun asi ser iguales las secuencias considerando las mutaciones
-	if( data == seq.data ){
+//	if( data == seq.data ){
+	if( true ){
 		if( mutations.size() != seq.mutations.size() ){
 			return false;
 		}

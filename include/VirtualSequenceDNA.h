@@ -15,7 +15,7 @@ protected:
 	// Texto de referencia de la INSTANCIA (=> ahorra espacio solo el constructor de copia)
 	// Notar que size es el largo del TEXTO (n_bytes = size/4)
 	seq_size_t size;
-	unsigned char *data;
+//	unsigned char *data;
 	bool owns_data;
 	
 	// Variables de la instancia (mutaciones)
@@ -81,7 +81,8 @@ public:
 	// Metodos de acceso directo a los datos
 	// Esto es para calcular estadisticas mas rapido
 	unsigned char *getData(){
-		return data;
+//		return data;
+		return NULL;
 	}
 	vector<seq_size_t> &getMutations(){;
 		return mutations;
