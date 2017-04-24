@@ -41,6 +41,7 @@ protected:
 public:
 	
 	VirtualSequenceDNA();
+	VirtualSequenceDNA(unsigned int _size);
 	VirtualSequenceDNA(const char *_ref, unsigned int _size);
 	VirtualSequenceDNA(const string &_ref);
 	VirtualSequenceDNA(const unsigned int _size, const unsigned int _seq);

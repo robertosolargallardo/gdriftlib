@@ -18,6 +18,25 @@ VirtualSequenceDNA::VirtualSequenceDNA() : VirtualSequence() {
 }
 
 // Constructor real que COPIA el buffer de texto
+VirtualSequenceDNA::VirtualSequenceDNA(unsigned int _size) : VirtualSequence() {
+//	cout<<"VirtualSequenceDNA - Inicio (text: "<<_ref<<", size: "<<_size<<")\n";
+	size = (seq_size_t)_size;
+	unsigned int data_size = (size>>2);
+	if( size & 0x3 ){
+		++data_size;
+	}
+//	cout<<"VirtualSequenceDNA - Pidiendo "<<data_size<<" bytes de memoria\n";
+	data = new unsigned char[ data_size ];
+	std::random_device rand_dev;
+	std::mt19937 generator(rand_dev());
+	std::uniform_int_distribution<char>  distr(0,CHAR_MAX-1);
+
+	for(int i=0;i<data_size;i++)
+		data[i]=distr(generator);
+
+	owns_data = true;
+}
+
 VirtualSequenceDNA::VirtualSequenceDNA(const char *_ref, unsigned int _size) : VirtualSequence() {
 	
 	#ifdef VS_DEBUG

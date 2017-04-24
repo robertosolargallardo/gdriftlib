@@ -17,6 +17,7 @@
 
 #include <thread>
 #include <mutex>
+#include <climits>
 
 using namespace std;
 

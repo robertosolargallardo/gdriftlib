@@ -132,8 +132,9 @@ void Pool::populate(const uint32_t &_cid,const uint32_t &_gid,const uint32_t &_n
 	
 	// Creacion del original
 //	cout<<"Pool::populate - Creando original (cid: "<<_cid<<", gid: "<<_gid<<", nucleotides: "<<_nucleotides<<", number_of_alleles: "<<_number_of_alleles<<")\n";
-	string texto_original(_nucleotides, 'A');
-	VirtualSequence *inicial_ref = new VirtualSequenceDNA(texto_original);
+	//string texto_original(_nucleotides, 'A');
+	//VirtualSequence *inicial_ref = new VirtualSequenceDNA(texto_original);
+	VirtualSequence *inicial_ref = new VirtualSequenceDNA(_nucleotides);
 	inicial_ref->increase();
 	this->_pool[pair<uint32_t,uint32_t>(_cid,_gid)].push_back(inicial_ref);
 //	cout<<"Pool::populate - Creando "<<_number_of_alleles-1<<" mutaciones adicionales\n";
