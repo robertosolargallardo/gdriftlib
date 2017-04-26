@@ -26,12 +26,16 @@ class Simulator{
             EventList *evlist;
             Individual::Profile *profile;
             Model *model;
-		
+            uint32_t detected_errors = 0;
 
    public:  Simulator(const boost::property_tree::ptree&);
             ~Simulator(void);
          
 			map<string,Sample*> &samples();
             void run(void);
+            
+            uint32_t detectedErrors(){
+            	return detected_errors;
+            }
 };
 #endif
