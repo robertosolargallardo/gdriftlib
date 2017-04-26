@@ -1,5 +1,6 @@
 #include "Population.h"
 Population::Population(void){
+	profile = NULL;
 	this->_name.clear();
 	this->_population.clear();
 	//Soporte para extern rng
