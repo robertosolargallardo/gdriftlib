@@ -30,11 +30,11 @@ void Simulator::run(void){
    if(evlist->empty()) 
       return;
 	
-	cout<<"Simulator::run - Inicio\n";
+//	cout<<"Simulator::run - Inicio\n";
 
    uint32_t start = evlist->top()->timestamp();
    for(uint32_t t = start; ; t++){
-      cout<<"Simulator::run - Generation "<<t<<"\n";
+//      cout<<"Simulator::run - Generation "<<t<<"\n";
       while(!evlist->empty() && evlist->top()->timestamp()==t){
          Event *e = evlist->top();
          evlist->pop();
@@ -198,7 +198,7 @@ void Simulator::run(void){
          delete e;
       }
 
-		cout<<"Simulator::run - Using Model\n";
+//		cout<<"Simulator::run - Using Model\n";
 		for(map<string,tuple<Population*, Population*>>::iterator i = populations.begin(); i != populations.end(); i++){
 			model->run(
 				get<0>(i->second), get<1>(i->second), pool, profile
@@ -208,9 +208,9 @@ void Simulator::run(void){
 		}
         
       pool->release();
-      cout<<"Simulator::run - Generation Finished\n";
+//      cout<<"Simulator::run - Generation Finished\n";
    }
-	cout<<"Simulator::run - Fin\n";
+//	cout<<"Simulator::run - Fin\n";
 }
 map<string,Sample*> &Simulator::samples(){
 	return _samples;
