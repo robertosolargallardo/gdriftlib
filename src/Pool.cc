@@ -103,7 +103,13 @@ void Pool::release(void){
 		
 		for(vector<VirtualSequence*>::iterator it = i->second.begin(); it != i->second.end(); it++){
 			if( (*it)->count() == 0 ){
-				reuse[i->first].push_back(*it);
+			
+				// Reuse
+//				reuse[i->first].push_back(*it);
+				
+				// NO Resuse
+				delete *it;
+				
 				++total_deletes;
 			}
 			else{
