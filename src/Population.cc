@@ -6,6 +6,44 @@ Population::Population(void){
 	//Soporte para extern rng
 	rng_gen = &rng;
 }
+Population::Population(const std::string &_name,const std::map<uint32_t,map<uint32_t,std::vector<Marker>>> &_population, const boost::property_tree::ptree &_fsettings){
+	profile = new Individual::Profile(_fsettings.get_child("individual"));
+   Ploidy ploidy=Ploidy(_fsettings.get_child("individual").get<uint32_t>("ploidy"));
+	std::map<uint32_t,Individual> individuals;
+
+	for(auto& chromosome : _population){
+		for(auto& gene : chromosome.second){
+			uint32_t id=0U;
+			for(auto& marker : gene.second){
+				/*creating individuals*/
+				if(individuals.count(id)==0) individuals[id]=Individual(id,*profile);
+
+				/*duplicating the marker depending on the ploidy*/
+				for(uint32_t p=0U;p<uint32_t(ploidy);p++){
+					switch(marker.type()){
+						case SEQUENCE:{
+							VirtualSequence* reference = new VirtualSequenceDNA(marker.sequence()->data());
+							individuals[id].setGene(gene.first,chromosome.first,p,reference);
+							break;
+						};
+						case MICROSATELLITE:{
+							//TODO not yet implemented
+							break;
+						};
+					}
+				}
+				++id;
+			}
+		}
+	}
+	this->_name=_name;
+	for(auto& individual : individuals)
+		this->_population.push_back(individual.second);
+	individuals.clear();
+}
+/*
+ *@deprecated
+ */
 Population::Population(const Ploidy &_ploidy, const boost::property_tree::ptree &_fpopulation, const boost::property_tree::ptree &_fsettings){
 //	cout<<"Population - Inicio\n";
 	

@@ -7,7 +7,7 @@
 
 #include "Individual.h"
 #include "Pool.h"
-
+#include "Marker.h"
 #include "VirtualSequence.h"
 #include "VirtualSequenceDNA.h"
 
@@ -32,6 +32,7 @@ class Population{
         Population(const string &_name);
         Population(const string &_name,const uint32_t &_size);
 		Population(const Ploidy &_ploidy,const boost::property_tree::ptree &_fpopulation, const boost::property_tree::ptree &_fsettings);
+		Population(const std::string& _name,const std::map<uint32_t,map<uint32_t,std::vector<Marker>>> &_population, const boost::property_tree::ptree &_fsettings);
 		
 		void setRng(mt19937 *_rng);
 		

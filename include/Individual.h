@@ -402,7 +402,12 @@ class Individual{
 			for(auto fchromosome : findividual.get_child("chromosomes")){
 				gid = 0;
 				for(auto fgene : fchromosome.second.get_child("genes")){
-					mut_rate[cid][gid] = fgene.second.get<double>("mutation.rate");
+					boost::optional<boost::property_tree::ptree&> mutation_rate= fgene.second.get_child_optional("mutation.rate");
+					if(!mutation_rate)
+					   mut_rate[cid][gid]=0.0;
+					else
+					   mut_rate[cid][gid] = fgene.second.get<double>("mutation.rate");
+
 					gen_len[cid][gid] = fgene.second.get<double>("nucleotides");
 //					cout<<"Profile - mut_rate["<<cid<<"]["<<gid<<"]: "<<mut_rate[cid][gid]<<"\n";
 					++gid;

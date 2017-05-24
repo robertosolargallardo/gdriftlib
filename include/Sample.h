@@ -3,6 +3,7 @@
 
 #include "Population.h"
 #include "NanoTimer.h"
+#include "Marker.h"
 
 #include "VirtualSequence.h"
 #include "VirtualSequenceDNA.h"
@@ -15,6 +16,7 @@ class Sample : public Population{
 		Sample(const string&);
 		Sample(const string&, Population*, const uint32_t&);
 		// Constructor de Population, para test/load/test.cc
+		Sample(const std::string &_name,const std::map<uint32_t,map<uint32_t,std::vector<Marker>>> &_population, const boost::property_tree::ptree &_fsettings);
 		Sample(const Ploidy &_ploidy, const boost::property_tree::ptree &_fpopulation, const boost::property_tree::ptree &_fsettings);
 		~Sample(void);
 		
