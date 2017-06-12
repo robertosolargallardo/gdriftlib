@@ -35,6 +35,7 @@ void Simulator::run(void){
    uint32_t start = evlist->top()->timestamp();
    for(uint32_t t = start; ; t++){
 //      cout<<"Simulator::run - Generation "<<t<<"\n";
+      if(t%100==0) cout<<"Simulator::run - Generation "<<t<<"\n";
       while(!evlist->empty() && evlist->top()->timestamp()==t){
          Event *e = evlist->top();
          evlist->pop();
@@ -222,6 +223,32 @@ void Simulator::run(void){
 //               cout<<"-----      -----\n";
                
                cout<<"Simulator::run - Fin DECREMENT\n";
+               break;
+            }
+            case EXTINCTION:{
+               if( populations.find(fparams.get<string>("source.population.name")) == populations.end() ){
+                  break;
+               }
+               cout<<"Simulator::run - EXTINCTION\n";
+               if( populations.find(fparams.get<string>("source.population.name")) == populations.end() ){
+                  break;
+               }
+               cout<<"Simulator::run - delete de src y dst...\n";
+               delete get<0>(populations[fparams.get<string>("source.population.name")]);
+               delete get<1>(populations[fparams.get<string>("source.population.name")]);
+               cout<<"Simulator::run - erase...\n";
+               populations.erase(populations.find(fparams.get<string>("source.population.name")));
+               
+//               cout<<"-----      -----\n";
+//               cout<<"Simulator::run - Revisando poblaciones\n";
+//               for(auto pop : populations){
+//                  cout<<"Simulator::run - Population \""<<pop.first<<"\"\n";
+//                  Sample sample(pop.first, get<0>(pop.second), (get<0>(pop.second)->size()<10000)?get<0>(pop.second)->size():10000);
+//                  sample.indices();
+//               }
+//               cout<<"-----      -----\n";
+               
+               cout<<"Simulator::run - Fin EXTINCTION\n";
                break;
             }
             case ENDSIM:{
