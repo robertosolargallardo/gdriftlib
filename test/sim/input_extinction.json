@@ -1,0 +1,161 @@
+{
+    "id": "20000000",
+    "run": "63",
+    "batch": "0",
+    "max-number-of-simulations": "20000",
+    "individual":
+    {
+        "ploidy": "1",
+        "chromosomes":
+        [
+            {
+                "id": "0",
+                "genes":
+                [
+                    {
+                        "id": "0",
+                        "type": "0",
+                        "nucleotides": "663",
+                        "number-of-segregating-sites": "100",
+                        "number-of-alleles": "10000",
+                        "mutation":
+                        {
+                            "model": "0",
+                            "rate": "0.00000005"
+                        }
+                    }
+                ]
+            }
+        ]
+    },
+	"scenario" : {
+		"id" : "0",
+		"model" : "0",
+		"events" : [
+			{
+				"id" : "0",
+				"type" : "create",
+				"params" : {
+					"population" : {
+						"name" : "p0",
+						"size" : "8053"
+					}
+				},
+				"timestamp" : "69"
+			},
+			{
+				"id" : "1",
+				"type" : "split",
+				"params" : {
+					"source" : {
+						"population" : {
+							"name" : "p0"
+						}
+					},
+					"partitions" : "2",
+					"destination" : [
+						{
+							"population" : {
+								"name" : "p1"
+							}
+						},
+						{
+							"population" : {
+								"name" : "p3"
+							}
+						}
+					]
+				},
+				"timestamp" : "19474"
+			},
+			{
+				"id" : "2",
+				"type" : "split",
+				"params" : {
+					"source" : {
+						"population" : {
+							"name" : "p3"
+						}
+					},
+					"partitions" : "2",
+					"destination" : [
+						{
+							"population" : {
+								"name" : "p2"
+							}
+						},
+						{
+							"population" : {
+								"name" : "p4"
+							}
+						}
+					]
+				},
+				"timestamp" : "22000"
+			},
+			{
+				"id" : "3",
+				"type" : "decrement",
+				"params" : {
+					"source" : {
+						"population" : {
+							"name" : "p1",
+							"percentage" : "0.7826024058983079"
+						}
+					}
+				},
+				"timestamp" : "24691"
+			},
+			{
+				"id" : "4",
+				"type" : "extinction",
+				"params" : {
+					"source" : {
+						"population" : {
+							"name" : "p4"
+						}
+					}
+				},
+				"timestamp" : "30000"
+			},
+			{
+				"id" : "5",
+				"type" : "increment",
+				"params" : {
+					"source" : {
+						"population" : {
+							"name" : "p1",
+							"percentage" : "1.311012605475348"
+						}
+					}
+				},
+				"timestamp" : "39473"
+			},
+			{
+				"id" : "6",
+				"type" : "endsim",
+				"params" : {
+					"sampling" : [
+						{
+							"name" : "sample1",
+							"source" : {
+								"population" : {
+									"name" : "p1"
+								}
+							}
+						},
+						{
+							"name" : "sample2",
+							"source" : {
+								"population" : {
+									"name" : "p2"
+								}
+							}
+						}
+					]
+				},
+				"timestamp" : "46324"
+			}
+		]
+	}
+}
