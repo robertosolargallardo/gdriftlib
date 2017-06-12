@@ -35,7 +35,7 @@ void Simulator::run(void){
    uint32_t start = evlist->top()->timestamp();
    for(uint32_t t = start; ; t++){
 //      cout<<"Simulator::run - Generation "<<t<<"\n";
-      if(t%100==0) cout<<"Simulator::run - Generation "<<t<<"\n";
+//      if(t%100==0) cout<<"Simulator::run - Generation "<<t<<"\n";
       while(!evlist->empty() && evlist->top()->timestamp()==t){
          Event *e = evlist->top();
          evlist->pop();
