@@ -19,7 +19,7 @@ public:
 	virtual ~VirtualSequenceMS();
 	virtual VirtualSequence *clone();
 		
-//	VirtualSequenceMS& operator=(const VirtualSequenceMS& original);
+	VirtualSequenceMS& operator=(const VirtualSequenceMS& original);
 	
 	// Aqui hay que hacer comparacion de tipo antes de comparar los datos
 	virtual bool operator==(const VirtualSequenceMS&);

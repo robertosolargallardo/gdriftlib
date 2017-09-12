@@ -25,12 +25,14 @@ VirtualSequenceMS::~VirtualSequenceMS(){
 //	cout<<"VirtualSequenceMS::~VirtualSequenceMS\n";
 }
 
-//VirtualSequenceMS& VirtualSequenceMS::operator=(const VirtualSequenceMS& original){
-//	if (this != &original){
-//		// borrar, pedir, copiar
-//	}	
-//	return *this;
-//}
+VirtualSequenceMS& VirtualSequenceMS::operator=(const VirtualSequenceMS& original){
+	if (this != &original){
+		// borrar, pedir, copiar
+		tandem = original.tandem;
+		repeats = original.repeats;
+	}	
+	return *this;
+}
 
 VirtualSequence *VirtualSequenceMS::clone(){
 //	cout<<"VirtualSequenceMS::clone\n";
