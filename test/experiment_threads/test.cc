@@ -19,6 +19,7 @@ mt19937 rng(seed());
 mutex global_mutex;
 // Cola de trabajo consumida por los threads procesadores
 vector<ptree> work_queue;
+unsigned int global_pos = 0;
 
 double generate(const ptree &fdistribution){
 	cout<<"generate - Inicio\n";
@@ -162,42 +163,66 @@ void fill_queue(ptree fsettings, unsigned int total){
 	
 }
 
-//void SimultionThread(unsigned int pid, const ptree &fsettings) {
-//	
+void SimultionThread(unsigned int pid, unsigned int n_threads){
+	
 //	global_mutex.lock();
-//	cout<<"SimultionThread["<<pid<<"] - Inicio\n";
+	cout<<"SimultionThread["<<pid<<"] - Inicio\n";
 //	global_mutex.unlock();
-//	
-//	NanoTimer timer;
-//	Simulator sim(fsettings);
-//	sim.run();
-//	
-//	global_mutex.lock();
-//	cout<<"SimultionThread["<<pid<<"] - Simulator->run Terminado en "<<timer.getMilisec()<<" ms\n";
-//	global_mutex.unlock();
-
-//	Sample all("summary");
-//	map<string, Sample*> samples = sim.samples();
-//	for(map<string, Sample*>::iterator i = samples.begin(); i != samples.end(); ++i){
-//		ptree findices = i->second->indices();
-//		stringstream ss;
-//		write_json(ss, findices);
-//		
+	
+	NanoTimer timer;
+	unsigned int procesados = 0;
+//	unsigned int cur_pos = 0;
+	unsigned int cur_pos = pid;
+	
+	while(true){
 //		global_mutex.lock();
-//		cout << ss.str() << endl;
+//		cur_pos = global_pos++;
 //		global_mutex.unlock();
+		
+		if( cur_pos >= work_queue.size() ){
+			cout<<"SimultionThread["<<pid<<"] - Cola de trabajo vacia, saliendo\n";
+			break;
+		}
+		
+		ptree fjob = work_queue[cur_pos];
+		++procesados;
+		
+		cout<<"SimultionThread["<<pid<<"] - Creando Simulator para tarea "<<cur_pos<<"\n";
+		Simulator sim(fjob);
+		cout<<"SimultionThread["<<pid<<"] - Simulator::run\n";
+		sim.run();
+		
+		// Estadisticos e indices
+		cout<<"SimultionThread["<<pid<<"] - Calculando estdisticos\n";
+		Sample all("summary");
+		map<string, Sample*> samples = sim.samples();
+		for(map<string, Sample*>::iterator i = samples.begin(); i != samples.end(); ++i){
+			ptree findices = i->second->indices();
+			
+//			stringstream ss;
+//			write_json(ss, findices);
 //		
-//		all.merge(i->second);
-//	}
-//	ptree findices = all.indices();
-//	stringstream ss;
-//	write_json(ss, findices);
-//	
+//			global_mutex.lock();
+//			cout << ss.str() << endl;
+//			global_mutex.unlock();
+		
+			all.merge(i->second);
+		}
+		ptree findices = all.indices();
+		
+		// Parte local del analyzer
+		// Esto requiere el target 
+		// Falta definir e implementar la normalizacion
+		
+		
+		cur_pos += n_threads;
+	}
+	
 //	global_mutex.lock();
-//	cout << ss.str() << endl;
+	cout<<"SimultionThread["<<pid<<"] - Fin (Total trabajos: "<<procesados<<", Total ms: "<<timer.getMilisec()<<")\n";
 //	global_mutex.unlock();
-//	
-//}
+	
+}
 
 int main(int argc,char** argv){
 
@@ -215,7 +240,7 @@ int main(int argc,char** argv){
 	cout<<"Test - Inicio\n";
 	NanoTimer timer;
 	
-	cout<<"Test - Preparando cola de trabajo\n";
+	cout<<"Test - Preparando Cola de Trabajo\n";
 	fill_queue(fsettings, total);
 	
 	// Solo para probar
@@ -227,6 +252,36 @@ int main(int argc,char** argv){
 		cout<<ss.str()<<"\n";
 		cout<<"-----      ------\n";
 	}
+	double ms_preparation = timer.getMilisec();
+	cout<<"Test - Preparacion terminada en "<<ms_preparation<<" ms\n";
+	
+	cout<<"Test - Iniciando "<<n_threads<<" threads\n";
+	vector<thread> threads_list;
+	for(unsigned int i = 0; i < n_threads; ++i){
+		threads_list.push_back( thread(SimultionThread, i, n_threads) );
+	
+		// Tomar pthread de este thread
+		pthread_t current_thread = threads_list.back().native_handle();
+		// Preparar datos para setear afinidad
+		cpu_set_t cpuset;
+		CPU_ZERO(&cpuset);
+		CPU_SET(i, &cpuset);
+		// Setear afinidad
+		pthread_setaffinity_np(current_thread, sizeof(cpu_set_t), &cpuset);
+		
+	}
+	for(unsigned int i = 0; i < n_threads; ++i){
+		threads_list[i].join();
+	}
+	double ms_processing = timer.getMilisec();
+	cout<<"Test - Procesamiento terminado en "<<(ms_processing - ms_preparation)<<" ms\n";
+	
+	// Analyzer
+	double ms_analysis = timer.getMilisec();
+	cout<<"Test - Analisis terminado en "<<(ms_analysis - ms_processing)<<" ms\n";
+	
+	cout<<"Test - Tiempo total: "<<ms_analysis<<" ms\n";
+	
 	
 	return(0);
 }
