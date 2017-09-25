@@ -10,8 +10,6 @@
 
 enum Ploidy{HAPLOID=1,DIPLOID=2,TRIPLOID=3,TETRAPLOID=4,PENTAPLOID=5,HEXAPLOID=6,HEPTAPLOID=7,OCTAPLOID=8};
 
-extern mt19937 rng;
-
 class Individual{
 	protected:
 		

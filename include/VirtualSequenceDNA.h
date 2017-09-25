@@ -5,9 +5,6 @@
 
 using namespace std;
 
-//extern random_device seed;
-//extern mt19937 rng;
-
 class VirtualSequenceDNA : public VirtualSequence {
 
 protected:

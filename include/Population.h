@@ -11,12 +11,6 @@
 #include "VirtualSequence.h"
 #include "VirtualSequenceDNA.h"
 
-// De momento conservo rng externo
-// La idea es sacarlo cuando ya nadie lo use
-// El constructor referencia el externo si no recibe un objeto adecuado 
-// extern random_device seed;
-extern mt19937 rng;
-
 using namespace std;
 
 class Population{
