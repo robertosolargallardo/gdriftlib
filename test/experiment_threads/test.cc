@@ -22,25 +22,25 @@ vector<ptree> work_queue;
 unsigned int global_pos = 0;
 
 double generate(const ptree &fdistribution){
-	cout<<"generate - Inicio\n";
+//	cout<<"generate - Inicio\n";
 	string type = fdistribution.get<string>("type");
 	double value = 0.0;
 	if( type.compare("uniform") == 0 ){
-		cout<<"generate - UNIFORM\n";
+//		cout<<"generate - UNIFORM\n";
 		double a = fdistribution.get<double>("params.a");
 		double b = fdistribution.get<double>("params.b");
 		uniform_real_distribution<> uniform(a, b);
 		value = uniform(rng);
 	}
 	else if( type.compare("normal") == 0 ){
-		cout<<"generate - NORMAL\n";
+//		cout<<"generate - NORMAL\n";
 		double mean = fdistribution.get<double>("params.mean");
 		double stddev = fdistribution.get<double>("params.stddev");
 		normal_distribution<> normal(mean, stddev);
 		value = normal(rng);
 	}
 	else if( type.compare("gamma") == 0 ){
-		cout<<"generate - GAMMA\n";
+//		cout<<"generate - GAMMA\n";
 		double alpha = fdistribution.get<double>("params.alpha");
 		double beta = fdistribution.get<double>("params.beta");
 		gamma_distribution<double> gamma(alpha, beta);
@@ -54,7 +54,7 @@ double generate(const ptree &fdistribution){
 
 template<class T>
 T parse_value(const ptree &variable, bool force_limits, double forced_min, double forced_max){
-	cout<<"parse_value - Inicio\n";
+//	cout<<"parse_value - Inicio\n";
 	string type = variable.get<string>("type");
 	double value = 0.0;
 	if( type.compare("random") == 0 ){
@@ -71,14 +71,14 @@ T parse_value(const ptree &variable, bool force_limits, double forced_min, doubl
 			value = forced_max;
 		}
 	}
-	cout<<"parse_value - Inicio\n";
+//	cout<<"parse_value - Inicio\n";
 	return static_cast<T>(value);
 }
 
 // Parsea e instania un individuo particular
 // Notar que uso la copia misma de findividual para guardar y retornar el resultado
 ptree parse_individual(ptree findividual){
-	cout<<"parse_individual - Inicio\n";
+//	cout<<"parse_individual - Inicio\n";
 	for(auto &fchromosome : findividual.get_child("chromosomes")){
 		for(auto &fgene: fchromosome.second.get_child("genes")){
 			ptree frate = fgene.second.get_child("mutation.rate");
@@ -86,12 +86,12 @@ ptree parse_individual(ptree findividual){
 			fgene.second.get_child("mutation").put<double>("rate", parse_value<double>(frate, true, 0.0, 1.0));
 		}
 	}
-	cout<<"parse_individual - Inicio\n";
+//	cout<<"parse_individual - Inicio\n";
 	return findividual;
 }
 
 ptree parse_scenario(ptree fscenario, unsigned int min_pop){
-	cout<<"parse_scenario - Inicio\n";
+//	cout<<"parse_scenario - Inicio\n";
 	uint32_t last_timestamp = 0;
 	// TODO: Este limite de seguridad al tamaño de la poblacion es arbitrario
 	uint32_t max_value = 100000000;
@@ -127,7 +127,7 @@ ptree parse_scenario(ptree fscenario, unsigned int min_pop){
 			fevent.second.get_child("params.source.population").put<double>("percentage", parse_value<double>(fpercentage, true, 0, 1.0));
 		}
 	}
-	cout<<"parse_scenario - Fin\n";
+//	cout<<"parse_scenario - Fin\n";
 	return fscenario;
 }
 
@@ -187,13 +187,13 @@ void SimultionThread(unsigned int pid, unsigned int n_threads){
 		ptree fjob = work_queue[cur_pos];
 		++procesados;
 		
-		cout<<"SimultionThread["<<pid<<"] - Creando Simulator para tarea "<<cur_pos<<"\n";
+//		cout<<"SimultionThread["<<pid<<"] - Creando Simulator para tarea "<<cur_pos<<"\n";
 		Simulator sim(fjob);
-		cout<<"SimultionThread["<<pid<<"] - Simulator::run\n";
+//		cout<<"SimultionThread["<<pid<<"] - Simulator::run\n";
 		sim.run();
 		
 		// Estadisticos e indices
-		cout<<"SimultionThread["<<pid<<"] - Calculando estdisticos\n";
+//		cout<<"SimultionThread["<<pid<<"] - Calculando estdisticos\n";
 		Sample all("summary");
 		map<string, Sample*> samples = sim.samples();
 		for(map<string, Sample*>::iterator i = samples.begin(); i != samples.end(); ++i){
@@ -244,14 +244,14 @@ int main(int argc,char** argv){
 	fill_queue(fsettings, total);
 	
 	// Solo para probar
-	cout<<"Test - Resultados:\n";
-	for(unsigned int i = 0; i < work_queue.size(); ++i){
-		cout<<"----- Trabajo "<<i<<" ------\n";
-		std::stringstream ss;
-		write_json(ss, work_queue[i]);
-		cout<<ss.str()<<"\n";
-		cout<<"-----      ------\n";
-	}
+//	cout<<"Test - Resultados:\n";
+//	for(unsigned int i = 0; i < work_queue.size(); ++i){
+//		cout<<"----- Trabajo "<<i<<" ------\n";
+//		std::stringstream ss;
+//		write_json(ss, work_queue[i]);
+//		cout<<ss.str()<<"\n";
+//		cout<<"-----      ------\n";
+//	}
 	double ms_preparation = timer.getMilisec();
 	cout<<"Test - Preparacion terminada en "<<ms_preparation<<" ms\n";
 	
