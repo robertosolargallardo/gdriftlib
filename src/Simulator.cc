@@ -30,7 +30,7 @@ void Simulator::run(void){
    if(evlist->empty()) 
       return;
 	
-	cout<<"Simulator::run - Inicio\n";
+//	cout<<"Simulator::run - Inicio\n";
 
    uint32_t start = evlist->top()->timestamp();
    for(uint32_t t = start; ; t++){
