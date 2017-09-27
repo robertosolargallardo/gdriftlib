@@ -285,6 +285,7 @@ void Simulator::run(void){
       }
 
 //		cout<<"Simulator::run - Using Model\n";
+		NanoTimer timer;
 		for(map<string,tuple<Population*, Population*>>::iterator i = populations.begin(); i != populations.end(); i++){
 			model->run(
 				get<0>(i->second), get<1>(i->second), pool, profile
@@ -292,7 +293,7 @@ void Simulator::run(void){
 			swap(get<0>(i->second),get<1>(i->second));
 			get<1>(i->second)->clear();
 		}
-        
+        model_time += timer.getMilisec();
         
 //       cout<<"-----      -----\n";
 //       cout<<"Simulator::run - Revisando poblaciones\n";
