@@ -38,7 +38,7 @@ protected:
 public:
 	
 	VirtualSequenceDNA();
-	VirtualSequenceDNA(unsigned int _size, mt19937 *arg_rng = NULL);
+	VirtualSequenceDNA(unsigned int _size, mt19937 *arg_rng);
 	VirtualSequenceDNA(const char *_ref, unsigned int _size);
 	VirtualSequenceDNA(const string &_ref);
 	VirtualSequenceDNA(const unsigned int _size, const unsigned int _seq);
@@ -49,7 +49,7 @@ public:
 	VirtualSequenceDNA& operator=(const VirtualSequenceDNA& original);
 	virtual bool operator==(const VirtualSequenceDNA&);
 	
-	virtual void mutate(mt19937 *arg_rng = NULL);
+	virtual void mutate(mt19937 *arg_rng);
 	virtual char at(seq_size_t pos) const;
 	
 	// Aplica una mutacion cambiando el BIT de la posicion absoluta pos 

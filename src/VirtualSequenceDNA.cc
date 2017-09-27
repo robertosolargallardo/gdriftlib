@@ -28,10 +28,6 @@ VirtualSequenceDNA::VirtualSequenceDNA(unsigned int _size, mt19937 *arg_rng) : V
 //	cout<<"VirtualSequenceDNA - Pidiendo "<<data_size<<" bytes de memoria\n";
 	data = new unsigned char[ data_size ];
 	
-	// Notar que este metodo deberia recibir un mt19937 rng externo
-	if(arg_rng == NULL){
-		arg_rng = &rng;
-	}
 	std::uniform_int_distribution<unsigned char>  distr(0, CHAR_MAX-1);
 	for(unsigned int i = 0; i < data_size; ++i){
 		data[i] = distr(*arg_rng);
@@ -311,10 +307,6 @@ void VirtualSequenceDNA::mutate(mt19937 *arg_rng){
 //	++count_mut;
 //	internal_mutex.unlock();
 //	#endif
-	
-	if(arg_rng == NULL){
-		arg_rng = &rng;
-	}
 	
 //	cout<<"VirtualSequenceDNA::mutate - Inicio\n";
 	

@@ -30,9 +30,6 @@ using namespace std;
 
 //#define VS_DEBUG
 
-extern random_device seed;
-extern mt19937 rng;
-
 class VirtualSequence{
 
 protected:
@@ -57,7 +54,7 @@ public:
 	// Aqui hay que hacer comparacion de tipo antes de comparar los datos
 	virtual bool operator==(const VirtualSequence&);
 	
-	virtual void mutate(mt19937 *arg_rng = NULL);
+	virtual void mutate(mt19937 *arg_rng);
 	virtual char at(seq_size_t pos) const;
 	
 	// Metodos relacionados con el contador de uso NO son virtuales

@@ -9,7 +9,9 @@ ModelWF::ModelWF(){
 
 //ModelWF::ModelWF(const ModelWF &original){}
 
-ModelWF::~ModelWF(){}
+ModelWF::~ModelWF(){
+	delete rng;
+}
 	
 //ModelWF& ModelWF::operator=(const ModelWF &original){
 //	if (this != &original){
@@ -45,7 +47,7 @@ void ModelWF::run(Population *src, Population *dst, Pool *pool, Individual::Prof
 		for(unsigned int id = 0; id < dst->size(); ++id){
 			parent1 = src_dist(*rng);
 			parent2 = src_dist(*rng);
-			dst->at(id).setParents(src->at(parent1), src->at(parent2));
+			dst->at(id).setParents(src->at(parent1), src->at(parent2), rng);
 		}
 //		cout<<"ModelWF::run - Padres asignados en "<<timer.getMilisec()<<" ms\n";
 	}
@@ -115,7 +117,7 @@ unsigned int ModelWF::processDNAGenes(Population *dst, Pool *pool, Individual::P
 		
 		
 //		cout<<"ModelWF::processDNAGenes - mutate...\n";
-		seq->mutate();
+		seq->mutate(rng);
 		++mutations;
 //		cout<<"ModelWF::processDNAGenes - push...\n";
 		pool->push(chrid, genid, seq);

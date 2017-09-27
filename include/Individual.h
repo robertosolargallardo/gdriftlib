@@ -240,7 +240,7 @@ class Individual{
 		
 		// Notar que lo ideal seria que parent fuese const
 		// Lamentablemente, el increase / decrease de los genes lo impide
-		inline void setParents(Individual &parent1, Individual &parent2){
+		inline void setParents(Individual &parent1, Individual &parent2, mt19937 *arg_rng){
 			
 			// Esta primera version solo funciona para diploides
 			if(ploidy != 2){
@@ -249,6 +249,7 @@ class Individual{
 			}
 			
 //			uniform_int_distribution<> coin(0, 1);
+			mt19937 &rng = *arg_rng;
 			unsigned int rand_bits = rng();
 			unsigned int mask = 0x80000000;
 			
