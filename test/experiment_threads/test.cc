@@ -263,6 +263,11 @@ void DummyThread(unsigned int pid, unsigned int local_jobs){
 	
 	double model_time = 0;
 	
+	unsigned int n_gens = 10000;
+	unsigned int pop_size = 100000;
+//	unsigned int *src = new unsigned int[pop_size];
+//	unsigned int *dst = new unsigned int[pop_size];
+	
 	for(unsigned int i = 0; i < local_jobs; ++i){
 		
 		++procesados;
@@ -270,8 +275,6 @@ void DummyThread(unsigned int pid, unsigned int local_jobs){
 //		cout<<"DummyThread["<<pid<<"] - Creando Simulator para tarea "<<i<<"\n";
 		
 		NanoTimer sim_timer;
-		unsigned int n_gens = 10000;
-		unsigned int pop_size = 100000;
 		unsigned int *src = new unsigned int[pop_size];
 		unsigned int *dst = new unsigned int[pop_size];
 		for(unsigned int k = 0; k < pop_size; ++k){
@@ -290,6 +293,9 @@ void DummyThread(unsigned int pid, unsigned int local_jobs){
 			src = dst;
 			dst = tmp;
 		}
+		delete [] src;
+		delete [] dst;
+		
 		model_time += sim_timer.getMilisec();
 		
 		// Parte local del analyzer
@@ -297,6 +303,9 @@ void DummyThread(unsigned int pid, unsigned int local_jobs){
 		// Falta definir e implementar la normalizacion
 		
 	}
+	
+//	delete [] src;
+//	delete [] dst;
 	
 //	global_mutex.lock();
 	cout<<"DummyThread["<<pid<<"] - Fin (Total trabajos: "<<procesados<<", Total ms: "<<timer.getMilisec()<<", Model ms: "<<model_time<<")\n";
@@ -333,14 +342,14 @@ int main(int argc,char** argv){
 //		threads_list.push_back( thread(SimultionThreadLocalParsing, i, total/n_threads, fsettings) );
 		threads_list.push_back( thread(DummyThread, i, total/n_threads) );
 	
-//		// Tomar pthread de este thread
-//		pthread_t current_thread = threads_list.back().native_handle();
-//		// Preparar datos para setear afinidad
-//		cpu_set_t cpuset;
-//		CPU_ZERO(&cpuset);
-//		CPU_SET(i, &cpuset);
-//		// Setear afinidad
-//		pthread_setaffinity_np(current_thread, sizeof(cpu_set_t), &cpuset);
+		// Tomar pthread de este thread
+		pthread_t current_thread = threads_list.back().native_handle();
+		// Preparar datos para setear afinidad
+		cpu_set_t cpuset;
+		CPU_ZERO(&cpuset);
+		CPU_SET(i, &cpuset);
+		// Setear afinidad
+		pthread_setaffinity_np(current_thread, sizeof(cpu_set_t), &cpuset);
 		
 	}
 	for(unsigned int i = 0; i < n_threads; ++i){
