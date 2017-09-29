@@ -78,7 +78,8 @@ int main(int argc,char** argv)
 		threads_list[i].join();
 	}
 	
-	cout<<"Test - Fin ("<<timer.getMilisec()<<" ms, count_str: "<<VirtualSequence::count_str<<", count_copy: "<<VirtualSequence::count_copy<<", count_mem: "<<VirtualSequence::count_mem<<", count_del: "<<VirtualSequence::count_del<<", count_del_mem: "<<VirtualSequence::count_del_mem<<", count_mut: "<<VirtualSequence::count_mut<<")\n";
+	cout<<"Test - Fin\n";
+//	cout<<"Test - Fin ("<<timer.getMilisec()<<" ms, count_str: "<<VirtualSequence::count_str<<", count_copy: "<<VirtualSequence::count_copy<<", count_mem: "<<VirtualSequence::count_mem<<", count_del: "<<VirtualSequence::count_del<<", count_del_mem: "<<VirtualSequence::count_del_mem<<", count_mut: "<<VirtualSequence::count_mut<<")\n";
 	
 	return(0);
 }
