@@ -16,6 +16,7 @@ Pool::Pool(const boost::property_tree::ptree &_findividual){
 	}
 }
 Individual* Pool::generate(const uint32_t &_id, const Individual::Profile &profile){
+   static thread_local std::mt19937 rng;
 	// Crear idividuo vacio y escoger genes del pool
 //	cout<<"Pool::generate - Inicio (_id: "<<_id<<")\n";
 	Individual *individual = new Individual(_id, profile);
@@ -34,6 +35,7 @@ Individual* Pool::generate(const uint32_t &_id, const Individual::Profile &profi
 }
 void Pool::regenerate(Individual *individual){
 //	cout<<"Pool::regenerate - Inicio (_id: "<<_id<<")\n";
+   static thread_local std::mt19937 rng;
 	individual->clear();
 	for(unsigned int plo = 0; plo < individual->getPloidy(); ++plo){
 		for(unsigned int chr = 0; chr < individual->getChromosomes(); ++chr){

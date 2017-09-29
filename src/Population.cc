@@ -3,8 +3,6 @@ Population::Population(void){
 	profile = NULL;
 	this->_name.clear();
 	this->_population.clear();
-	//Soporte para extern rng
-	rng_gen = &rng;
 }
 Population::Population(const std::string &_name,const std::map<uint32_t,map<uint32_t,std::vector<Marker>>> &_population, const boost::property_tree::ptree &_fsettings){
 	profile = new Individual::Profile(_fsettings.get_child("individual"));
@@ -67,27 +65,18 @@ Population::Population(const Ploidy &_ploidy, const boost::property_tree::ptree 
 		}
 		this->_population.push_back(individual);
 	}
-	//Soporte para extern rng
-	rng_gen = &rng;
-//	cout<<"Population - Fin\n";
 }
 Population::Population(const string &_name){
 	this->_name=_name;
-	//Soporte para extern rng
-	rng_gen = &rng;
 	profile = NULL;
 }
 Population::Population(const string &_name,const uint32_t &_size){
 	this->_name=_name;
 	this->_population.reserve(_size);
-	//Soporte para extern rng
-	rng_gen = &rng;
 	profile = NULL;
 }
 Population::Population(const uint32_t &_size){
 	this->_population.reserve(_size);
-	//Soporte para extern rng
-	rng_gen = &rng;
 	profile = NULL;
 }
 
@@ -175,14 +164,16 @@ void Population::decrease(const uint32_t &_size){
 	}
 }
 void Population::increase(const uint32_t &size){
-	uniform_int_distribution<> uniform(0, this->size() - 1);
+   static thread_local std::mt19937 rng;
+	uniform_int_distribution<> uniform(0,this->size()-1);
 	for(uint32_t i=0; i < size; ++i){
-		Individual ind(_population[uniform(*rng_gen)]);
+		Individual ind(_population[uniform(rng)]);
 		_population.push_back(ind);
 	}
 }
 void Population::shuffle(void){
-	std::shuffle(this->_population.begin(),this->_population.end(), *rng_gen);
+   static thread_local std::mt19937 rng;
+	std::shuffle(this->_population.begin(),this->_population.end(),rng);
 }
 void Population::merge(Population* _population){
 	while(!_population->empty()){

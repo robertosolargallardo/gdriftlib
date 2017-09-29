@@ -1,5 +1,6 @@
 #ifndef _EVENTLIST_H
 #define _EVENTLIST_H
+
 #include <memory>
 #include <string>
 #include <queue>

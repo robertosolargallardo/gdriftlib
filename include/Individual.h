@@ -1,5 +1,6 @@
 #ifndef _INDIVIDUAL_H_
 #define _INDIVIDUAL_H_
+
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
 
@@ -9,8 +10,6 @@
 #include "VirtualSequence.h"
 
 enum Ploidy{HAPLOID=1,DIPLOID=2,TRIPLOID=3,TETRAPLOID=4,PENTAPLOID=5,HEXAPLOID=6,HEPTAPLOID=7,OCTAPLOID=8};
-
-extern mt19937 rng;
 
 class Individual{
 	protected:
@@ -251,6 +250,7 @@ class Individual{
 			}
 			
 //			uniform_int_distribution<> coin(0, 1);
+         static thread_local std::mt19937 rng;
 			unsigned int rand_bits = rng();
 			unsigned int mask = 0x80000000;
 			

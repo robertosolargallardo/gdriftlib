@@ -18,7 +18,7 @@ VirtualSequenceDNA::VirtualSequenceDNA() : VirtualSequence() {
 }
 
 // Constructor real que COPIA el buffer de texto
-VirtualSequenceDNA::VirtualSequenceDNA(unsigned int _size, mt19937 *arg_rng) : VirtualSequence() {
+VirtualSequenceDNA::VirtualSequenceDNA(unsigned int _size) : VirtualSequence() {
 //	cout<<"VirtualSequenceDNA - Inicio (text: "<<_ref<<", size: "<<_size<<")\n";
 	size = (seq_size_t)_size;
 	unsigned int data_size = (size>>2);
@@ -28,13 +28,10 @@ VirtualSequenceDNA::VirtualSequenceDNA(unsigned int _size, mt19937 *arg_rng) : V
 //	cout<<"VirtualSequenceDNA - Pidiendo "<<data_size<<" bytes de memoria\n";
 	data = new unsigned char[ data_size ];
 	
-	// Notar que este metodo deberia recibir un mt19937 rng externo
-	if(arg_rng == NULL){
-		arg_rng = &rng;
-	}
+   static thread_local std::mt19937 rng;
 	std::uniform_int_distribution<unsigned char>  distr(0, CHAR_MAX-1);
 	for(unsigned int i = 0; i < data_size; ++i){
-		data[i] = distr(*arg_rng);
+		data[i] = distr(rng);
 	}
 
 	owns_data = true;
@@ -304,7 +301,7 @@ bool VirtualSequenceDNA::findMutation(seq_size_t pos, seq_size_t &mut_pos) const
 }
 
 // Este metodo puede entrar en conflicto con insert
-void VirtualSequenceDNA::mutate(mt19937 *arg_rng){
+void VirtualSequenceDNA::mutate(void){
 	
 	#ifdef VS_DEBUG
 	internal_mutex.lock();
@@ -312,16 +309,14 @@ void VirtualSequenceDNA::mutate(mt19937 *arg_rng){
 	internal_mutex.unlock();
 	#endif
 	
-	if(arg_rng == NULL){
-		arg_rng = &rng;
-	}
-	
 //	cout<<"VirtualSequenceDNA::mutate - Inicio\n";
 	
 	// Version directa en bits
 	// Notar que aqui pos representa la poscion del bit mutado, de ahi el size*2
+   static thread_local std::mt19937 rng;
+
 	uniform_int_distribution<> pos_dist(0, (size<<1) - 1);
-	seq_size_t pos = pos_dist(*arg_rng);
+	seq_size_t pos = pos_dist(rng);
 	mutateBit(pos);
 	
 }

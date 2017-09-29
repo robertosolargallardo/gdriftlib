@@ -6,6 +6,7 @@ Sample::Sample(const string &_name) : Population(_name){
 	;
 }
 Sample::Sample(const string &_name, Population *_population, const uint32_t &_size) : Population(_name){
+   static thread_local std::mt19937 rng;
 	this->_population.reserve(_size);
 	// Ralizar shuffle de la poblacion padre NO ES CORRECTO
 	// Esto requiere una copia local del vector, luego shuffle, y luego SACAR el resto (dejando al padre intacto)

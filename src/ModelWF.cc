@@ -1,4 +1,6 @@
 #include "ModelWF.h" 
+#include <boost/random.hpp>
+#include <boost/math/distributions/binomial.hpp>
 
 
 ModelWF::ModelWF(){
@@ -19,7 +21,7 @@ ModelWF::~ModelWF(){}
 //}
 
 void ModelWF::run(Population *src, Population *dst, Pool *pool, Individual::Profile *profile){
-	
+	static thread_local std::mt19937 rng;
 //	cout<<"ModelWF::run - Iterando por "<<dst->size()<<" individuos ("<<profile->getChromosomes()<<" chromosomes)\n";
 	
 	NanoTimer timer;
@@ -71,7 +73,8 @@ void ModelWF::run(Population *src, Population *dst, Pool *pool, Individual::Prof
 }
 
 unsigned int ModelWF::processDNAGenes(Population *dst, Pool *pool, Individual::Profile *profile, unsigned int plo, unsigned int chrid, unsigned int genid){
-	
+	static thread_local std::mt19937 rng;
+
 	uniform_int_distribution<> dst_dist(0, dst->size() - 1);
 	unsigned int mutations = 0;
 	// Secuencia del gen que se modifica
@@ -88,10 +91,17 @@ unsigned int ModelWF::processDNAGenes(Population *dst, Pool *pool, Individual::P
 	// Por ahora, solo multiplico la probabilidad de mutacion, por el largo del gen, por toda la poblacion
 //	unsigned int total_muts = (unsigned int)(rate * length * dst->size());
 	// Version binomial (Notar que considero rate como la prob de mutacion POR NUCLEOTIDO de cada individuo)
-	//binomial_distribution<unsigned int> binomial_dist(length * dst->size(), rate);
-	//unsigned int total_muts = binomial_dist(rng);
-	binomial_distribution<unsigned long long> binomial_dist(static_cast<unsigned long long>(length) * static_cast<unsigned long long>(dst->size()), rate);
-	unsigned int total_muts = static_cast<unsigned int>(binomial_dist(rng));
+	/*binomial_distribution<unsigned int> binomial_dist(length * dst->size(), rate);
+	unsigned int total_muts = binomial_dist(rng);*/
+
+	/*TODO*/
+	/*binomial_distribution<> binomial_dist(static_cast<unsigned long long>(length) * static_cast<unsigned long long>(dst->size()), rate);
+	unsigned int total_muts = static_cast<unsigned int>(binomial_dist(rng));*/
+	static thread_local boost::mt19937 rng2;
+   boost::variate_generator<boost::mt19937&,boost::binomial_distribution<>> binomial(rng2,boost::binomial_distribution<>(static_cast<unsigned long long>(length)*static_cast<unsigned long long>(dst->size()), rate));
+	unsigned int total_muts = static_cast<unsigned int>(binomial());
+	
+	/*TODO*/
 	pair<uint32_t, uint32_t> par(chrid, genid);
 	unsigned int reusados = 0;
 //	cout<<"ModelWF::processDNAGenes - total_muts: "<<total_muts<<" ("<<(length * dst->size())<<", "<<rate<<", pool->reuse: "<<pool->reuse[par].size()<<")\n";

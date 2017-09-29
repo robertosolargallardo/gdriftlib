@@ -30,7 +30,7 @@ void Simulator::run(void){
    if(evlist->empty()) 
       return;
 	
-	cout<<"Simulator::run - Inicio\n";
+//	cout<<"Simulator::run - Inicio\n";
 
    uint32_t start = evlist->top()->timestamp();
    for(uint32_t t = start; ; t++){
@@ -45,7 +45,7 @@ void Simulator::run(void){
          switch(e->type()){
             case CREATE:{
                uint32_t size = fparams.get<uint32_t>("population.size");
-               cout<<"Simulator::run - CREATE ("<<size<<")\n";
+//               cout<<"Simulator::run - CREATE ("<<size<<")\n";
                tuple<Population*,Population*> target(
                   new Population(fparams.get<string>("population.name"), size), 
                   new Population(fparams.get<string>("population.name"), size)
@@ -67,7 +67,7 @@ void Simulator::run(void){
 //               }
 //               cout<<"-----      -----\n";
                
-               cout<<"Simulator::run - Fin CREATE\n";
+//               cout<<"Simulator::run - Fin CREATE\n";
                break;
             }
             case SPLIT:{
@@ -252,7 +252,7 @@ void Simulator::run(void){
                break;
             }
             case ENDSIM:{
-               cout<<"Simulator::run - ENDSIM\n";
+  //             cout<<"Simulator::run - ENDSIM\n";
                if(fparams.get_child_optional("sampling")){
                   uint32_t size = 0U;
                   for(auto fsampling : fparams.get_child("sampling")){
@@ -263,7 +263,7 @@ void Simulator::run(void){
                         continue;
                      }
                      uint32_t pop_size = get<0>(populations[fsampling.second.get<string>("source.population.name")])->size();
-             		  cout<<"Simulator::run - Population "<<fsampling.second.get<string>("source.population.name")<<", size: "<<pop_size<<"\n";
+    //         		  cout<<"Simulator::run - Population "<<fsampling.second.get<string>("source.population.name")<<", size: "<<pop_size<<"\n";
                      size = (uint32_t)( (double)pop_size*SAMPLING_PERCENT );
                      if( size < 10000 ){
                         size = (pop_size<10000)?pop_size:10000;
@@ -272,7 +272,7 @@ void Simulator::run(void){
                   }
                }
                delete e;
-               cout<<"Simulator::run - Fin ENDSIM\n";
+      //         cout<<"Simulator::run - Fin ENDSIM\n";
                return;
             }
             default:{

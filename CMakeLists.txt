@@ -28,7 +28,7 @@ add_executable(test_statistics "${CMAKE_SOURCE_DIR}/test/statistics/test.cc")
 
 link_directories(${CMAKE_BINARY_DIR})
 
-target_link_libraries(test_sim gdrift++)
+target_link_libraries(test_sim gdrift++ pthread)
 target_link_libraries(test_load gdrift++)
 target_link_libraries(test_parallel gdrift++ pthread)
 target_link_libraries(test_statistics gdrift++)

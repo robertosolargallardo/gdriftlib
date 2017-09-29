@@ -41,7 +41,7 @@ VirtualSequence *VirtualSequence::clone(){
 	return new VirtualSequence(*this);
 }
 
-void VirtualSequence::mutate(mt19937 *arg_rng){
+void VirtualSequence::mutate(void){
 	cerr<<"VirtualSequence::mutate - Not Implemented.\n";
 }
 
