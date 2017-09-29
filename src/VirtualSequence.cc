@@ -3,15 +3,15 @@
 const unsigned int VirtualSequence::alphabet_size = 4;
 const char VirtualSequence::alphabet[] = {'A', 'C', 'G', 'T'};
 
-unsigned int VirtualSequence::count_str = 0;
-unsigned int VirtualSequence::count_int = 0;
-unsigned int VirtualSequence::count_copy = 0;
-unsigned int VirtualSequence::count_mem = 0;
-unsigned int VirtualSequence::count_del = 0;
-unsigned int VirtualSequence::count_del_mem = 0;
-unsigned int VirtualSequence::count_mut = 0;
+//unsigned int VirtualSequence::count_str = 0;
+//unsigned int VirtualSequence::count_int = 0;
+//unsigned int VirtualSequence::count_copy = 0;
+//unsigned int VirtualSequence::count_mem = 0;
+//unsigned int VirtualSequence::count_del = 0;
+//unsigned int VirtualSequence::count_del_mem = 0;
+//unsigned int VirtualSequence::count_mut = 0;
 
-mutex VirtualSequence::internal_mutex;
+//mutex VirtualSequence::internal_mutex;
 
 VirtualSequence::VirtualSequence(){
 //	cout<<"VirtualSequence::VirtualSequence\n";

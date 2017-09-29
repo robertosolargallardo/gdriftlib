@@ -34,7 +34,7 @@ class VirtualSequence{
 
 protected:
 		
-	static mutex internal_mutex;
+//	static mutex internal_mutex;
 
 	static const unsigned int alphabet_size;
 	static const char alphabet[];
@@ -77,13 +77,13 @@ public:
 	virtual void printData();
 	
 	// Contador de la clase
-	static unsigned int count_str;
-	static unsigned int count_int;
-	static unsigned int count_copy;
-	static unsigned int count_mem;
-	static unsigned int count_del;
-	static unsigned int count_del_mem;
-	static unsigned int count_mut;
+//	static unsigned int count_str;
+//	static unsigned int count_int;
+//	static unsigned int count_copy;
+//	static unsigned int count_mem;
+//	static unsigned int count_del;
+//	static unsigned int count_del_mem;
+//	static unsigned int count_mut;
 	
 };
 

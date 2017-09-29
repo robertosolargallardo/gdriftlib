@@ -232,7 +232,7 @@ bool VirtualSequenceDNA::verifyDecompression(){
 		// Si ya tiene datos, bsata con agregar las mutaciones
 //		cout<<"VirtualSequenceDNA::verifyDecompression - Descomprimiendo secuencia por numero de mutaciones\n";
 		if(!owns_data){
-			++count_mem;
+//			++count_mem;
 			unsigned char *original_data = data;
 			unsigned int data_size = (size>>2);
 			if( size & 0x3 ){
