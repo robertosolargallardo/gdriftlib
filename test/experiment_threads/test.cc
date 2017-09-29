@@ -219,25 +219,24 @@ void SimultionThreadLocalParsing(unsigned int pid, unsigned int local_jobs, ptre
 		scenarios.push_back(fscenario.second);
 	}
 	
+	// En esta prueba parseo solo una vez y reuso el json
+	ptree fjob;
+	fjob.put("id", sim_id);
+	fjob.put("run", pid);
+	fjob.put("batch", 0);
+	fjob.put("feedback", 0);
+	fjob.put("batch-size", local_jobs);
+	fjob.put("max-number-of-simulations", local_jobs);
+	fjob.add_child("individual", parse_individual(fsettings.get_child("individual")));
+	fjob.add_child("scenario", parse_scenario(scenarios[pid%scenarios.size()], 100));
+	
 	double model_time = 0;
 	
 	for(unsigned int i = 0; i < local_jobs; ++i){
 		
-		ptree fjob;
-		fjob.put("id", sim_id);
-		fjob.put("run", i);
-		fjob.put("batch", 0);
-		fjob.put("feedback", 0);
-		fjob.put("batch-size", local_jobs);
-		fjob.put("max-number-of-simulations", local_jobs);
-		fjob.add_child("individual", parse_individual(fsettings.get_child("individual")));
-		fjob.add_child("scenario", parse_scenario(scenarios[i%scenarios.size()], 100));
-		
 		++procesados;
 		
-//		cout<<"SimultionThreadLocalParsing["<<pid<<"] - Creando Simulator para tarea "<<i<<"\n";
 		Simulator sim(fjob);
-//		cout<<"SimultionThreadLocalParsing["<<pid<<"] - Simulator::run\n";
 		sim.run();
 		model_time += sim.model_time;
 		
@@ -253,38 +252,22 @@ void SimultionThreadLocalParsing(unsigned int pid, unsigned int local_jobs, ptre
 	
 }
 
-void DummyThreadLocalParsing(unsigned int pid, unsigned int local_jobs, ptree fsettings){
+void DummyThread(unsigned int pid, unsigned int local_jobs){
 	
 //	global_mutex.lock();
-	cout<<"DummyThreadLocalParsing["<<pid<<"] - Inicio\n";
+	cout<<"DummyThread["<<pid<<"] - Inicio\n";
 //	global_mutex.unlock();
 	
 	NanoTimer timer;
 	unsigned int procesados = 0;
 	
-	string sim_id = fsettings.get<string>("id");
-	vector<ptree> scenarios;
-	for(auto &fscenario : fsettings.get_child("scenarios")){
-		scenarios.push_back(fscenario.second);
-	}
-	
 	double model_time = 0;
 	
 	for(unsigned int i = 0; i < local_jobs; ++i){
 		
-		ptree fjob;
-		fjob.put("id", sim_id);
-		fjob.put("run", i);
-		fjob.put("batch", 0);
-		fjob.put("feedback", 0);
-		fjob.put("batch-size", local_jobs);
-		fjob.put("max-number-of-simulations", local_jobs);
-		fjob.add_child("individual", parse_individual(fsettings.get_child("individual")));
-		fjob.add_child("scenario", parse_scenario(scenarios[i%scenarios.size()], 100));
-		
 		++procesados;
 		
-//		cout<<"DummyThreadLocalParsing["<<pid<<"] - Creando Simulator para tarea "<<i<<"\n";
+//		cout<<"DummyThread["<<pid<<"] - Creando Simulator para tarea "<<i<<"\n";
 		
 		NanoTimer sim_timer;
 		unsigned int n_gens = 10000;
@@ -309,8 +292,6 @@ void DummyThreadLocalParsing(unsigned int pid, unsigned int local_jobs, ptree fs
 		}
 		model_time += sim_timer.getMilisec();
 		
-		
-		
 		// Parte local del analyzer
 		// Esto requiere el target 
 		// Falta definir e implementar la normalizacion
@@ -318,7 +299,7 @@ void DummyThreadLocalParsing(unsigned int pid, unsigned int local_jobs, ptree fs
 	}
 	
 //	global_mutex.lock();
-	cout<<"DummyThreadLocalParsing["<<pid<<"] - Fin (Total trabajos: "<<procesados<<", Total ms: "<<timer.getMilisec()<<", Model ms: "<<model_time<<")\n";
+	cout<<"DummyThread["<<pid<<"] - Fin (Total trabajos: "<<procesados<<", Total ms: "<<timer.getMilisec()<<", Model ms: "<<model_time<<")\n";
 //	global_mutex.unlock();
 	
 }
@@ -350,7 +331,7 @@ int main(int argc,char** argv){
 	for(unsigned int i = 0; i < n_threads; ++i){
 //		threads_list.push_back( thread(SimultionThread, i, n_threads) );
 //		threads_list.push_back( thread(SimultionThreadLocalParsing, i, total/n_threads, fsettings) );
-		threads_list.push_back( thread(DummyThreadLocalParsing, i, total/n_threads, fsettings) );
+		threads_list.push_back( thread(DummyThread, i, total/n_threads) );
 	
 //		// Tomar pthread de este thread
 //		pthread_t current_thread = threads_list.back().native_handle();
