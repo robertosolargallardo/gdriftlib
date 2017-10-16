@@ -1,4 +1,6 @@
+
 #include <iostream>
+#include <random>
 #include <thread>
 #include <mutex>
 #include <vector>
@@ -261,54 +263,30 @@ void DummyThread(unsigned int pid, unsigned int local_jobs){
 	NanoTimer timer;
 	unsigned int procesados = 0;
 	
-	double model_time = 0;
-	
-	unsigned int n_gens = 10000;
+	unsigned int n_gens = 100;
 	unsigned int pop_size = 100000;
-//	unsigned int *src = new unsigned int[pop_size];
-//	unsigned int *dst = new unsigned int[pop_size];
+	unsigned int *src = new unsigned int[pop_size];
+	unsigned int *dst = new unsigned int[pop_size];
+	
+	random_device rd;
+	mt19937 gen(rd());
+	uniform_int_distribution<> dist(1, pop_size);
 	
 	for(unsigned int i = 0; i < local_jobs; ++i){
-		
 		++procesados;
-		
-//		cout<<"DummyThread["<<pid<<"] - Creando Simulator para tarea "<<i<<"\n";
-		
-		NanoTimer sim_timer;
-		unsigned int *src = new unsigned int[pop_size];
-		unsigned int *dst = new unsigned int[pop_size];
-		for(unsigned int k = 0; k < pop_size; ++k){
-			src[k] = k;
-		}
 		for(unsigned int g = 0; g < n_gens; ++g){
 			for(unsigned int k = 0; k < pop_size; ++k){
-				if( (k & 0x1) == 0 ){
-					dst[i] = src[ ((k * g)>>2) % pop_size ];
-				}
-				else{
-					dst[i] = src[ ((k * g)<<2) % pop_size ];
-				}
+				dst[k] = dist(gen);
+				src[k] = dist(gen);
 			}
-			unsigned int *tmp = src;
-			src = dst;
-			dst = tmp;
 		}
-		delete [] src;
-		delete [] dst;
-		
-		model_time += sim_timer.getMilisec();
-		
-		// Parte local del analyzer
-		// Esto requiere el target 
-		// Falta definir e implementar la normalizacion
-		
 	}
 	
-//	delete [] src;
-//	delete [] dst;
+	delete [] src;
+	delete [] dst;
 	
 //	global_mutex.lock();
-	cout<<"DummyThread["<<pid<<"] - Fin (Total trabajos: "<<procesados<<", Total ms: "<<timer.getMilisec()<<", Model ms: "<<model_time<<")\n";
+	cout<<"DummyThread["<<pid<<"] - Fin (Total trabajos: "<<procesados<<", Total ms: "<<timer.getMilisec()<<")\n";
 //	global_mutex.unlock();
 	
 }
@@ -342,14 +320,14 @@ int main(int argc,char** argv){
 //		threads_list.push_back( thread(SimultionThreadLocalParsing, i, total/n_threads, fsettings) );
 		threads_list.push_back( thread(DummyThread, i, total/n_threads) );
 	
-		// Tomar pthread de este thread
-		pthread_t current_thread = threads_list.back().native_handle();
-		// Preparar datos para setear afinidad
-		cpu_set_t cpuset;
-		CPU_ZERO(&cpuset);
-		CPU_SET(i, &cpuset);
-		// Setear afinidad
-		pthread_setaffinity_np(current_thread, sizeof(cpu_set_t), &cpuset);
+//		// Tomar pthread de este thread
+//		pthread_t current_thread = threads_list.back().native_handle();
+//		// Preparar datos para setear afinidad
+//		cpu_set_t cpuset;
+//		CPU_ZERO(&cpuset);
+//		CPU_SET(i, &cpuset);
+//		// Setear afinidad
+//		pthread_setaffinity_np(current_thread, sizeof(cpu_set_t), &cpuset);
 		
 	}
 	for(unsigned int i = 0; i < n_threads; ++i){
