@@ -7,6 +7,7 @@
 #include "Sample.h"
 #include "Pool.h"
 #include "Individual.h"
+#include "NanoTimer.h"
 
 #include "Model.h"
 #include "ModelWF.h"
@@ -37,5 +38,7 @@ class Simulator{
             uint32_t detectedErrors(){
             	return detected_errors;
             }
+            
+            double model_time;
 };
 #endif

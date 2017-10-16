@@ -25,6 +25,7 @@ add_executable(test_sim "${CMAKE_SOURCE_DIR}/test/sim/test.cc")
 add_executable(test_load "${CMAKE_SOURCE_DIR}/test/load/test.cc")
 add_executable(test_parallel "${CMAKE_SOURCE_DIR}/test/parallel/test.cc")
 add_executable(test_statistics "${CMAKE_SOURCE_DIR}/test/statistics/test.cc")
+add_executable(experiment_threads "${CMAKE_SOURCE_DIR}/test/experiment_threads/test.cc")
 
 link_directories(${CMAKE_BINARY_DIR})
 
@@ -32,6 +33,7 @@ target_link_libraries(test_sim gdrift++)
 target_link_libraries(test_load gdrift++)
 target_link_libraries(test_parallel gdrift++ pthread)
 target_link_libraries(test_statistics gdrift++)
+target_link_libraries(experiment_threads gdrift++ pthread)
 
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set (CMAKE_INSTALL_PREFIX "/usr/local" CACHE PATH "default install path" FORCE )

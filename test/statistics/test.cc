@@ -56,7 +56,7 @@ int main(int argc,char** argv)
 		VirtualSequence *seq = seq_original->clone();
 		// Mutar seq
 		for(unsigned int j = 0; j < n_muts; ++j){
-			seq->mutate();
+			seq->mutate(&rng);
 		}
 		pool.push_back(seq);
 		cout<<"Test - Agregando Individuo\n";
@@ -84,7 +84,8 @@ int main(int argc,char** argv)
 	}
 	pool.clear();
 	
-	cout<<"Test - Fin (count_str: "<<VirtualSequence::count_str<<", count_int: "<<VirtualSequence::count_int<<", count_copy: "<<VirtualSequence::count_copy<<", count_mem: "<<VirtualSequence::count_mem<<", count_del: "<<VirtualSequence::count_del<<", count_del_mem: "<<VirtualSequence::count_del_mem<<", count_mut: "<<VirtualSequence::count_mut<<")\n";
+	cout<<"Test - Fin\n";
+//	cout<<"Test - Fin (count_str: "<<VirtualSequence::count_str<<", count_int: "<<VirtualSequence::count_int<<", count_copy: "<<VirtualSequence::count_copy<<", count_mem: "<<VirtualSequence::count_mem<<", count_del: "<<VirtualSequence::count_del<<", count_del_mem: "<<VirtualSequence::count_del_mem<<", count_mut: "<<VirtualSequence::count_mut<<")\n";
 	
 	return(0);
 	

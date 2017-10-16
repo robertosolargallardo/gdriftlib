@@ -11,11 +11,10 @@
 #include "VirtualSequenceDNA.h"
 #include "NanoTimer.h"
 
-extern random_device seed;
-extern mt19937 rng;
 class Pool{
    private: map<pair<uint32_t,uint32_t>,vector<VirtualSequence*>> _pool;
             boost::property_tree::ptree _findividual;
+            mt19937 *rng;
 
    public:  Pool(const boost::property_tree::ptree&);
 

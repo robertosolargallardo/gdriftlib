@@ -5,9 +5,6 @@
 
 using namespace std;
 
-//extern random_device seed;
-//extern mt19937 rng;
-
 class VirtualSequenceDNA : public VirtualSequence {
 
 protected:
@@ -34,14 +31,12 @@ protected:
 	// Si pos calza exactamente con un insert, retorna el caracter
 	seq_size_t countInserts(seq_size_t pos, char &res) const;
 	
-//	const static unsigned int NOT_FOUND = 0xffffffff;
-//	unsigned int findMutation(seq_size_t pos) const;
 	bool findMutation(seq_size_t pos, seq_size_t &pos_mut) const;
 
 public:
 	
 	VirtualSequenceDNA();
-	VirtualSequenceDNA(unsigned int _size, mt19937 *arg_rng = NULL);
+	VirtualSequenceDNA(unsigned int _size, mt19937 *arg_rng);
 	VirtualSequenceDNA(const char *_ref, unsigned int _size);
 	VirtualSequenceDNA(const string &_ref);
 	VirtualSequenceDNA(const unsigned int _size, const unsigned int _seq);
@@ -52,7 +47,7 @@ public:
 	VirtualSequenceDNA& operator=(const VirtualSequenceDNA& original);
 	virtual bool operator==(const VirtualSequenceDNA&);
 	
-	virtual void mutate(mt19937 *arg_rng = NULL);
+	virtual void mutate(mt19937 *arg_rng);
 	virtual char at(seq_size_t pos) const;
 	
 	// Aplica una mutacion cambiando el BIT de la posicion absoluta pos 
@@ -87,15 +82,6 @@ public:
 	vector<seq_size_t> &getMutations(){;
 		return mutations;
 	}
-	
-//	// Contador de constructores
-//	static unsigned int count_str;
-//	static unsigned int count_int;
-//	static unsigned int count_copy;
-//	static unsigned int count_mem;
-//	static unsigned int count_del;
-//	static unsigned int count_del_mem;
-//	static unsigned int count_mut;
 	
 };
 

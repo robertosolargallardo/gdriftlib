@@ -3,13 +3,15 @@
 
 ModelWF::ModelWF(){
 //	cout<<"ModelWF - Inicio\n";
-	
+	rng = new mt19937(std::chrono::system_clock::now().time_since_epoch().count());
 //	cout<<"ModelWF - Fin\n";
 }
 
 //ModelWF::ModelWF(const ModelWF &original){}
 
-ModelWF::~ModelWF(){}
+ModelWF::~ModelWF(){
+	delete rng;
+}
 	
 //ModelWF& ModelWF::operator=(const ModelWF &original){
 //	if (this != &original){
@@ -32,7 +34,7 @@ void ModelWF::run(Population *src, Population *dst, Pool *pool, Individual::Prof
 		unsigned int parent = 0;
 		// Creando nueva generacion
 		for(unsigned int id = 0; id < dst->size(); ++id){
-			parent = src_dist(rng);
+			parent = src_dist(*rng);
 			dst->at(id).setParent(src->at(parent));
 		}
 //		cout<<"ModelWF::run - Padres asignados en "<<timer.getMilisec()<<" ms\n";
@@ -43,9 +45,9 @@ void ModelWF::run(Population *src, Population *dst, Pool *pool, Individual::Prof
 		unsigned int parent2 = 0;
 		// Creando nueva generacion
 		for(unsigned int id = 0; id < dst->size(); ++id){
-			parent1 = src_dist(rng);
-			parent2 = src_dist(rng);
-			dst->at(id).setParents(src->at(parent1), src->at(parent2));
+			parent1 = src_dist(*rng);
+			parent2 = src_dist(*rng);
+			dst->at(id).setParents(src->at(parent1), src->at(parent2), rng);
 		}
 //		cout<<"ModelWF::run - Padres asignados en "<<timer.getMilisec()<<" ms\n";
 	}
@@ -88,16 +90,14 @@ unsigned int ModelWF::processDNAGenes(Population *dst, Pool *pool, Individual::P
 	// Por ahora, solo multiplico la probabilidad de mutacion, por el largo del gen, por toda la poblacion
 //	unsigned int total_muts = (unsigned int)(rate * length * dst->size());
 	// Version binomial (Notar que considero rate como la prob de mutacion POR NUCLEOTIDO de cada individuo)
-	//binomial_distribution<unsigned int> binomial_dist(length * dst->size(), rate);
-	//unsigned int total_muts = binomial_dist(rng);
 	binomial_distribution<unsigned long long> binomial_dist(static_cast<unsigned long long>(length) * static_cast<unsigned long long>(dst->size()), rate);
-	unsigned int total_muts = static_cast<unsigned int>(binomial_dist(rng));
+	unsigned int total_muts = static_cast<unsigned int>(binomial_dist(*rng));
 	pair<uint32_t, uint32_t> par(chrid, genid);
 	unsigned int reusados = 0;
 //	cout<<"ModelWF::processDNAGenes - total_muts: "<<total_muts<<" ("<<(length * dst->size())<<", "<<rate<<", pool->reuse: "<<pool->reuse[par].size()<<")\n";
 	for(unsigned int mut = 0; mut < total_muts; ++mut){
 		// Escoger individuo para mutar
-		unsigned int mut_pos = dst_dist(rng);
+		unsigned int mut_pos = dst_dist(*rng);
 //		cout<<"ModelWF::processDNAGenes - mut_pos: "<<mut_pos<<" de "<<dst->size()<<"\n";
 		
 		
@@ -117,7 +117,7 @@ unsigned int ModelWF::processDNAGenes(Population *dst, Pool *pool, Individual::P
 		
 		
 //		cout<<"ModelWF::processDNAGenes - mutate...\n";
-		seq->mutate();
+		seq->mutate(rng);
 		++mutations;
 //		cout<<"ModelWF::processDNAGenes - push...\n";
 		pool->push(chrid, genid, seq);

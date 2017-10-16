@@ -13,7 +13,7 @@ Sample::Sample(const string &_name, Population *_population, const uint32_t &_si
 	uniform_int_distribution<> uniform(0, _population->size()-1);
 
 	for(uint32_t i = 0; i < _size; ++i)
-		this->push(_population->at(uniform(rng)));
+		this->push(_population->at(uniform(*rng_gen)));
 }
 Sample::Sample(const std::string &_name,const std::map<uint32_t,map<uint32_t,std::vector<Marker>>> &_population, const boost::property_tree::ptree &_fsettings):Population(_name,_population,_fsettings){
 	;

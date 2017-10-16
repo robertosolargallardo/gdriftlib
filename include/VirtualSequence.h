@@ -30,14 +30,11 @@ using namespace std;
 
 //#define VS_DEBUG
 
-extern random_device seed;
-extern mt19937 rng;
-
 class VirtualSequence{
 
 protected:
 		
-	static mutex internal_mutex;
+//	static mutex internal_mutex;
 
 	static const unsigned int alphabet_size;
 	static const char alphabet[];
@@ -57,7 +54,7 @@ public:
 	// Aqui hay que hacer comparacion de tipo antes de comparar los datos
 	virtual bool operator==(const VirtualSequence&);
 	
-	virtual void mutate(mt19937 *arg_rng = NULL);
+	virtual void mutate(mt19937 *arg_rng);
 	virtual char at(seq_size_t pos) const;
 	
 	// Metodos relacionados con el contador de uso NO son virtuales
@@ -80,13 +77,13 @@ public:
 	virtual void printData();
 	
 	// Contador de la clase
-	static unsigned int count_str;
-	static unsigned int count_int;
-	static unsigned int count_copy;
-	static unsigned int count_mem;
-	static unsigned int count_del;
-	static unsigned int count_del_mem;
-	static unsigned int count_mut;
+//	static unsigned int count_str;
+//	static unsigned int count_int;
+//	static unsigned int count_copy;
+//	static unsigned int count_mem;
+//	static unsigned int count_del;
+//	static unsigned int count_del_mem;
+//	static unsigned int count_mut;
 	
 };
 

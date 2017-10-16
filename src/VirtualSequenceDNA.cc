@@ -28,10 +28,6 @@ VirtualSequenceDNA::VirtualSequenceDNA(unsigned int _size, mt19937 *arg_rng) : V
 //	cout<<"VirtualSequenceDNA - Pidiendo "<<data_size<<" bytes de memoria\n";
 	data = new unsigned char[ data_size ];
 	
-	// Notar que este metodo deberia recibir un mt19937 rng externo
-	if(arg_rng == NULL){
-		arg_rng = &rng;
-	}
 	std::uniform_int_distribution<unsigned char>  distr(0, CHAR_MAX-1);
 	for(unsigned int i = 0; i < data_size; ++i){
 		data[i] = distr(*arg_rng);
@@ -42,12 +38,12 @@ VirtualSequenceDNA::VirtualSequenceDNA(unsigned int _size, mt19937 *arg_rng) : V
 
 VirtualSequenceDNA::VirtualSequenceDNA(const char *_ref, unsigned int _size) : VirtualSequence() {
 	
-	#ifdef VS_DEBUG
-	internal_mutex.lock();
-	++count_str;
-	++count_mem;
-	internal_mutex.unlock();
-	#endif
+//	#ifdef VS_DEBUG
+//	internal_mutex.lock();
+//	++count_str;
+//	++count_mem;
+//	internal_mutex.unlock();
+//	#endif
 	
 //	cout<<"VirtualSequenceDNA - Inicio (text: "<<_ref<<", size: "<<_size<<")\n";
 	size = (seq_size_t)_size;
@@ -98,12 +94,12 @@ VirtualSequenceDNA::VirtualSequenceDNA(const char *_ref, unsigned int _size) : V
 // Llena el resto de A's (con un memset... 0)
 VirtualSequenceDNA::VirtualSequenceDNA(const unsigned int _size, const unsigned int _seq) : VirtualSequence() {
 	
-	#ifdef VS_DEBUG
-	internal_mutex.lock();
-	++count_int;
-	++count_mem;
-	internal_mutex.unlock();
-	#endif
+//	#ifdef VS_DEBUG
+//	internal_mutex.lock();
+//	++count_int;
+//	++count_mem;
+//	internal_mutex.unlock();
+//	#endif
 	
 	size = (seq_size_t)_size;
 	unsigned int data_size = (size>>2);
@@ -147,11 +143,11 @@ VirtualSequenceDNA::VirtualSequenceDNA(const string &_ref)
 // Tambien incluye las mutaciones del original en el mapa de la nueva instancia
 VirtualSequenceDNA::VirtualSequenceDNA(const VirtualSequenceDNA &original) : VirtualSequence() {
 	
-	#ifdef VS_DEBUG
-	internal_mutex.lock();
-	++count_copy;
-	internal_mutex.unlock();
-	#endif
+//	#ifdef VS_DEBUG
+//	internal_mutex.lock();
+//	++count_copy;
+//	internal_mutex.unlock();
+//	#endif
 	
 //	cout<<"VirtualSequenceDNA - Copia\n";
 	size = original.size;
@@ -173,16 +169,16 @@ VirtualSequence *VirtualSequenceDNA::clone(){
 VirtualSequenceDNA::~VirtualSequenceDNA(){
 //	cout<<"VirtualSequenceDNA::~VirtualSequenceDNA \n";
 	
-	#ifdef VS_DEBUG
-	internal_mutex.lock();
-	if(owns_data){
-		++count_del_mem;
-	}
-	else{
-		++count_del;
-	}
-	internal_mutex.unlock();
-	#endif
+//	#ifdef VS_DEBUG
+//	internal_mutex.lock();
+//	if(owns_data){
+//		++count_del_mem;
+//	}
+//	else{
+//		++count_del;
+//	}
+//	internal_mutex.unlock();
+//	#endif
 	
 	inserts.clear();
 	mutations.clear();
@@ -203,11 +199,11 @@ VirtualSequenceDNA& VirtualSequenceDNA::operator=(const VirtualSequenceDNA& orig
 			delete [] data;
 		}
 		
-		#ifdef VS_DEBUG
-		internal_mutex.lock();
-		++count_copy;
-		internal_mutex.unlock();
-		#endif
+//		#ifdef VS_DEBUG
+//		internal_mutex.lock();
+//		++count_copy;
+//		internal_mutex.unlock();
+//		#endif
 	
 		//cout<<"VirtualSequenceDNA - Copia\n";
 		size = original.size;
@@ -236,7 +232,7 @@ bool VirtualSequenceDNA::verifyDecompression(){
 		// Si ya tiene datos, bsata con agregar las mutaciones
 //		cout<<"VirtualSequenceDNA::verifyDecompression - Descomprimiendo secuencia por numero de mutaciones\n";
 		if(!owns_data){
-			++count_mem;
+//			++count_mem;
 			unsigned char *original_data = data;
 			unsigned int data_size = (size>>2);
 			if( size & 0x3 ){
@@ -306,15 +302,11 @@ bool VirtualSequenceDNA::findMutation(seq_size_t pos, seq_size_t &mut_pos) const
 // Este metodo puede entrar en conflicto con insert
 void VirtualSequenceDNA::mutate(mt19937 *arg_rng){
 	
-	#ifdef VS_DEBUG
-	internal_mutex.lock();
-	++count_mut;
-	internal_mutex.unlock();
-	#endif
-	
-	if(arg_rng == NULL){
-		arg_rng = &rng;
-	}
+//	#ifdef VS_DEBUG
+//	internal_mutex.lock();
+//	++count_mut;
+//	internal_mutex.unlock();
+//	#endif
 	
 //	cout<<"VirtualSequenceDNA::mutate - Inicio\n";
 	
@@ -377,11 +369,11 @@ void VirtualSequenceDNA::mutateBit(unsigned int pos){
 // Notar que esto puede modificar un maximo de 4 bytes (32 bits de mask)
 void VirtualSequenceDNA::mutateBitMask(unsigned int mask, unsigned int byte_ini){
 
-	#ifdef VS_DEBUG
-	internal_mutex.lock();
-	++count_mut;
-	internal_mutex.unlock();
-	#endif
+//	#ifdef VS_DEBUG
+//	internal_mutex.lock();
+//	++count_mut;
+//	internal_mutex.unlock();
+//	#endif
 	
 	unsigned int bit_ini = (byte_ini<<3);
 	unsigned int test_mask = 0x1;

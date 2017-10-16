@@ -3,12 +3,11 @@ Population::Population(void){
 	profile = NULL;
 	this->_name.clear();
 	this->_population.clear();
-	//Soporte para extern rng
-	rng_gen = &rng;
+	rng_gen = new mt19937(std::chrono::system_clock::now().time_since_epoch().count());
 }
 Population::Population(const std::string &_name,const std::map<uint32_t,map<uint32_t,std::vector<Marker>>> &_population, const boost::property_tree::ptree &_fsettings){
 	profile = new Individual::Profile(_fsettings.get_child("individual"));
-   Ploidy ploidy=Ploidy(_fsettings.get_child("individual").get<uint32_t>("ploidy"));
+	Ploidy ploidy=Ploidy(_fsettings.get_child("individual").get<uint32_t>("ploidy"));
 	std::map<uint32_t,Individual> individuals;
 
 	for(auto& chromosome : _population){
@@ -40,6 +39,8 @@ Population::Population(const std::string &_name,const std::map<uint32_t,map<uint
 	for(auto& individual : individuals)
 		this->_population.push_back(individual.second);
 	individuals.clear();
+	rng_gen = new mt19937(std::chrono::system_clock::now().time_since_epoch().count());
+	
 }
 /*
  *@deprecated
@@ -67,27 +68,23 @@ Population::Population(const Ploidy &_ploidy, const boost::property_tree::ptree 
 		}
 		this->_population.push_back(individual);
 	}
-	//Soporte para extern rng
-	rng_gen = &rng;
+	rng_gen = new mt19937(std::chrono::system_clock::now().time_since_epoch().count());
 //	cout<<"Population - Fin\n";
 }
 Population::Population(const string &_name){
 	this->_name=_name;
-	//Soporte para extern rng
-	rng_gen = &rng;
+	rng_gen = new mt19937(std::chrono::system_clock::now().time_since_epoch().count());
 	profile = NULL;
 }
 Population::Population(const string &_name,const uint32_t &_size){
 	this->_name=_name;
 	this->_population.reserve(_size);
-	//Soporte para extern rng
-	rng_gen = &rng;
+	rng_gen = new mt19937(std::chrono::system_clock::now().time_since_epoch().count());
 	profile = NULL;
 }
 Population::Population(const uint32_t &_size){
 	this->_population.reserve(_size);
-	//Soporte para extern rng
-	rng_gen = &rng;
+	rng_gen = new mt19937(std::chrono::system_clock::now().time_since_epoch().count());
 	profile = NULL;
 }
 
@@ -135,6 +132,7 @@ Population::~Population(void){
 		delete profile;
 		profile = NULL;
 	}
+	delete rng_gen;
 }
 string Population::name(void){
 	return this->_name;

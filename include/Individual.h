@@ -10,34 +10,12 @@
 
 enum Ploidy{HAPLOID=1,DIPLOID=2,TRIPLOID=3,TETRAPLOID=4,PENTAPLOID=5,HEXAPLOID=6,HEPTAPLOID=7,OCTAPLOID=8};
 
-extern mt19937 rng;
-
 class Individual{
 	protected:
-		
-		static mutex internal_mutex;
 		
 		// Reference to the genes (as VirtualSequences)
 		//  - To get the gen of a (ploidy, chr, gen_pos): gens + gens_ploidy*ploidy + gens_chr[chr] + gen_pos
 		VirtualSequence **gens;
-		
-		/*
-		// All this numbers can be static if we are using a single specie
-		// Total of genes (effective total, considering chromosomes AND ploidy)
-		static unsigned int n_gens;
-		// Number of chromosomes sets
-		static unsigned int ploidy;
-		// Number of chromosomes per set
-		static unsigned int n_chr;
-		// Number of genes per chromosome (array, accumulated)
-		static unsigned int *gens_chr;
-		// Number of genes per ploidy (the sum of the above)
-		static unsigned int gens_ploidy;
-		// Mutation rate per gene
-		static double *mut_rate;
-		// Number of nucleotides per gene
-//		static unsigned int *gen_len;
-		*/
 		
 		unsigned int id;
 		// Non static version (with smaller variables)
@@ -51,12 +29,6 @@ class Individual{
 		unsigned short *gens_chr;
 		// Number of genes per ploidy (the sum of the above)
 		unsigned int gens_ploidy;
-		
-		// Mutation rate per gene
-		// This should not be in individual, but in Model or Population (as all data related to the mutation model)
-//		double *mut_rate;
-		// Number of nucleotides per gene
-//		static unsigned int *gen_len;
 		
 	public:
 		// Forward declaration of Individual::Profile
@@ -242,7 +214,7 @@ class Individual{
 		
 		// Notar que lo ideal seria que parent fuese const
 		// Lamentablemente, el increase / decrease de los genes lo impide
-		inline void setParents(Individual &parent1, Individual &parent2){
+		inline void setParents(Individual &parent1, Individual &parent2, mt19937 *arg_rng){
 			
 			// Esta primera version solo funciona para diploides
 			if(ploidy != 2){
@@ -251,6 +223,7 @@ class Individual{
 			}
 			
 //			uniform_int_distribution<> coin(0, 1);
+			mt19937 &rng = *arg_rng;
 			unsigned int rand_bits = rng();
 			unsigned int mask = 0x80000000;
 			
@@ -295,8 +268,6 @@ class Individual{
 			}
 			
 		}
-		
-//		static void setParameters(const boost::property_tree::ptree &findividual);
 	
 	// Simple class to store global information related to the individuals of the population
 	// This includes number of chromosomes, genes, mutation, etc
