@@ -36,7 +36,7 @@ target_link_libraries(test_statistics gdrift++)
 target_link_libraries(experiment_threads gdrift++ pthread)
 
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
-    set (CMAKE_INSTALL_PREFIX "/usr/local" CACHE PATH "default install path" FORCE )
+    set (CMAKE_INSTALL_PREFIX "/usr/" CACHE PATH "default install path" FORCE )
 endif()
 
 install(TARGETS gdrift++ DESTINATION ${CMAKE_INSTALL_PREFIX}/lib)
