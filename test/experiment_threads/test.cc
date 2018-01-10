@@ -162,7 +162,7 @@ void fill_queue(ptree fsettings, unsigned int total, mt19937 &generator){
 }
 
 vector<double> get_statistics(map<string, Sample*> &samples){
-	cout << "get_statistics - Inicio\n";
+//	cout << "get_statistics - Inicio\n";
 		
 	ptree json_stats;
 	Sample all("summary");
@@ -188,20 +188,20 @@ vector<double> get_statistics(map<string, Sample*> &samples){
 	
 	vector<double> statistics;
 	for( auto par_1 : grouped_stats ){
-		cout << "Population name: " << par_1.first << "\n";
+//		cout << "Population name: " << par_1.first << "\n";
 		for( auto par_2 : par_1.second ){
-			cout << par_2.first << ": " << par_2.second << "\n";
+//			cout << par_2.first << ": " << par_2.second << "\n";
 			statistics.push_back(par_2.second);
 		}
-		cout << "-----     -----\n";
+//		cout << "-----     -----\n";
 	}
 	
-	cout << "get_statistics - Fin\n";
+//	cout << "get_statistics - Fin\n";
 	return statistics;
 }
 
 vector<double> get_params(ptree &fjob){
-	cout << "get_params - Inicio\n";
+//	cout << "get_params - Inicio\n";
 	
 	map<string, double> params_res;
 	
@@ -254,10 +254,10 @@ vector<double> get_params(ptree &fjob){
 	
 	vector<double> params;
 	for(auto par : params_res){
-		cout << "param[" << par.first << "]: " << par.second << "\n";
+//		cout << "param[" << par.first << "]: " << par.second << "\n";
 		params.push_back(par.second);
 	}
-	cout << "get_params - End\n";
+//	cout << "get_params - End\n";
 	
 	return params;
 }
