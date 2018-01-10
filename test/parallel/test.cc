@@ -5,11 +5,6 @@
 
 using namespace std;
 
-// Soporte para extern rng
-// Esto debe ser reemplazado por una instancia de mt19937 en el thread
-random_device seed;
-mt19937 rng(seed());
-
 // Mutex global para controlar acceso a cout u otros objetos compartidos
 // Este mutex debiera pertenecer al Controller en el modelo real
 mutex global_mutex;
