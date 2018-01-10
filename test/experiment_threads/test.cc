@@ -161,6 +161,107 @@ void fill_queue(ptree fsettings, unsigned int total, mt19937 &generator){
 	
 }
 
+vector<double> get_statistics(map<string, Sample*> &samples){
+	cout << "get_statistics - Inicio\n";
+		
+	ptree json_stats;
+	Sample all("summary");
+	for(map<string, Sample*>::iterator i = samples.begin(); i != samples.end(); ++i){
+		json_stats.push_back(std::make_pair("", i->second->indices()));
+		all.merge(i->second);
+	}
+	json_stats.push_back(std::make_pair("", all.indices()));
+
+	map<string, map<string, double>> grouped_stats;
+	for( auto &population_stats : json_stats ){
+		string pop_name = population_stats.second.get<string>("name");
+		map<string, double> pop_stats;
+		for(auto &c : population_stats.second.get_child("chromosomes")){
+			for(auto &g : c.second.get_child("genes")){
+				for(auto i : g.second.get_child("indices")){
+					pop_stats[i.first] = std::stod(i.second.data());
+				}
+			}
+		}
+		grouped_stats[pop_name] = pop_stats;
+	}
+	
+	vector<double> statistics;
+	for( auto par_1 : grouped_stats ){
+		cout << "Population name: " << par_1.first << "\n";
+		for( auto par_2 : par_1.second ){
+			cout << par_2.first << ": " << par_2.second << "\n";
+			statistics.push_back(par_2.second);
+		}
+		cout << "-----     -----\n";
+	}
+	
+	cout << "get_statistics - Fin\n";
+	return statistics;
+}
+
+vector<double> get_params(ptree &fjob){
+	cout << "get_params - Inicio\n";
+	
+	map<string, double> params_res;
+	
+	// LLeno params_res con los parametros de este resultado
+	ptree scenario = fjob.get_child("scenario");
+	for(auto &event : scenario.get_child("events")){
+		
+		unsigned int eid = event.second.get<unsigned int>("id");
+		string param_name_base = "events.";
+		param_name_base += std::to_string(eid);
+		param_name_base += ".";
+		
+		// Primer parametro (de todos los eventos) timestamp
+		// Segundo parametro, si es create, tiene size
+		// Tercer parametro, si NO es endsim, split ni extinction (ni create), tiene percentage
+		// Notar que esos 3 casos no tienen parametros adicionales
+		
+		unsigned int timestamp = event.second.get<unsigned int>("timestamp");
+		params_res[param_name_base + "timestamp"] = timestamp;
+		
+		string type = event.second.get<string>("type");
+		if( type.compare("create") == 0 ){
+			unsigned int size = event.second.get<unsigned int>("params.population.size");
+			params_res[param_name_base + "params.population.size"] = size;
+		}
+		else if( type.compare("endsim") != 0 
+			&& type.compare("split") != 0 
+			&& type.compare("extinction") != 0 ){
+			double percentage = event.second.get<double>("params.source.population.percentage");
+			params_res[param_name_base + "params.source.population.percentage"] = percentage;
+		}
+		
+	}
+	
+	// Tambien incluyo las mutaciones de cada gen
+	ptree individual = fjob.get_child("individual");
+	for(auto &c : individual.get_child("chromosomes")){
+		uint32_t cid = c.second.get<uint32_t>("id");
+		for(auto &g : c.second.get_child("genes")){
+			uint32_t gid = g.second.get<uint32_t>("id");
+			double rate = g.second.get<double>("mutation.rate");
+			string param_name = "chromosomes.";
+			param_name += std::to_string(cid);
+			param_name += ".genes.";
+			param_name += std::to_string(gid);
+			param_name += ".mutation.rate";
+			params_res[param_name] = rate;
+		}
+	}
+	
+	vector<double> params;
+	for(auto par : params_res){
+		cout << "param[" << par.first << "]: " << par.second << "\n";
+		params.push_back(par.second);
+	}
+	cout << "get_params - End\n";
+	
+	return params;
+}
+
 void SimultionThread(unsigned int pid, unsigned int n_threads){
 	
 	global_mutex.lock();
@@ -172,6 +273,11 @@ void SimultionThread(unsigned int pid, unsigned int n_threads){
 	unsigned int cur_pos = 0;
 	
 	double model_time = 0;
+	
+	string file_name = "results_";
+	file_name += std::to_string(pid);
+	file_name += ".txt";
+	fstream writer(file_name, fstream::trunc | fstream::out);
 	
 	while(true){
 		global_mutex.lock();
@@ -189,6 +295,7 @@ void SimultionThread(unsigned int pid, unsigned int n_threads){
 		++procesados;
 		
 		Simulator sim(fjob);
+		sim.model_time = 0;
 		sim.run();
 		model_time += sim.model_time;
 		
@@ -196,7 +303,26 @@ void SimultionThread(unsigned int pid, unsigned int n_threads){
 		// Esto requiere el target 
 		// Falta definir e implementar la normalizacion
 		
+		if( sim.detectedErrors() == 0 ){
+			vector<double> statistics = get_statistics(sim.samples());
+			vector<double> params = get_params(fjob);
+
+			// Con los estadisticos y los parametros en json, tengo que sacar esos datos a double
+			// En la salida van los 15 estadisticos, y los parametros
+			for( double value : statistics ){
+				writer << value << "\t";
+			}
+			for( double value : params ){
+				writer << value << "\t";
+			}
+			writer << "\n";
+			
+			
+		}
+		
 	}
+	
+	writer.close();
 	
 	global_mutex.lock();
 	cout<<"SimultionThread["<<pid<<"] - Fin (Total trabajos: "<<procesados<<", Total ms: "<<timer.getMilisec()<<", Model ms: "<<model_time<<")\n";
@@ -267,8 +393,8 @@ int main(int argc,char** argv){
 	cout<<"Test - Iniciando "<<n_threads<<" threads\n";
 	vector<thread> threads_list;
 	for(unsigned int i = 0; i < n_threads; ++i){
-//		threads_list.push_back( thread(SimultionThread, i, n_threads) );
-		threads_list.push_back( thread(DummyThread, i, total/n_threads) );
+		threads_list.push_back( thread(SimultionThread, i, n_threads) );
+//		threads_list.push_back( thread(DummyThread, i, total/n_threads) );
 		
 //		// Tomar pthread de este thread
 //		pthread_t current_thread = threads_list.back().native_handle();
@@ -287,6 +413,7 @@ int main(int argc,char** argv){
 	cout<<"Test - Procesamiento terminado en "<<(ms_processing - ms_preparation)<<" ms\n";
 	
 	// Analyzer
+	
 	double ms_analysis = timer.getMilisec();
 	cout<<"Test - Analisis terminado en "<<(ms_analysis - ms_processing)<<" ms\n";
 	
