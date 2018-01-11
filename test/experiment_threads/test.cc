@@ -163,7 +163,7 @@ void fill_queue(ptree fsettings, unsigned int total, mt19937 &generator){
 
 vector<double> get_statistics(map<string, Sample*> &samples){
 //	cout << "get_statistics - Inicio\n";
-		
+	
 	ptree json_stats;
 	Sample all("summary");
 	for(map<string, Sample*>::iterator i = samples.begin(); i != samples.end(); ++i){
@@ -262,7 +262,7 @@ vector<double> get_params(ptree &fjob){
 	return params;
 }
 
-void SimultionThread(unsigned int pid, unsigned int n_threads){
+void SimultionThread(unsigned int pid, unsigned int n_threads, string output_base){
 	
 	global_mutex.lock();
 	cout<<"SimultionThread["<<pid<<"] - Inicio\n";
@@ -274,10 +274,13 @@ void SimultionThread(unsigned int pid, unsigned int n_threads){
 	
 	double model_time = 0;
 	
-	string file_name = "results_";
+	string file_name = output_base;
 	file_name += std::to_string(pid);
 	file_name += ".txt";
-	fstream writer(file_name, fstream::trunc | fstream::out);
+	
+	unsigned int max_storage = 10;
+	vector< vector<double> > statistics_storage;
+	vector< vector<double> > params_storage;
 	
 	while(true){
 		global_mutex.lock();
@@ -306,23 +309,58 @@ void SimultionThread(unsigned int pid, unsigned int n_threads){
 		if( sim.detectedErrors() == 0 ){
 			vector<double> statistics = get_statistics(sim.samples());
 			vector<double> params = get_params(fjob);
-
-			// Con los estadisticos y los parametros en json, tengo que sacar esos datos a double
-			// En la salida van los 15 estadisticos, y los parametros
-			for( double value : statistics ){
-				writer << value << "\t";
+			
+			statistics_storage.push_back(statistics);
+			params_storage.push_back(params);
+			
+			if( statistics_storage.size() >= max_storage ){
+				
+//				global_mutex.lock();
+//				cout<<"SimultionThread["<<pid<<"] - statistics_storage.size: "<<statistics_storage.size()<<", guardando...\n";
+//				global_mutex.unlock();
+				
+				fstream writer(file_name, fstream::out | fstream::app);
+				for(unsigned int i = 0; i < statistics_storage.size(); ++i){
+					for( double value : statistics_storage[i] ){
+						writer << value << "\t";
+					}
+					for( double value : params_storage[i] ){
+						writer << value << "\t";
+					}
+					writer << "\n";
+				}
+				writer.close();
+				statistics_storage.clear();
+				params_storage.clear();
 			}
-			for( double value : params ){
-				writer << value << "\t";
-			}
-			writer << "\n";
 			
 			
 		}
 		
 	}
 	
-	writer.close();
+	// Si quedaron resultados pendientes, los guardo aqui
+	if( statistics_storage.size() > 0 ){
+		
+//		global_mutex.lock();
+//		cout<<"SimultionThread["<<pid<<"] - statistics_storage.size: "<<statistics_storage.size()<<", guardando...\n";
+//		global_mutex.unlock();
+		
+		fstream writer(file_name, fstream::out | fstream::app);
+		for(unsigned int i = 0; i < statistics_storage.size(); ++i){
+			for( double value : statistics_storage[i] ){
+				writer << value << "\t";
+			}
+			for( double value : params_storage[i] ){
+				writer << value << "\t";
+			}
+			writer << "\n";
+		}
+		writer.close();
+		statistics_storage.clear();
+		params_storage.clear();
+	}
+	
 	
 	global_mutex.lock();
 	cout<<"SimultionThread["<<pid<<"] - Fin (Total trabajos: "<<procesados<<", Total ms: "<<timer.getMilisec()<<", Model ms: "<<model_time<<")\n";
@@ -369,8 +407,8 @@ void DummyThread(unsigned int pid, unsigned int local_jobs){
 
 int main(int argc,char** argv){
 
-	if(argc != 4){
-		cout<<"\nUsage: ./test json_file total_jobs n_threads\n";
+	if(argc != 5){
+		cout<<"\nUsage: ./test json_file total_jobs n_threads output_base\n";
 		cout<<"\n";
 		return 0;
 	}
@@ -379,10 +417,40 @@ int main(int argc,char** argv){
 	read_json(argv[1], fsettings);
 	unsigned int total = atoi(argv[2]);
 	unsigned int n_threads = atoi(argv[3]);
+	string output_base = argv[4];
 	
-	cout<<"Test - Inicio\n";
-	NanoTimer timer;
 	mt19937 generator((std::random_device())());
+	NanoTimer timer;
+	
+	cout<<"Test - Inicio (total: "<<total<<", n_threads: "<<n_threads<<", output_base: "<<output_base<<")\n";
+	
+	cout<<"Test - Revisando trabajos terminados\n";
+	unsigned int terminados = 0;
+	unsigned int buff_size = 1020*1024;
+	char buff[buff_size];
+	for(unsigned int pid = 0; pid < n_threads; ++pid){
+		string file_name = output_base;
+		file_name += std::to_string(pid);
+		file_name += ".txt";
+		fstream reader(file_name, fstream::in);
+		
+		while(true){
+			reader.getline(buff, buff_size);
+			if( !reader.good() || strlen(buff) < 1 ){
+				break;
+			}
+			++terminados;
+		}
+		
+		reader.close();
+	}
+	if(terminados < total){
+		total -= terminados;
+	}
+	else{
+		total = 0;
+	}
+	cout<<"Test - Terminados: "<<terminados<<", Total efectivo: "<<total<<"\n";
 	
 	cout<<"Test - Preparando Cola de Trabajo\n";
 	fill_queue(fsettings, total, generator);
@@ -393,7 +461,7 @@ int main(int argc,char** argv){
 	cout<<"Test - Iniciando "<<n_threads<<" threads\n";
 	vector<thread> threads_list;
 	for(unsigned int i = 0; i < n_threads; ++i){
-		threads_list.push_back( thread(SimultionThread, i, n_threads) );
+		threads_list.push_back( thread(SimultionThread, i, n_threads, output_base) );
 //		threads_list.push_back( thread(DummyThread, i, total/n_threads) );
 		
 //		// Tomar pthread de este thread
