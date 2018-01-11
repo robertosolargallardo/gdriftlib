@@ -7,10 +7,65 @@
 #include <fstream>
 #include <string.h>
 
+#include <algorithm>
+#include <math.h>
+
 #include <map>
 #include <vector>
 
 using namespace std;
+
+double distance(vector<double> &stats, vector<double> &target){
+	double d = 0.0;
+	for(unsigned int i = 0; i < target.size(); ++i){
+		d += pow( stats[i] - target[i], 2.0 );
+	}
+	d = pow(d, 0.5);
+	return d;
+}
+
+double get_mean(vector<double> &data){
+	if( data.size() < 1 ){
+		return 0.0;
+	}
+	double suma = 0.0;
+	for(unsigned int i = 0; i < data.size(); ++i){
+		suma += data[i];
+	}
+	return suma/data.size();
+}
+
+// Notar que realizo una copia local de data para ordenarlo sin modificar los originales
+double get_median(vector<double> &data){
+	if( data.size() < 1 ){
+		return 0.0;
+	}
+	double median;
+	vector<double> copia = data;
+	size_t size = copia.size();
+	sort(copia.begin(), copia.end());
+	// Si es par, promedio los dos elementos medios
+	if( (size % 0x1) == 0 ){
+		median = copia[ (size / 2) - 1 ] + copia[ size / 2 ];
+		median /= 2.0;
+	}
+	else{
+		median = copia[ size / 2 ];
+	}
+	return median;
+}
+
+// Si se recibe mean, se usa. De otro modo, se calcula.
+double get_variance(vector<double> &data, double mean){
+	if( data.size() < 1 ){
+		return 0.0;
+	}
+	double suma = 0.0;
+	for(unsigned int i = 0; i < data.size(); ++i){
+		suma += pow(data[i] - mean, 2.0);
+	}
+	return suma/data.size();
+}
 
 int main(int argc,char** argv){
 
@@ -144,31 +199,89 @@ int main(int argc,char** argv){
 	
 	cout << "Statistics - Normalizando target y stats de resultados\n";
 	for(unsigned int i = 0; i < target.size(); ++i){
-//		target[i] = normalizar(target[i], min_stats[i], max_stats[i]);
 		target[i] = ( target[i] - min_stats[i] )/(max_stats[i] - min_stats[i]);
 	}
 	for( vector<double> &res_stats : stats ){
 		for(unsigned int i = 0; i < res_stats.size(); ++i){
-//			res_stats[i] = normalizar(res_stats[i], min_stats[i], max_stats[i]);
 			res_stats[i] = ( res_stats[i] - min_stats[i] )/(max_stats[i] - min_stats[i]);
 		}
 	}
 	
-	// Verificacion
-	cout << "Target: ";
-	for(unsigned int i = 0; i < n_stats; ++i){
-		cout << target[i] << " | ";
-	}
-	cout << "\n";
-	for(unsigned int k = 0; k < 10 && k < stats.size(); ++k){
-		cout << "Res[" << k << "]: ";
-		for(unsigned int i = 0; i < n_stats; ++i){
-			cout << stats[k][i] << " | ";
-		}
-		cout << "\n";
+//	// Verificacion
+//	cout << "Target: ";
+//	for(unsigned int i = 0; i < n_stats; ++i){
+//		cout << target[i] << " | ";
+//	}
+//	cout << "\n";
+//	for(unsigned int k = 0; k < 10 && k < stats.size(); ++k){
+//		cout << "Res[" << k << "]: ";
+//		for(unsigned int i = 0; i < n_stats; ++i){
+//			cout << stats[k][i] << " | ";
+//		}
+//		cout << "\n";
+//	}
+	
+	// Arreglo con pares <distancia, pos>
+	// Eso es para ordenar y seleccionar mas facilmente
+	vector< pair<double, unsigned int> > distancias;
+	unsigned int pos = 0;
+	for( vector<double> &res_stats : stats ){
+		value = distance( res_stats, target );
+		distancias.push_back( pair<double, unsigned int>(value, pos++) );
 	}
 	
-//	vector<double> distancia;
+//	// Verificacion
+//	for(unsigned int k = 0; k < 10 && k < distancias.size(); ++k){
+//		cout << "Distancia[" << k << "]: (" << distancias[k].first <<", " << distancias[k].second <<")\n";
+//	}
+//	cout<<"-----\n";
+	
+	sort(distancias.begin(), distancias.end());
+	
+	// Verificacion
+	for(unsigned int k = 0; k < 10 && k < distancias.size(); ++k){
+		cout << "Distancia[" << k << "]: (" << distancias[k].first <<", " << distancias[k].second <<")\n";
+	}
+	cout<<"-----\n";
+	
+	// Verificacion
+	for(unsigned int k = 0; k < 10 && k < distancias.size(); ++k){
+		unsigned int pos = distancias.size() - k - 1;
+		cout << "Distancia[" << pos << "]: (" << distancias[pos].first <<", " << distancias[pos].second <<")\n";
+	}
+	cout<<"-----\n";
+	
+	// Seleccion efectiva de resultados
+	unsigned int topk = (unsigned int)(percentage * distancias.size());
+	vector< vector<double> > samples;
+	for(unsigned int i = 0; i < n_params; ++i){
+		vector<double> sample;
+		samples.push_back(sample);
+	}
+	for(unsigned int i = 0; i < topk; ++i){
+		unsigned int pos_res = distancias[i].second;
+		for(unsigned int j = 0; j < n_params; ++j){
+			value = params[pos_res][j];
+			samples[j].push_back(value);
+		}
+	}
+	
+//	// Verificacion
+//	cout << "Statistics - samples.size: " << samples.size() << "\n";
+//	for(unsigned int i = 0; i < samples.size(); ++i){
+//		cout << "Statistics - samples[" << i << "].size: " << samples[i].size() << "\n";
+//	}
+	
+	// Calculo de estadisticos reales
+	for(unsigned int i = 0; i < samples.size(); ++i){
+		double mean = get_mean(samples[i]);
+		double median = get_median(samples[i]);
+		double variance = get_variance(samples[i], mean);
+		double stddev = pow(variance, 0.5);
+		
+		cout << "Statistics - Posteriori[" << i << "]: (mean: " << mean << ", median: " << median << ", variance: " << variance << ", stddev: " << stddev << ")\n";
+		
+	}
 	
 	
 	
