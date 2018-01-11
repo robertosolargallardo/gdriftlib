@@ -253,6 +253,7 @@ int main(int argc,char** argv){
 	
 	// Seleccion efectiva de resultados
 	unsigned int topk = (unsigned int)(percentage * distancias.size());
+	cout << "Statistics - Topk: " << topk << " / " << distancias.size() << "\n";
 	vector< vector<double> > samples;
 	for(unsigned int i = 0; i < n_params; ++i){
 		vector<double> sample;
