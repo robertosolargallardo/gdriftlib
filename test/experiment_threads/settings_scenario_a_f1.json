@@ -1,0 +1,186 @@
+{
+	"id": "1001",
+	"type": "init",
+	"max-number-of-simulations": "100000",
+	"batch-size": "10000",
+	"population-increase-phases": "0",
+	"name": "Scenario A",
+	"user": "0",
+	"feedback": "0",
+
+	"individual": {
+		"ploidy": "1",
+		"chromosomes": [{
+			"id": "0",
+			"genes": [{
+				"id": "0",
+				"type": "0",
+				"nucleotides": "663",
+				"number-of-segregating-sites": "10",
+				"number-of-alleles": "1048576",
+
+				"mutation": {
+					"model": "0",
+					"rate" : {
+						"type": "random",
+						"distribution": {
+							"type": "normal",
+							"params": {
+								"mean": "7.54995e-08",
+								"stddev": "1.76083e-08"
+							}
+						}	
+					}
+				}
+			}]
+		}]
+	},
+	"scenarios": [{
+		"id": "0",
+		"model": "0",
+		"events": [{
+			"id": "0",
+			"type": "create",
+			"timestamp": {
+				"type": "fixed",
+				"value": "0"
+			},
+			"params": {
+				"population": {
+					"name": "p0",
+					"size": {
+						"type": "random",
+						"distribution": {
+							"type": "normal",
+							"params": {
+								"mean": "11688.9",
+								"stddev": "2422.79"
+							}
+						}
+					}
+				}
+			}
+		}, {
+			"id": "1",
+			"type": "increment",
+			"timestamp": {
+				"type": "random",
+				"distribution": {
+					"type": "normal",
+					"params": {
+						"mean": "49.9632",
+						"stddev": "28.8403"
+					}
+				}
+			},
+			"params": {
+				"source": {
+					"population": {
+						"name": "p0",
+						"percentage": {
+							"type": "random",
+							"distribution": {
+								"type": "normal",
+								"params": {
+									"mean": "0.529332",
+									"stddev": "0.140175"
+								}
+							}
+						}
+					}
+				}
+			}
+		}, {
+			"id": "2",
+			"type": "split",
+			"timestamp": {
+				"type": "random",
+				"distribution": {
+					"type": "normal",
+					"params": {
+						"mean": "10322",
+						"stddev": "2845"
+					}
+				}
+			},
+			"params": {
+				"source": {
+					"population": {
+						"name": "p0"
+					}
+				},
+				"partitions": "2",
+				"destination": [{
+					"population": {
+						"name": "p1"
+					}
+				}, {
+					"population": {
+						"name": "p2"
+					}
+				}]
+			}
+		}, {
+			"id": "3",
+			"type": "decrement",
+			"timestamp": {
+				"type": "random",
+				"distribution": {
+					"type": "normal",
+					"params": {
+						"mean": "58708.5",
+						"stddev": "4649.47"
+					}
+				}
+			},
+			"params": {
+				"source": {
+					"population": {
+						"name": "p1",
+						"percentage": {
+							"type": "random",
+							"distribution": {
+								"type": "normal",
+								"params": {
+									"mean": "0.84441",
+									"stddev": "0.0589842"
+								}
+							}
+						}
+					}
+				}
+			}
+		}, {
+			"id": "4",
+			"type": "endsim",
+			"timestamp": {
+				"type": "random",
+				"distribution": {
+					"type": "normal",
+					"params": {
+						"mean": "60059.1",
+						"stddev": "3982.08"
+					}
+				}
+			},
+			"params": {
+				"sampling": [{
+					"name": "sample1",
+					"source": {
+						"population": {
+							"name": "p1"
+						}
+					}
+				}, {
+					"name": "sample2",
+					"source": {
+						"population": {
+							"name": "p2"
+						}
+					}
+				}]
+			}
+		}]
+	}
+	]
+}
