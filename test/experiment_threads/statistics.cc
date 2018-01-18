@@ -69,8 +69,8 @@ double get_variance(vector<double> &data, double mean){
 
 int main(int argc,char** argv){
 
-	if(argc != 8){
-		cout<<"\nUsage: ./test results_base n_threads n_stats n_params target_file percentage distributions_file\n";
+	if(argc != 9){
+		cout<<"\nUsage: ./test results_base n_threads n_stats n_params target_file percentage distributions_file final_results\n";
 		cout<<"\n";
 		return 0;
 	}
@@ -82,10 +82,12 @@ int main(int argc,char** argv){
 	string target_file = argv[5];
 	float percentage = atof(argv[6]);
 	string distributions_file = argv[7];
+	string final_results = argv[8];
 	
 	cout << "Statistics - Inicio (n_stats: " << n_stats << ", n_params: " << n_params << ", percentage: " << percentage << ")\n";
 	
 	vector< vector<double> > stats;
+	vector< vector<double> > stats_norm;
 	vector< vector<double> > params;
 	unsigned int buff_size = 1020*1024;
 	char buff[buff_size];
@@ -108,12 +110,15 @@ int main(int argc,char** argv){
 			stringstream toks(line);
 			
 			vector<double> res_stats;
+			vector<double> res_stats_norm;
 			for(unsigned int i = 0; i < n_stats; ++i){
 				value = 0.0;
 				toks >> value;
 				res_stats.push_back(value);
+				res_stats_norm.push_back(value);
 			}
 			stats.push_back(res_stats);
+			stats_norm.push_back(res_stats_norm);
 			
 			vector<double> res_params;
 			for(unsigned int i = 0; i < n_stats; ++i){
@@ -201,31 +206,36 @@ int main(int argc,char** argv){
 	for(unsigned int i = 0; i < target.size(); ++i){
 		target[i] = ( target[i] - min_stats[i] )/(max_stats[i] - min_stats[i]);
 	}
-	for( vector<double> &res_stats : stats ){
+	for( vector<double> &res_stats : stats_norm ){
 		for(unsigned int i = 0; i < res_stats.size(); ++i){
 			res_stats[i] = ( res_stats[i] - min_stats[i] )/(max_stats[i] - min_stats[i]);
 		}
 	}
 	
-//	// Verificacion
-//	cout << "Target: ";
-//	for(unsigned int i = 0; i < n_stats; ++i){
-//		cout << target[i] << " | ";
-//	}
-//	cout << "\n";
-//	for(unsigned int k = 0; k < 10 && k < stats.size(); ++k){
-//		cout << "Res[" << k << "]: ";
-//		for(unsigned int i = 0; i < n_stats; ++i){
-//			cout << stats[k][i] << " | ";
-//		}
-//		cout << "\n";
-//	}
+	// Verificacion
+	cout << "Target: ";
+	for(unsigned int i = 0; i < n_stats; ++i){
+		cout << target[i] << " | ";
+	}
+	cout << "\n";
+	for(unsigned int k = 0; k < 10 && k < stats.size(); ++k){
+		cout << "Res[" << k << "]: ";
+		for(unsigned int i = 0; i < n_stats; ++i){
+			cout << stats[k][i] << " | ";
+		}
+		cout << "\n";
+		cout << "Res_norm[" << k << "]: ";
+		for(unsigned int i = 0; i < n_stats; ++i){
+			cout << stats_norm[k][i] << " | ";
+		}
+		cout << "\n";
+	}
 	
 	// Arreglo con pares <distancia, pos>
 	// Eso es para ordenar y seleccionar mas facilmente
 	vector< pair<double, unsigned int> > distancias;
 	unsigned int pos = 0;
-	for( vector<double> &res_stats : stats ){
+	for( vector<double> &res_stats : stats_norm ){
 		value = distance( res_stats, target );
 		distancias.push_back( pair<double, unsigned int>(value, pos++) );
 	}
@@ -273,6 +283,8 @@ int main(int argc,char** argv){
 //		cout << "Statistics - samples[" << i << "].size: " << samples[i].size() << "\n";
 //	}
 	
+	
+	fstream writer(distributions_file, fstream::out | fstream::trunc);
 	// Calculo de estadisticos reales
 	for(unsigned int i = 0; i < samples.size(); ++i){
 		double mean = get_mean(samples[i]);
@@ -281,9 +293,34 @@ int main(int argc,char** argv){
 		double stddev = pow(variance, 0.5);
 		
 		cout << "Statistics - Posteriori[" << i << "]: (mean: " << mean << ", median: " << median << ", variance: " << variance << ", stddev: " << stddev << ")\n";
+		writer << "Posteriori[" << i << "]: mean: " << mean << " | median: " << median << " | variance: " << variance << " | stddev: " << stddev << "\n";
 		
 	}
+	writer.close();
 	
+	
+	writer.open(final_results, fstream::out | fstream::trunc);
+	for(unsigned int i = 0; i < distancias.size(); ++i){
+		double d = distancias[i].first;
+		unsigned pos = distancias[i].second;
+		vector<double> res_stats = stats[pos];
+		vector<double> res_params = params[pos];
+		
+		writer << d << "\t";
+		
+		for(unsigned int j = 0; j < n_stats; ++j){
+			writer << res_stats[j] << "\t";
+		}
+		
+		for(unsigned int j = 0; j < n_params; ++j){
+			writer << res_params[j] << "\t";
+		}
+		
+		writer << "\n";
+		
+		
+	}
+	writer.close();
 	
 	
 	cout << "Statistics - Fin\n";
