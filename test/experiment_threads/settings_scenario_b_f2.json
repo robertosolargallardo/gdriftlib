@@ -1,0 +1,156 @@
+{
+	"id": "1002",
+	"type": "init",
+	"max-number-of-simulations": "100000",
+	"batch-size": "10000",
+	"population-increase-phases": "0",
+	"name": "Scenario B",
+	"user": "0",
+	"feedback": "0",
+
+	"individual": {
+		"ploidy": "1",
+		"chromosomes": [{
+			"id": "0",
+			"genes": [{
+				"id": "0",
+				"type": "0",
+				"nucleotides": "663",
+				"number-of-segregating-sites": "10",
+				"number-of-alleles": "1048576",
+
+				"mutation": {
+					"model": "0",
+					"rate" : {
+						"type": "random",
+						"distribution": {
+							"type": "normal",
+							"params": {
+								"mean": "8.6304e-08",
+								"stddev": "1.35834e-08"
+							}
+						}	
+					}
+				}
+			}]
+		}]
+	},
+	"scenarios": [{
+		"id": "0",
+		"model": "0",
+		"events": [{
+			"id": "0",
+			"type": "create",
+			"timestamp": {
+				"type": "fixed",
+				"value": "0"
+			},
+			"params": {
+				"population": {
+					"name": "p0",
+					"size": {
+						"type": "random",
+						"distribution": {
+							"type": "normal",
+							"params": {
+								"mean": "13846.2",
+								"stddev": "1861.95"
+							}
+						}
+					}
+				}
+			}
+		}, {
+			"id": "1",
+			"type": "split",
+			"timestamp": {
+				"type": "random",
+				"distribution": {
+					"type": "normal",
+					"params": {
+						"mean": "50.7207",
+						"stddev": "27.6229"
+					}
+				}
+			},
+			"params": {
+				"source": {
+					"population": {
+						"name": "p0"
+					}
+				},
+				"partitions": "2",
+				"destination": [{
+					"population": {
+						"name": "p1"
+					}
+				}, {
+					"population": {
+						"name": "p2"
+					}
+				}]
+			}
+		}, {
+			"id": "2",
+			"type": "decrement",
+			"timestamp": {
+				"type": "random",
+				"distribution": {
+					"type": "normal",
+					"params": {
+						"mean": "10047.3",
+						"stddev": "2881.04"
+					}
+				}
+			},
+			"params": {
+				"source": {
+					"population": {
+						"name": "p1",
+						"percentage": {
+							"type": "random",
+							"distribution": {
+								"type": "normal",
+								"params": {
+									"mean": "0.134392",
+									"stddev": "0.0557679"
+								}
+							}
+						}
+					}
+				}
+			}
+		}, {
+			"id": "3",
+			"type": "endsim",
+			"timestamp": {
+				"type": "random",
+				"distribution": {
+					"type": "normal",
+					"params": {
+						"mean": "58166.6",
+						"stddev": "5795.28"
+					}
+				}
+			},
+			"params": {
+				"sampling": [{
+					"name": "sample1",
+					"source": {
+						"population": {
+							"name": "p1"
+						}
+					}
+				}, {
+					"name": "sample2",
+					"source": {
+						"population": {
+							"name": "p2"
+						}
+					}
+				}]
+			}
+		}]
+	}
+	]
+}
